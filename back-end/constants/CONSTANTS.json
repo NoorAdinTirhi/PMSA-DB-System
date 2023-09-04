@@ -1,0 +1,3 @@
+[
+    { "name": "allMembers", "allowed": ["secgen"] }
+]

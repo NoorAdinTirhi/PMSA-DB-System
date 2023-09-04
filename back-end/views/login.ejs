@@ -80,11 +80,11 @@
     </head>
     <body>
         <form class="form-container drop-shadow curved curved-hz-2", method = "post", action = "/login">
-            <h1 >PMSA Login</h1>
+            <h1 style="background-color: rgb(25, 88, 206); color :#FFF"  >PMSA Login</h1>
             <label for ="username">Username :</label>
-            <input type='text' id="username" name="username", placeholder="username"> <br><br>
+            <input required type='text' id="username" name="username", placeholder="username"> <br><br>
             <label>Password :</label>
-            <input type='password' name="password", placeholder="password"><br>
+            <input required type='password' name="password", placeholder="password"><br>
             <label>
               <%= login_string %>
             </label><br><br>
