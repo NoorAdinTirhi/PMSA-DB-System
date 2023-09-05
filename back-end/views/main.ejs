@@ -102,12 +102,15 @@
         .allButoon {
             padding: 1%;
             border: 2px solid #000000;
-            margin-left: 30%;
+            border-radius: 5%;
+            margin-left: 50%;
             margin-top: 20%;
             margin-bottom: 20%;
             padding: 20px;
             font-size: 20px;
-            width: 150px
+            width: 100%;
+            height: 100px;
+            background-color: transparent;
         }
         
         .zoom {
@@ -121,63 +124,301 @@
             /* Safari 3-8 */
             transform: scale(1.5);
         }
+        
+        .column {
+            float: left;
+            content: "";
+            width: 25%;
+            border: 2px solid #000000;
+            padding-top: 1%;
+            padding-bottom: 1%;
+        }
+        
+        .minicolumn {
+            float: left;
+            display: inline-block;
+            height: 100%;
+            padding: 1px;
+        }
+        
+        .row {
+            content: "";
+            clear: both;
+            position: relative;
+            width: 90%;
+            float: none;
+            margin-left: 5%;
+            margin-right: 5%;
+            height: 60%;
+            margin-bottom: 10%;
+        }
+        
+        #SecGen {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        #SecGen td,
+        #SecGen th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            padding-top: 15px;
+            padding-top: 15px;
+        }
+        
+        #SecGen tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        #SecGen tr:hover {
+            background-color: #ddd;
+        }
+        
+        #SecGen th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #0b60af;
+            color: white;
+        }
+        
+        #leftbox {
+            display: inline-block;
+            position: relative;
+            width: 30%;
+            margin-left: 5.5%;
+            margin-top: 2%;
+            margin-right: 2%;
+            float: left;
+            min-width: max-content;
+        }
+        
+        #rightbox {
+            display: inline-block;
+            position: relative;
+            width: 49%;
+            margin-left: 2%;
+            margin-right: 5.5%;
+            margin-top: 2%;
+            float: right;
+            min-width: max-content;
+        }
     </style>
 </head>
 
 <body>
     <!-- main header -->
-    <div class="line" style="position: relative; width:fit-content; margin-left: 1%; padding-right: 2%;">
-        <div style="display: inline-block; padding-right : 5% auto">
-            <!-- title -->
-            <h1 style="margin-right:25px">Welcome
-                <%= user%>
-            </h1>
+    <div id="leftbox">
+        <div class="line" style=" position: relative; width:max-content; ">
+            <div style="display: inline-block; padding-right : 5% auto">
+                <!-- title -->
+                <h1 style="margin-right:25px">Welcome
+                    <%= user%>
+                </h1>
+            </div>
+            <!-- time and date -->
+            <div style="display: inline-block; margin-right : 5% auto; ">
+                <text id="current_date"></text><br>
+                <text id="current_time"></text>
+            </div>
         </div>
-        <!-- time and date -->
-        <div style="display: inline-block; margin-right : 5% auto; ">
-            <text id="current_date"></text><br>
-            <text id="current_time"></text>
+        <br>
+
+        <!-- list of buttons -->
+        <div style="position: relative; float: left;">
+            <!-- all members -->
+            <form method="post" action="/allMembers">
+                <input type="hidden" name="username" value="<%=user%>">
+                <button class="allButoon zoom secgen" type="submit">
+                    All Members
+                </button>
+            </form>
+            <!-- all activities -->
+            <form method="post" action="/allActivities">
+                <input type="hidden" name="username" value="<%=user%>">
+                <button class="allButoon zoom secgen" type="submit">
+                    All Activities
+                </button>
+            </form>
+            <!-- all trainers -->
+            <form method="post" action="/allTrainers">
+                <input type="hidden" name="username" value="<%=user%>">
+                <button class="allButoon zoom secgen" type="submit">
+                    All Trainers
+                </button>
+            </form>
         </div>
     </div>
-    </div><br>
 
-    <!-- list of buttons -->
-    <div style="position: relative; float: left; margin-left:2%">
-        <!-- all members -->
-        <div class="allButoon zoom secgen" onclick="location.href='allMembers'">
-            All Members
-        </div>
-        <div class="allButoon zoom secgen" onclick="location.href='allActivites.ejs'">
-            All Activities
-        </div>
-        <div class="allButoon zoom secgen" onclick="location.href='allTrainers.ejs'">
-            All Trainers
+    <!-- Activities Log -->
+    <div id="rightbox">
+        <div class="line" style=" position: relative; width:60%;  margin-bottom: 2%; float: left; margin-left: 20%;">
+            <div style="display: inline-block; padding-right : 5% auto">
+                <!-- title -->
+                <h1 style="margin-right:25px">
+                    Activities Log
+                </h1>
+            </div>
+            <!-- time and date -->
+            <div style="display: inline-block; margin-right : 5% auto; ">
+                <text id="current_date"></text><br>
+                <text id="current_time"></text>
+            </div>
         </div>
 
-    </div>
+        <table id="SecGen">
+            <tr>
+                <th>Account Name</th>
+                <th>Last Time Logged</th>
+                <th>Last Change</th>
+            </tr>
+            <tr>
+                <td>National Secgen</td>
+                <td>
+                    <%=natSecgenLTG%>
+                </td>
+                <td>
+                    <%=natSecgenLC%>
+                </td>
+            </tr>
+            <tr>
+                <td>Secgen Nablus</td>
+                <td>
+                    <%=NablusSecgenLTG%>
+                </td>
+                <td>
+                    <%=NablusSecgenLC%>
+                </td>
+            </tr>
+            <tr>
+                <td>Jerusalem Secgen</td>
+                <td>
+                    <%=JerusalemSecgenLTG%>
+                </td>
+                <td>
+                    <%=JerusalemSecgenLC%>
+                </td>
+            </tr>
+            <tr>
+                <td>HU Secgen</td>
+                <td>
+                    <%=HUSecgenLTG%>
+                </td>
+                <td>
+                    <%=HUSecgenLC%>
+                </td>
+            </tr>
+            <tr>
+                <td>Jinin Secgen</td>
+                <td>
+                    <%=JininSecgenLTG%>
+                </td>
+                <td>
+                    <%=JininSecgenLC%>
+                </td>
+            </tr>
+            <tr>
+                <td>Gaza Secgen</td>
+                <td>
+                    <%=JininSecgenLTG%>
+                </td>
+                <td>
+                    <%=JininSecgenLC%>
+                </td>
+            </tr>
 
-    <script>
-        filterSelection("<%=privelege%>")
-        var cur_time = new Date();
-        document.getElementById("current_time").innerText = `${cur_time.getHours()}:${cur_time.getMinutes()}`
-        document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${cur_time.getMonth()}/${cur_time.getDate()}`
-        var intervalId = setInterval(function() {
+        </table>
+        <div class="line" style=" position: relative; width:60%;  margin-bottom: 2%; float: left; margin-left: 20%;">
+            <div style="display: inline-block; padding-right : 5% auto">
+                <!-- title -->
+                <h1 style="margin-right:25px">
+                    Current LCs terms time-span
+                </h1>
+            </div>
+            <!-- time and date -->
+            <div style="display: inline-block; margin-right : 5% auto; ">
+                <text id="current_date"></text><br>
+                <text id="current_time"></text>
+            </div>
+        </div>
+        <div>
+            <div class="row">
+                <div class="column" style="margin-left:6.5%; margin-right: 2.5%;">
+                    <div class="minicolumn" style="border-right:1px solid #000000; width: 50% ">
+                        Nablus
+                    </div>
+                    <div class="minicolumn" style="width:auto">
+                        yyyy/mm/dd
+                    </div>
+                </div>
+                <div class="column" style="margin-left:2.5%; margin-right: 2.5%;">
+                    <div class="minicolumn" style="border-right:1px solid #000000; width: 50%">
+                        HQ
+                    </div>
+                    <div class="minicolumn">
+                        yyyy/mm/dd
+                    </div>
+                </div>
+                <div class="column" style="margin-left:2.5%; margin-right: 6.5%;">
+                    <div class="minicolumn" style="border-right:1px solid #000000; width: 50%">
+                        GAZA
+                    </div>
+                    <div class="minicolumn">
+                        yyyy/mm/dd
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="margin-left:6.5%; margin-right: 2.5%;">
+                    <div class="minicolumn" style="border-right:1px solid #000000; width: 50%">
+                        Jerusalem
+                    </div>
+                    <div class="minicolumn" style="width:auto">
+                        yyyy/mm/dd
+                    </div>
+                </div>
+                <div class="column" style="margin-left:2.5%; margin-right: 2.5%;">
+                    <div class="minicolumn" style="border-right:1px solid #000000; width: 50%">
+                        PPU
+                    </div>
+                    <div class="minicolumn">
+                        yyyy/mm/dd
+                    </div>
+                </div>
+                <div class="column" style="margin-left:2.5%; margin-right: 6.5%;">
+                    <div class="minicolumn" style="border-right:1px solid #000000; width: 50%">
+                        Jenin
+                    </div>
+                    <div class="minicolumn">
+                        yyyy/mm/dd
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <script>
+            filterSelection("<%=privelege%>")
             var cur_time = new Date();
-            document.getElementById("current_time").innerText = `${cur_time.getHours()}:${cur_time.getMinutes()}`
-            document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${cur_time.getMonth()}/${cur_time.getDate()}`
-        }, 1000);
+            document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
+            document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+            var intervalId = setInterval(function() {
+                var cur_time = new Date();
+                document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
+                document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+            }, 1000);
 
-        function filterSelection(c) {
-            const collection = document.getElementsByClassName("filterDiv");
-            for (let i = 0; i < collection.length; i++) {
-                if (collection[i].className.indexOf(c) > -1)
-                    collection[i].style.display = "block";
+            function filterSelection(c) {
+                const collection = document.getElementsByClassName("filterDiv");
+                for (let i = 0; i < collection.length; i++) {
+                    if (collection[i].className.indexOf(c) > -1)
+                        collection[i].style.display = "block";
+                }
+
             }
-
-        }
-    </script>
+        </script>
 
 </body>
-
-
-</html>

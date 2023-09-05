@@ -3,6 +3,7 @@ const express = require('express')
 const path = require('path')
 const bodyparaer = require('body-parser')
 const fs = require('fs')
+const { authUser } = require('./authentication/auth')
 
 let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
 
@@ -15,18 +16,18 @@ app.use(bodyparaer.urlencoded({
     extended: true
 }))
 
+app.use(express.json())
+
 var con;
 
 
 // /////////////////////////
 // login page stuff (GET the login page and well as POST the username and password)
-app.get('/login', function(reg, res) {
+app.get('/login', function(req, res) {
     //HTML Files Path
     const options = {
         root: path.join(__dirname, "/../front-end/")
     }
-    console.log(__dirname);
-
     const fileName = 'login'
 
     res.render(fileName, { login_string: "Please enter Username and password" })
@@ -55,8 +56,19 @@ app.post("/login", function(req, res) {
 
 // /////////////////////////
 // Main page GET processing
-app.get("/allMembers", function(reg, res) {
-    res.render('allMembers', {})
+app.post("/allMembers", function(req, res) {
+    res.render('allMembers')
+    console.log(`***\nusername : ${req.body.username}\n `)
+})
+
+app.post("/allActivities", function(req, res) {
+    res.render('allActivities')
+    console.log(`***\nusername : ${req.body.username}\n `)
+})
+
+app.post("/allTrainers", function(req, res) {
+    res.render('allTrainers')
+    console.log(`***\nusername : ${req.body.username}\n `)
 })
 
 app.listen(8081, function(err) {
