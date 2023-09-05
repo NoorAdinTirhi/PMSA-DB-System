@@ -2,7 +2,7 @@
 <html>
 
 <head>
-
+    <link rel="stylesheet" href="styles/common.css">
     <style>
         body {
             text-align: center;
@@ -93,16 +93,9 @@
             background-repeat: no-repeat;
         }
         
-        .line {
-            padding: 1%;
-            border-bottom: 2px solid black;
-            position: absolute;
-        }
-        
         .allButoon {
             padding: 1%;
             border: 2px solid #000000;
-            border-radius: 5%;
             margin-left: 50%;
             margin-top: 20%;
             margin-bottom: 20%;
@@ -114,15 +107,19 @@
         }
         
         .zoom {
-            transition: transform .5s;
+            transition-property: box-shadow border-radius transform;
+            transition-duration: .5s;
         }
         
         .zoom:hover {
-            -ms-transform: scale(1.5);
+            -ms-transform: scale(1.01);
             /* IE 9 */
-            -webkit-transform: scale(1.5);
+            -webkit-transform: scale(1.01);
             /* Safari 3-8 */
-            transform: scale(1.5);
+            box-shadow: 2px 2px 3px 1px rgb(5, 5, 5);
+            border-radius: 2%;
+            transform: scale(1.01);
+            cursor: pointer;
         }
         
         .column {
@@ -321,10 +318,10 @@
             <tr>
                 <td>Gaza Secgen</td>
                 <td>
-                    <%=JininSecgenLTG%>
+                    <%=GazaSecgenLTG%>
                 </td>
                 <td>
-                    <%=JininSecgenLC%>
+                    <%=GazaSecgenLC%>
                 </td>
             </tr>
 
@@ -349,23 +346,23 @@
                         Nablus
                     </div>
                     <div class="minicolumn" style="width:auto">
-                        yyyy/mm/dd
+                        <%=NablusStartDate%>
                     </div>
                 </div>
                 <div class="column" style="margin-left:2.5%; margin-right: 2.5%;">
                     <div class="minicolumn" style="border-right:1px solid #000000; width: 50%">
-                        HQ
+                        HU
                     </div>
                     <div class="minicolumn">
-                        yyyy/mm/dd
+                        <%=HUStartDate%>
                     </div>
                 </div>
                 <div class="column" style="margin-left:2.5%; margin-right: 6.5%;">
                     <div class="minicolumn" style="border-right:1px solid #000000; width: 50%">
-                        GAZA
+                        Gaza
                     </div>
                     <div class="minicolumn">
-                        yyyy/mm/dd
+                        <%=GazaStartDate%>
                     </div>
                 </div>
             </div>
@@ -375,7 +372,7 @@
                         Jerusalem
                     </div>
                     <div class="minicolumn" style="width:auto">
-                        yyyy/mm/dd
+                        <%=JerusalemStartDate%>
                     </div>
                 </div>
                 <div class="column" style="margin-left:2.5%; margin-right: 2.5%;">
@@ -383,7 +380,7 @@
                         PPU
                     </div>
                     <div class="minicolumn">
-                        yyyy/mm/dd
+                        <%=PPUStartDate%>
                     </div>
                 </div>
                 <div class="column" style="margin-left:2.5%; margin-right: 6.5%;">
@@ -391,20 +388,18 @@
                         Jenin
                     </div>
                     <div class="minicolumn">
-                        yyyy/mm/dd
+                        <%=JeninStartDate%>
                     </div>
                 </div>
             </div>
         </div>
-
-
-
 
         <script>
             filterSelection("<%=privelege%>")
             var cur_time = new Date();
             document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
             document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+
             var intervalId = setInterval(function() {
                 var cur_time = new Date();
                 document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
@@ -417,8 +412,8 @@
                     if (collection[i].className.indexOf(c) > -1)
                         collection[i].style.display = "block";
                 }
-
             }
         </script>
+
 
 </body>

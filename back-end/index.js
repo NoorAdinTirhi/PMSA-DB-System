@@ -4,6 +4,7 @@ const path = require('path')
 const bodyparaer = require('body-parser')
 const fs = require('fs')
 const { authUser } = require('./authentication/auth')
+const { mainPage_varialbes } = require('./constants/CONSTANTS')
 
 let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
 
@@ -49,7 +50,9 @@ app.post("/login", function(req, res) {
         } else {
             console.log("Connected")
                 // TODO: figure out what's the privelege of the user and assign it
-            res.render("main", { privelege: "secgen", user: username });
+            mainPage_varialbes.user = username
+            console.log(mainPage_varialbes)
+            res.render('main', mainPage_varialbes)
         }
     })
 })
@@ -69,6 +72,32 @@ app.post("/allActivities", function(req, res) {
 app.post("/allTrainers", function(req, res) {
     res.render('allTrainers')
     console.log(`***\nusername : ${req.body.username}\n `)
+})
+
+
+app.get("/styles/*", function(req, res) {
+    //HTML Files Path
+    const options = {
+        root: path.join(__dirname, "/views")
+    }
+    console.log(req.originalUrl)
+    const fileName = req.originalUrl
+
+
+    res.sendFile(fileName, options)
+})
+
+app.get("/scripts/*", function(req, res) {
+    //HTML Files Path
+    const options = {
+        root: path.join(__dirname, "/views")
+    }
+
+    console.log(req.originalUrl)
+    const fileName = req.originalUrl
+
+
+    res.sendFile(fileName, options)
 })
 
 app.listen(8081, function(err) {
