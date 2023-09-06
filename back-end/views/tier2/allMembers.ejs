@@ -13,8 +13,7 @@
         #natBox {
             float: left;
             display: inline-block;
-            margin-left: 10%;
-            margin-right: 2.5%;
+            margin-left: 25%;
             padding: 40px;
             text-align: center;
             font-size: 30px;
@@ -31,13 +30,15 @@
         }
         
         #boxesTable {
-            float: left;
+            float: right;
+            margin-right: 25%;
+            width: 25%;
+            min-width: max-content;
             display: inline-block;
             border-collapse: collapse;
             border-style: solid;
             border-color: black;
             height: 122px;
-            width: fit-content;
             align-items: center;
             font-size: large;
         }
@@ -46,20 +47,26 @@
             text-align: center;
             border-style: solid;
             border-width: 2px;
-            width: 33.333% auto;
             font-size: 22px;
-            padding: 15px;
+            width: 10%;
+            padding-top: 14px;
+            padding-bottom: 14px;
             transition-property: box-shadow border-radius transform;
             transition-duration: .5s;
         }
         
-        #boxTable td:hover {
+        td:hover {
             box-shadow: 2px 2px 3px 1px rgb(5, 5, 5);
             border-radius: 2%;
             transform: scale(1.01);
         }
         
-        #boxesTable tr {}
+        #boxesTable tr {
+            min-width: max-content;
+            width: max-content;
+            min-height: max-content;
+            height: max-content;
+        }
         
         .localbox:hover {
             box-shadow: 2px 2px 3px 1px rgb(5, 5, 5);
@@ -70,54 +77,55 @@
 </head>
 
 <body>
-    <div class="line" style=" position: relative; width:max-content; ">
-        <div style="display: inline-block; padding-right : 5% auto">
-            <!-- title -->
-            <h1 style="margin-right:25px">Welcome
-                <%= user%>
-            </h1>
+    <div class="fullbox">
+        <div class="line" style=" position: relative; width:max-content; margin-left : 3%">
+            <div style="display: inline-block; padding-right : 5% auto">
+                <!-- title -->
+                <h1 style="margin-right:25px">Welcome
+                    <%= user%>
+                </h1>
+            </div>
+            <!-- time and date -->
+            <div style="display: inline-block; margin-right : 5% auto; ">
+                <text id="current_date"></text><br>
+                <text id="current_time"></text>
+            </div>
         </div>
-        <!-- time and date -->
-        <div style="display: inline-block; margin-right : 5% auto; ">
-            <text id="current_date"></text><br>
-            <text id="current_time"></text>
-        </div>
-    </div>
-    <div id="boxesSec">
-        <div id=natBox>
-            National
-        </div>
-        <table id="boxesTable">
-            <tr>
-                <td>
-                    Nablus
-                </td>
-                <td>
-                    Jerusalem
-                </td>
-                <td>
-                    Gaza
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    PPU
-                </td>
-                <td>
-                    HU
-                </td>
-                <td>
-                    Jinin
-                </td>
-            </tr>
+        <div id="boxesSec">
+            <div id=natBox>
+                National
+            </div>
+            <table id="boxesTable">
+                <tr>
+                    <td>
+                        Nablus
+                    </td>
+                    <td>
+                        Jerusalem
+                    </td>
+                    <td>
+                        Gaza
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        PPU
+                    </td>
+                    <td>
+                        HU
+                    </td>
+                    <td>
+                        Jinin
+                    </td>
+                </tr>
 
-        </table>
+            </table>
+        </div>
     </div>
 
 
 
     <script>
-        filterSelection("<%=privelege%>")
         var cur_time = new Date();
         document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
         document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
@@ -126,15 +134,6 @@
             document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
             document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
         }, 1000);
-
-        function filterSelection(c) {
-            const collection = document.getElementsByClassName("filterDiv");
-            for (let i = 0; i < collection.length; i++) {
-                if (collection[i].className.indexOf(c) > -1)
-                    collection[i].style.display = "block";
-            }
-
-        }
     </script>
 
 </body>

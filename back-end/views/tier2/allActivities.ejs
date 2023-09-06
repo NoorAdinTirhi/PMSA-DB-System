@@ -2,11 +2,324 @@
 <html>
 
 <head>
-
+    <link rel="stylesheet" href="../styles/common.css">
+    <style>
+        #boxesSec {
+            margin-top: 5%;
+            height: 70%;
+            align-items: center;
+        }
+        
+        #natBox {
+            float: left;
+            display: inline-block;
+            margin-left: 25%;
+            padding: 40px;
+            text-align: center;
+            font-size: 30px;
+            border-style: solid;
+            border-color: #000000;
+            transition-property: box-shadow border-radius transform;
+            transition-duration: .25s;
+        }
+        
+        #natBox:hover {
+            box-shadow: 2px 2px 3px 1px rgb(5, 5, 5);
+            border-radius: 2%;
+            transform: scale(1.01);
+        }
+        
+        #boxesTable {
+            float: right;
+            margin-right: 25%;
+            width: 25%;
+            min-width: max-content;
+            display: inline-block;
+            border-collapse: collapse;
+            border-style: solid;
+            border-color: black;
+            height: 122px;
+            align-items: center;
+            font-size: large;
+        }
+        
+        #boxesTable td {
+            text-align: center;
+            border-style: solid;
+            border-width: 2px;
+            font-size: 22px;
+            width: 10%;
+            padding-top: 14px;
+            padding-bottom: 14px;
+            transition-property: box-shadow border-radius transform;
+            transition-duration: .25s;
+        }
+        
+        #boxesTable td:hover {
+            box-shadow: 2px 2px 3px 1px rgb(5, 5, 5);
+            border-radius: 2%;
+            transform: scale(1.01);
+        }
+        
+        #boxesTable tr {
+            min-width: max-content;
+            width: max-content;
+            min-height: max-content;
+            height: max-content;
+        }
+        
+        #activities-table {
+            float: left;
+            margin-right: 10%;
+            width: 25%;
+            min-width: max-content;
+            min-height: max-content;
+            border-collapse: collapse;
+            border-style: solid;
+            border-color: black;
+            align-items: center;
+            font-size: large;
+        }
+        
+        #activities-table td {
+            border-right: 1px solid #000000;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+        
+        .localbox:hover {
+            box-shadow: 2px 2px 3px 1px rgb(5, 5, 5);
+            border-radius: 2%;
+            transform: scale(1.01);
+        }
+    </style>
 </head>
 
 <body>
-    <h1>this is all activities</h1>
+    <div class="fullbox">
+        <div class="line" style=" position: relative; width:max-content; margin-left : 3%">
+            <div style="display: inline-block; padding-right : 5% auto">
+                <!-- title -->
+                <h1 style="margin-right:25px">Welcome
+                    <%= user%>
+                </h1>
+            </div>
+            <!-- time and date -->
+            <div style="display: inline-block; margin-right : 5% auto; ">
+                <text id="current_date"></text><br>
+                <text id="current_time"></text>
+            </div>
+        </div>
+        <div id="boxesSec">
+            <div id=natBox>
+                National
+            </div>
+            <table id="boxesTable">
+                <tr>
+                    <td>
+                        Nablus
+                    </td>
+                    <td>
+                        Jerusalem
+                    </td>
+                    <td>
+                        Gaza
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        PPU
+                    </td>
+                    <td>
+                        HU
+                    </td>
+                    <td>
+                        Jinin
+                    </td>
+                </tr>
+
+            </table>
+        </div><br>
+        <table id="activities-table" style="margin-top: 5%; border-style: solid; width:80%; float:left; margin-left: 10%;">
+            <tr style="position: relative;">
+                <th style="width: 10%; border-bottom:2px solid #000000">
+                    //
+                </th>
+                <th style="width: 10%;border-bottom:2px solid #000000">
+                    Number of Activities
+                </th>
+                <th style="border-bottom:2px solid #000000">
+                    Activities
+                </th>
+            </tr>
+            <tr style="text-align: center;">
+                <td style="width: 10%;">
+                    All
+                </td>
+                <td style="width: 10%;">
+                    <%=allActNum%>
+                </td>
+                <td>
+                    <form method="post" action="/selectAct" style="width:100%">
+                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                            <% allActivities.forEach( element=> { %>
+                                <option value="<%= element.actID%>"><%= element.actName %></option>
+                            <% }) %>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr style="text-align: center;">
+                <td style="width: 10%;">
+                    General
+                </td>
+                <td style="width: 10%;">
+                    <%=genActNum%>
+                </td>
+                <td>
+                    <form method="post" action="/selectAct" style="width:100%">
+                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                            <% generalActivities.forEach( element=> { %>
+                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% }) %>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr style="text-align: center;">
+                <td style="width: 10%;">
+                    CB
+                </td>
+                <td style="width: 10%;">
+                    <%=CBActNum%>
+                </td>
+                <td>
+                    <form method="post" action="/selectAct" style="width:100%">
+                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                            <% CBActivities.forEach( element=> { %>
+                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% }) %>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr style="text-align: center;">
+                <td style="width: 10%;">
+                    SCORF
+                </td>
+                <td style="width: 10%;">
+                    <%=scorfActNum%>
+                </td>
+                <td>
+                    <form method="post" action="/selectAct" style="width:100%">
+                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                            <% scorfActivities.forEach( element=> { %>
+                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% }) %>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr style="text-align: center;">
+                <td style="width: 10%;">
+                    SCOPE
+                </td>
+                <td style="width: 10%;">
+                    <%=scopeActNum%>
+                </td>
+                <td>
+                    <form method="post" action="/selectAct" style="width:100%" onselect="this.form.submit()">
+                        <select name="activity" style="width: 100%;">
+                            <% scopeActivities.forEach( element=> { %>
+                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% }) %>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr style="text-align: center;">
+                <td style="width: 10%;">
+                    SCOME
+                </td>
+                <td style="width: 10%;">
+                    <%=scomeActNum%>
+                </td>
+                <td>
+                    <form method="post" action="/selectAct" style="width:100%">
+                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                            <% scomeActivities.forEach( element=> { %>
+                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% }) %>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr style="text-align: center;">
+                <td style="width: 10%;">
+                    SCORP
+                </td>
+                <td style="width: 10%;">
+                    <%=scorpActNum%>
+                </td>
+                <td>
+                    <form method="post" action="/selectAct" style="width:100%">
+                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                            <% scorpActivities.forEach( element=> { %>
+                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% }) %>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr style="text-align: center;">
+                <td style="width: 10%;">
+                    SCORA
+                </td>
+                <td style="width: 10%;">
+                    <%=scoraActNum%>
+                </td>
+                <td>
+                    <form method="post" action="/selectAct" style="width:100%">
+                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                            <% scoraActivities.forEach( element=> { %>
+                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% }) %>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            <tr style="text-align: center;">
+                <td style="width: 10%;">
+                    SCOPH
+                </td>
+                <td style="width: 10%;">
+                    <%=scophActNum%>
+                </td>
+                <td>
+                    <form method="post" action="/selectAct" style="width:100%">
+                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                            <% scophActivities.forEach( element=> { %>
+                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% }) %>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+    <script>
+        var cur_time = new Date();
+        document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
+        document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+        var intervalId = setInterval(function() {
+            var cur_time = new Date();
+            document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
+            document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+        }, 1000);
+    </script>
+
 </body>
 
 </html>

@@ -3,3 +3,22 @@
     border-bottom: 2px solid black;
     position: absolute;
 }
+
+.fullbox {
+    background-color: #FFF;
+    border-style: solid;
+    border-color: #0887f0;
+    border-width: 1px;
+    min-width: max-content;
+    min-height: max-content;
+    width: 94%;
+    height: max-content;
+    padding-bottom: 3%;
+    margin-left: 3%;
+    margin-right: 3%;
+    margin-top: 4%;
+    box-shadow: 5px 5px 5px #0887f0;
+    position: absolute;
+    float: left;
+    overflow: scroll;
+}
