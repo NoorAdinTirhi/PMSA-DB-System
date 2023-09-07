@@ -1,11 +1,10 @@
 .line {
     padding: 1%;
     border-bottom: 2px solid black;
-    position: absolute;
 }
 
 .fullbox {
-    background-color: #FFF;
+    background-color: transparent;
     border-style: solid;
     border-color: #0887f0;
     border-width: 1px;
@@ -19,8 +18,7 @@
     margin-top: 4%;
     box-shadow: 5px 5px 5px #0887f0;
     position: absolute;
-    float: left;
-    overflow: scroll;
+    float: left
 }
 
 body {
@@ -28,4 +26,10 @@ body {
     margin: auto;
     overflow: hidden;
     font-family: Arial, Helvetica, sans-serif;
+    /* position: absolute; */
+}
+
+html,
+body {
+    overflow-y: scroll;
 }

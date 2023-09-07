@@ -4,38 +4,197 @@
 <head>
     <link rel="stylesheet" href="../../styles/common.css">
     <style>
-
+        #parentbox {
+            position: relative;
+            float: left;
+            width: 94%;
+            margin-left: 3%;
+            margin-right: 3%;
+            margin-top: 1%;
+            margin-bottom: 1%;
+            height: 98%;
+            vertical-align: middle;
+        }
+        
+        #parentbox>* {
+            height: 100%
+        }
+        
+        .sidebox {
+            /* border-style: solid;
+            border-color: black; */
+            min-width: min-content;
+            min-height: min-content;
+        }
+        
+        #leftbox {
+            width: 30%;
+            padding: 8% 0%;
+            float: left;
+            justify-content: center;
+        }
+        
+        #leftbox>* {
+            margin: 4% 0%
+        }
+        
+        .sidebox>* {
+            margin: 1% 0%
+        }
+        
+        #rightbox {
+            width: 60%;
+            height: 100%;
+            float: right;
+        }
+        
+        .headerbox {
+            text-align: center;
+            border-style: solid;
+            border-color: black;
+            font-size: xx-large;
+            padding: 15px;
+            display: block;
+        }
+        
+        .participantBtn {
+            font-size: x-large;
+            border-style: solid;
+            padding: 5px;
+            background-color: transparent;
+            border-style: solid;
+            border-color: black;
+            border-width: 3px;
+            transition-duration: .5s;
+        }
+        
+        .participantBtn:hover {
+            -ms-transform: scale(1.01);
+            /* IE 9 */
+            -webkit-transform: scale(1.01);
+            /* Safari 3-8 */
+            box-shadow: 2px 2px 3px 1px rgb(5, 5, 5);
+            border-radius: 2%;
+            transform: scale(1.01);
+            cursor: pointer;
+        }
     </style>
 </head>
 
 <body>
-    <div class="fullbox">
-        <div class="line" style="position: relative; width:max-content; margin-left : 3%">
-            <div style="display: inline-block; padding-right : 5% auto">
-                <!-- title -->
-                <h1 style="margin-right:25px">Welcome
-                    <%= user%>
+    <div class="fullbox" style="justify-content: start;">
+        <div style="display: block; height: max-content; width: fit-content; text-align: center; margin: 0% 2%; overflow: hidden; justify-self: left;">
+            <div class="line" style="position: relative; width:100%">
+                <div style="display: inline-block; padding-right : 5% auto">
+                    <!-- title -->
+                    <h1 style="margin-right:25px">
+                        Welcome
+                        <%= user%><br>
+                    </h1>
+                </div>
+                <!-- time and date -->
+                <div style="display: inline-block; margin-right : 5% auto; ">
+                    <text id="current_date"></text><br>
+                    <text id="current_time"></text>
+                </div>
+            </div>
+            <div style="float:left">
+                <h1>
+                    <%=activityName%>:
+                        <%=activityID%>
                 </h1>
             </div>
-            <!-- time and date -->
-            <div style="display: inline-block; margin-right : 5% auto; ">
-                <text id="current_date"></text><br>
-                <text id="current_time"></text>
-            </div>
         </div>
-        <div>
+        <div id="parentbox">
+            <div id=leftbox class="sidebox">
+                <div style="text-align: center;">
+                    <div class="headerbox" style="display:block">
+                        <%=activityName%>
+                    </div>
+                </div>
+
+                <div class="headerbox" style="display:block">
+                    <div style="border-bottom : solid 1px black; width:100%">
+                        Activity Description
+                    </div>
+                    <div style="font-size: large; margin-top:2%">
+                        <a href="<%=reportLink%>">Report Link</a>
+                    </div>
+                    <div style="font-size: large;margin-top:2%">
+                        <a href="<%=proposalLink%>">Proposal Link</a>
+                    </div>
+                </div>
+                <div class="headerbox" style="display:block">
+                    <%=committeeName%>
+                </div>
+                <div style="height: max-content; width: 100%; display:blcok">
+                    <div class="headerbox" style="display: inline-block;">
+                        <!-- <%=startDate%> -->
+                        yyyy/mm/dd
+                    </div>
+                    <div class="headerbox" style="display: inline-block;">
+                        <!-- <%=endDate%> -->
+                        yyyy/mm/dd
+                    </div>
+                </div>
+            </div>
+            <div id=rightbox class="sidebox">
+                <div style="width:94%;display: inline-block; padding:1%">
+                    <button class="participantBtn" style="float:left">
+                        Add Participant
+                    </button>
+                    <button class="participantBtn" style="float:right">
+                        Delete Participant
+                    </button>
+                </div>
+                <div style="display: inline-block; border-style: solid; width: 89%; padding:5%">
+                    <div style="float:left; width:40%; max-width: 40%;">
+                        <div class="headerbox" style="margin:3% 0%; overflow-x: hidden; max-width: 100%; font-size: x-large;">
+                            <%=participantName%>
+                        </div>
+                        <div class="headerbox" style="margin:3% 0%; overflow-x: hidden;max-width: 100%;font-size: x-large;">
+                            <%=participantLocalCommittee%>
+                        </div>
+                        <div class="headerbox" style="margin:3% 0%; overflow-x: hidden;max-width: 100%;font-size: x-large;">
+                            <%=participantYearOfStudy%>
+                        </div>
+                        <div class="headerbox" style="margin:3% 0%; overflow-x: hidden; max-width: 100%;font-size: x-large;">
+                            <%=participantPhoneNO%>
+                        </div>
+                        <div class="headerbox" style="margin:3% 0%; overflow-x: hidden;max-width: 100%;font-size: x-large;">
+                            <a href="<%=participantEmail%>">Email</a>
+                        </div>
+                        <div class="headerbox" style="margin:3% 0%; overflow-x: hidden;max-width: 100%;font-size: x-large;">
+                            <a href="<%=participantFacebook%>">Facebook Account</a>
+                        </div>
+                    </div>
+                    <div style="float:right ">
+
+                    </div>
+                </div>
+                <div style="width:94%;display: inline-block; padding:1%">
+                    <button class="participantBtn" style="float:left">
+                        Previous Participant
+                    </button>
+                    <button class="participantBtn" style="float:right">
+                        Next Participant
+                    </button>
+                </div>
+            </div>
 
         </div>
+
+    </div>
     </div>
 
     <script>
         var cur_time = new Date();
-        document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
-        document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+        document.getElementById("current_time ").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0 "+cur_time.getMinutes()) : cur_time.getMinutes()}`
+        document.getElementById("current_date ").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0 "+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0 "+cur_time.getDate()):(cur_time.getDate())}`
         var intervalId = setInterval(function() {
             var cur_time = new Date();
-            document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
-            document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+            document.getElementById("current_time ").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0 "+cur_time.getMinutes()) : cur_time.getMinutes()}`
+            document.getElementById("current_date ").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0 "+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0 "+cur_time.getDate()):(cur_time.getDate())}`
         }, 1000);
     </script>
 </body>
