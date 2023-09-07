@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="../../styles/common.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div class="fullbox">
+        <div class="line" style="position: relative; width:max-content; margin-left : 3%">
+            <div style="display: inline-block; padding-right : 5% auto">
+                <!-- title -->
+                <h1 style="margin-right:25px">Welcome
+                    <%= user%>
+                </h1>
+            </div>
+            <!-- time and date -->
+            <div style="display: inline-block; margin-right : 5% auto; ">
+                <text id="current_date"></text><br>
+                <text id="current_time"></text>
+            </div>
+        </div>
+        <div>
+
+        </div>
+    </div>
+
+    <script>
+        var cur_time = new Date();
+        document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
+        document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+        var intervalId = setInterval(function() {
+            var cur_time = new Date();
+            document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
+            document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+        }, 1000);
+    </script>
+</body>
+
+</html>
