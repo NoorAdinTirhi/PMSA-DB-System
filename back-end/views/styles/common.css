@@ -22,3 +22,10 @@
     float: left;
     overflow: scroll;
 }
+
+body {
+    text-align: center;
+    margin: auto;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
