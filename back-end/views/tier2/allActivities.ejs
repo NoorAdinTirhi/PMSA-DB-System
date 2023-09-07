@@ -161,7 +161,8 @@
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
-                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                        <select name="activity" style="width: 100%;" onchange="this.form.submit()">
+                            <option selected hidden value="-1">All Activities</option>
                             <% allActivities.forEach( element=> { %>
                                 <option value="<%= element.actID%>"><%= element.actName %></option>
                             <% }) %>
@@ -178,7 +179,8 @@
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
-                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                        <select name="activity" style="width: 100%;" onchange="this.form.submit()">
+                            <option selected hidden value="-1">General Activities</option>
                             <% generalActivities.forEach( element=> { %>
                                 <option value="<%=element.actID%>"><%= element.actName %></option>
                             <% }) %>
@@ -195,7 +197,8 @@
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
-                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                        <select name="activity" style="width: 100%;" onchange="this.form.submit()">
+                            <option selected hidden value="-1">CB Activities</option>
                             <% CBActivities.forEach( element=> { %>
                                 <option value="<%=element.actID%>"><%= element.actName %></option>
                             <% }) %>
@@ -212,7 +215,8 @@
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
-                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                        <select name="activity" style="width: 100%;" onchange="this.form.submit()">
+                            <option selected hidden value="-1">SCORF Activities</option>
                             <% scorfActivities.forEach( element=> { %>
                                 <option value="<%=element.actID%>"><%= element.actName %></option>
                             <% }) %>
@@ -228,8 +232,9 @@
                     <%=scopeActNum%>
                 </td>
                 <td>
-                    <form method="post" action="/selectAct" style="width:100%" onselect="this.form.submit()">
-                        <select name="activity" style="width: 100%;">
+                    <form method="post" action="/selectAct" style="width:100%">
+                        <select name="activity" style="width: 100%;" onchange="this.form.submit()">
+                            <option selected hidden value="-1">SCOPE Activities</option>
                             <% scopeActivities.forEach( element=> { %>
                                 <option value="<%=element.actID%>"><%= element.actName %></option>
                             <% }) %>
@@ -246,7 +251,8 @@
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
-                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                        <select name="activity" style="width: 100%;" onchange="this.form.submit()">
+                            <option selected hidden value="-1">SCOME Activities</option>
                             <% scomeActivities.forEach( element=> { %>
                                 <option value="<%=element.actID%>"><%= element.actName %></option>
                             <% }) %>
@@ -263,7 +269,8 @@
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
-                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                        <select name="activity" style="width: 100%;" onchange="this.form.submit()">
+                            <option selected hidden value="-1">SCORP Activities</option>
                             <% scorpActivities.forEach( element=> { %>
                                 <option value="<%=element.actID%>"><%= element.actName %></option>
                             <% }) %>
@@ -280,7 +287,8 @@
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
-                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                        <select name="activity" style="width: 100%;" onchange="this.form.submit()">
+                            <option selected hidden value="-1">SCORA Activities</option>
                             <% scoraActivities.forEach( element=> { %>
                                 <option value="<%=element.actID%>"><%= element.actName %></option>
                             <% }) %>
@@ -297,7 +305,8 @@
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
-                        <select name="activity" style="width: 100%;" onselect="this.form.submit()">
+                        <select name="activity" style="width: 100%;" onchange="this.form.submit()">
+                            <option selected hidden value="-1">SCOPH Activities</option>
                             <% scophActivities.forEach( element=> { %>
                                 <option value="<%=element.actID%>"><%= element.actName %></option>
                             <% }) %>

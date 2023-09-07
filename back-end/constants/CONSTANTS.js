@@ -1,3 +1,4 @@
+//TODO make sure to remove the temporary values
 module.exports = {
     ROLES: {
         ADMIN: ['SecgenNat'],

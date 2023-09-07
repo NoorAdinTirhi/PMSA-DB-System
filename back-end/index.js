@@ -3,8 +3,11 @@ const express = require('express')
 const path = require('path')
 const bodyparaer = require('body-parser')
 const fs = require('fs')
+const audit = require('express-requests-logger')
+
 const { authUser } = require('./authentication/auth')
 const { mainPage_varialbes, activityPage_variables } = require('./constants/CONSTANTS')
+
 
 let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
 
@@ -18,6 +21,7 @@ app.use(bodyparaer.urlencoded({
 }))
 
 app.use(express.json())
+app.use(audit())
 
 var con;
 
