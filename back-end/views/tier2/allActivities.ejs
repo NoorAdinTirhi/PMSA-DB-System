@@ -18,6 +18,7 @@
             text-align: center;
             font-size: 30px;
             border-style: solid;
+            border-width: 3px;
             border-color: #000000;
             transition-property: box-shadow border-radius transform;
             transition-duration: .25s;
@@ -49,8 +50,6 @@
             border-width: 2px;
             font-size: 22px;
             width: 10%;
-            padding-top: 15px;
-            padding-bottom: 15px;
             transition-property: box-shadow border-radius transform;
             transition-duration: .25s;
         }
@@ -111,30 +110,44 @@
             </div>
         </div>
         <div id="boxesSec">
-            <div id=natBox>
+            <form method="post" action="/actsNational">
+            <button id=natBox type="submit">
                 National
-            </div>
+            </button>
+            </form>
             <table id="boxesTable">
                 <tr>
                     <td>
-                        Nablus
+                        <form  method="post" action="/actsNablus">
+                            <button class="localbutton" type="submit"> Nablus</button>
+                        </form>
                     </td>
                     <td>
-                        Jerusalem
+                        <form  method="post" action="/actsJerusalem">
+                            <button class="localbutton" type="submit"> Jerusalem</button>
+                        </form>
                     </td>
                     <td>
-                        Gaza
+                        <form  method="post" action="/actsGaza">
+                            <button class="localbutton" type="submit"> Gaza</button>
+                        </form>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        PPU
+                        <form  method="post" action="/actsPPU">
+                            <button class="localbutton" type="submit"> PPU</button>
+                        </form>
                     </td>
                     <td>
-                        HU
+                        <form  method="post" action="/actsHU">
+                            <button class="localbutton" type="submit"> HU</button>
+                        </form>
                     </td>
                     <td>
-                        Jinin
+                        <form  method="post" action="/actsJinin">
+                            <button class="localbutton" type="submit"> Gaza</button>
+                        </form>
                     </td>
                 </tr>
 
@@ -200,9 +213,10 @@
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
                             <option selected hidden value="-1">CB Activities</option>
                             <% CBActivities.forEach( element=> { %>
-                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                                <option value="<%=element.actID%>"><%=element.actName%></option>
                             <% }) %>
                         </select>
+                    </form>
                     </form>
                 </td>
             </tr>
@@ -327,6 +341,22 @@
             document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
             document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
         }, 1000);
+        const hiddenUserIn = document.createElement('input');
+        hiddenUserIn.setAttribute('type', 'hidden');
+        hiddenUserIn.setAttribute('name', "username");
+        hiddenUserIn.setAttribute('value',"<%=user%>");
+
+        const hiddenCipherIn = document.createElement('input');
+        hiddenCipherIn.setAttribute('type', 'hidden');
+        hiddenCipherIn.setAttribute('name', "cipher");
+        hiddenCipherIn.setAttribute('value',"<%=cipher%>");
+
+        const forms = document.forms;
+        
+        for (let i = 0; i <forms.length; i++){
+            forms[i].appendChild(hiddenUserIn);
+            forms[i].appendChild(hiddenCipherIn);
+        }
     </script>
 
 </body>

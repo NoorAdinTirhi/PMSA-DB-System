@@ -30,7 +30,6 @@
         
         #leftbox {
             width: 30%;
-            padding: 8% 0%;
             float: left;
             justify-content: center;
             display: flex;
@@ -145,12 +144,74 @@
                         yyyy/mm/dd
                     </div>
                 </div>
+                <div style="display:flex; flex-direction:column;">
+                    <div>
+                        <h1 style="border-bottom: solid black;">Committee Participation Percentages</h1>
+                    </div>
+                    <div style="display: flex; flex-direction:row; margin-top:2.5%;">
+                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
+                            <div style="padding:2px; border-right: solid black">
+                                Nablus
+                            </div>
+                            <div style="padding:2px;">
+                                <%=nablusPercent%>
+                            </div>
+                        </div>
+                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
+                            <div style="padding:2px; border-right: solid black">
+                                Gaza
+                            </div>
+                            <div style="padding:2px;">
+                                <%=gazaPercent%>
+                            </div>
+                        </div>
+                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
+                            <div style="padding:2px; border-right: solid black">
+                                PPU
+                            </div>
+                            <div style="padding:2px;">
+                                <%=ppuPercent%>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; margin-top:2.5%">
+                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
+                            <div style="padding:2px; border-right: solid black">
+                                Jerusalem
+                            </div>
+                            <div style="padding:2px;">
+                                <%=jerusalemPercent%>
+                            </div>
+                        </div>
+                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
+                            <div style="padding:2px; border-right: solid black">
+                                Jinin
+                            </div>
+                            <div style="padding:2px;">
+                                <%=jininPercent%>
+                            </div>
+                        </div>
+                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
+                            <div style="padding:2px; border-right: solid black">
+                                HUU
+                            </div>
+                            <div style="padding:2px;">
+                                <%=huPercent%>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row">
+
+                    </div>
+                </div>
             </div>
             <div id=rightbox class="sidebox">
                 <div style="width:94%;display: inline-block; padding:1%">
+                    <!-- TODO make a pop up containing all valid participants -->
                     <button class="participantBtn" style="float:left">
                         Add Participant
                     </button>
+                    <!-- TODO make a pop up containing all valid participants  -->
                     <button class="participantBtn" style="float:right">
                         Delete Participant
                     </button>
@@ -213,20 +274,18 @@
                     </div>
                 </div>
                 <div style="width:94%;display: inline-block; padding:1% ">
-                    <button class="participantBtn " style="float:left ">
-                        Previous Participant
-                    </button>
-                    <button class="participantBtn " style="float:right ">
-                        Next Participant
-                    </button>
+                    <form method="post" action="/prevPart">
+                    <button class="participantBtn " style="float:left ">Previous Participant</button></form>
+                    <form method="post" action="/nextPart">
+                        <button class="participantBtn " style="float:right ">Next Participant</button>
+                    </form>
                 </div>
                 <div style="width:94%;display: inline-block; padding:1% ">
-                    <button class="participantBtn " style="float:left ">
-                        Print Certificate
-                    </button>
-                    <button class="participantBtn " style="float:right ">
-                        Print All Certificates
-                    </button>
+                    <form method="post" action="/printCert">
+                    <button class="participantBtn " style="float:left ">Print Certificate</button></form>
+                    <form method="post" action="/printAllCert">
+                        <button class="participantBtn " style="float:right ">Print All Certificates</button>
+                    </form>
                 </div>
             </div>
 
@@ -244,6 +303,23 @@
             document.getElementById("current_time ").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0 "+cur_time.getMinutes()) : cur_time.getMinutes()}`
             document.getElementById("current_date ").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0 "+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0 "+cur_time.getDate()):(cur_time.getDate())}`
         }, 1000);
+
+        const hiddenUserIn = document.createElement('input');
+        hiddenUserIn.setAttribute('type', 'hidden');
+        hiddenUserIn.setAttribute('name', "username");
+        hiddenUserIn.setAttribute('value',"<%=user%>");
+
+        const hiddenCipherIn = document.createElement('input');
+        hiddenCipherIn.setAttribute('type', 'hidden');
+        hiddenCipherIn.setAttribute('name', "cipher");
+        hiddenCipherIn.setAttribute('value',"<%=cipher%>");
+
+        const forms = document.forms;
+        
+        for (let i = 0; i <forms.length; i++){
+            forms[i].appendChild(hiddenUserIn);
+            forms[i].appendChild(hiddenCipherIn);
+        }
     </script>
 </body>
 

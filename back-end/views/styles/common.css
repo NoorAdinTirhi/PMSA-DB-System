@@ -33,3 +33,11 @@ html,
 body {
     overflow-y: scroll;
 }
+
+.localbutton {
+            width:100%;
+            border-style:none;
+            height:100%;
+            font-size: 22px;
+            padding: 14px 0;
+        }

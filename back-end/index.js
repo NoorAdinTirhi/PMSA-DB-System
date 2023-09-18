@@ -25,6 +25,15 @@ app.use(audit())
 
 var con;
 
+//TODO implement Nablus members event
+//TODO implement Jerusalem members event
+//TODO implement Gaza members event
+//TODO implement PPU members event
+//TODO implement HU members event
+//TODO implement Jinin members event
+//TODO implement cipher confirmation
+//TODO implement user registration
+
 
 // /////////////////////////
 // login page stuff (GET the login page and well as POST the username and password)

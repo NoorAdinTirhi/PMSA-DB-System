@@ -49,8 +49,6 @@
             border-width: 2px;
             font-size: 22px;
             width: 10%;
-            padding-top: 15px;
-            padding-bottom: 15px;
             transition-property: box-shadow border-radius transform;
             transition-duration: .5s;
         }
@@ -126,36 +124,49 @@
                 </div>
             </div>
             <div id="boxesSec">
-                <div id=natBox>
-                    National
-                </div>
-                <table id="boxesTable">
-                    <tr>
-                        <td>
-                            Nablus
-                        </td>
-                        <td>
-                            Jerusalem
-                        </td>
-                        <td>
-                            Gaza
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            PPU
-                        </td>
-                        <td>
-                            HU
-                        </td>
-                        <td>
-                            Jinin
-                        </td>
-                    </tr>
+            <form method="post" action="/membersNational">
+            <button id=natBox type="submit" >
+                National
+            </button>
+            </form>
+            <table id="boxesTable">
+                <tr>
+                    <td>
+                        <form  method="post" action="/membersNablus">
+                            <button class="localbutton" type="submit"> Nablus</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form  method="post" action="/membersJerusalem">
+                            <button class="localbutton" type="submit"> Jerusalem</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form  method="post" action="/membersGaza">
+                            <button class="localbutton" type="submit"> Gaza</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <form  method="post" action="/membersPPU">
+                            <button class="localbutton" type="submit"> PPU</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form  method="post" action="/membersHU">
+                            <button class="localbutton" type="submit"> HU</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form  method="post" action="/membersJinin">
+                            <button class="localbutton" type="submit"> Gaza</button>
+                        </form>
+                    </td>
+                </tr>
 
-                </table>
-            </div>
-        </div>
+            </table>
+        </div><br>
         <div style=" display: flex; flex-direction: row; text-align: center; margin-top: 2%;">
             <div style="width: 50%; min-width: 920px;;display: flex; flex-direction: column; margin-right: 1%;">
                 <div id="personalInfo">
@@ -305,19 +316,27 @@
                 </div>
 
             </div>
-            <div style="display: flex; flex-direction: column; align-items: center; min-width: max-content; padding-top: 1%; width : 10%">
-                <button class="cyclePartBtn">
+            <div style="display: flex; flex-direction: column; min-width: max-content; padding-top: 1%; width : 10%">
+                <form method="post" action="/membersNext">
+                    <button class="cyclePartBtn" type="submit">
                     Next
-                </button>
-                <button class="cyclePartBtn">
+                    </button>
+                </form>
+                <form method="post" action="/membersPrev">
+                    <button class="cyclePartBtn" type="submit">
                     Prev
-                </button>
-                <button class="cyclePartBtn">
+                    </button>
+                </form>
+                <form method="post" action="/membersAdd">
+                    <button class="cyclePartBtn" type="submit">
                     Add
-                </button>
-                <button class="cyclePartBtn">
+                    </button>
+                </form>
+                <form method="post" action="/membersDelete">
+                    <button class="cyclePartBtn" type="submit">
                     Delete
-                </button>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -333,6 +352,23 @@
             document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
             document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
         }, 1000);
+
+        const hiddenUserIn = document.createElement('input');
+        hiddenUserIn.setAttribute('type', 'hidden');
+        hiddenUserIn.setAttribute('name', "username");
+        hiddenUserIn.setAttribute('value',"<%=user%>");
+
+        const hiddenCipherIn = document.createElement('input');
+        hiddenCipherIn.setAttribute('type', 'hidden');
+        hiddenCipherIn.setAttribute('name', "cipher");
+        hiddenCipherIn.setAttribute('value',"<%=cipher%>");
+
+        const forms = document.forms;
+        
+        for (let i = 0; i <forms.length; i++){
+            forms[i].appendChild(hiddenUserIn);
+            forms[i].appendChild(hiddenCipherIn);
+        }
     </script>
 
 </body>
