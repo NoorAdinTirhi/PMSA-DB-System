@@ -8,13 +8,14 @@
             position: relative;
             float: left;
             width: 94%;
-            margin-left: 3%;
-            margin-right: 3%;
+            margin-left: 1%;
+            margin-right: 1%;
             margin-top: 1%;
             margin-bottom: 1%;
             height: 98%;
             vertical-align: middle;
-            max-height: 740px;
+            min-height: max-content;
+            min-width: max-content;
         }
         
         #parentbox>* {
@@ -29,11 +30,12 @@
         }
         
         #leftbox {
-            width: 30%;
+            min-width: max-content;
             float: left;
             justify-content: center;
             display: flex;
             flex-direction: column;
+            margin: 0px 50px;
         }
         
         #leftbox>* {
@@ -47,9 +49,9 @@
         }
         
         #rightbox {
-            width: 60%;
             height: 100%;
-            float: right;
+            display: flex;
+            flex-direction: column;
         }
         
         .headerbox {
@@ -82,6 +84,17 @@
             transform: scale(1.01);
             cursor: pointer;
         }
+        #addMemPopUp{
+            display:none;
+            position: absolute;
+            width: 98%;
+            height: 80%;
+            margin: 0% 1%;
+            margin-bottom: 5%;
+            min-width: max-content;
+            background-color: whitesmoke;
+            box-shadow: 2px 2px 2px 3px #4e4e4e;
+        }
     </style>
 </head>
 
@@ -109,6 +122,7 @@
                 </h1>
             </div>
         </div>
+
         <div id="parentbox">
             <div id=leftbox class="sidebox">
                 <div style="text-align: center;">
@@ -131,17 +145,14 @@
                 <div class="headerbox" style="margin-left: 41.8px;">
                     <%=committeeName%>
                 </div>
-                <div style="height: max-content; width: 100%; display:flex; flex-direction: row;">
+                <div style="height: max-content; min-width:max-content; display:flex; flex-direction: row;">
                     Start&ensp;<br>Date&ensp;
-                    <div class="headerbox" style="display: inline-block; margin-right: 5%;">
-                        <!-- TODO add actual dates -->
-                        <!-- <%=startDate%> -->
-                        yyyy/mm/dd
+                    <div class="headerbox" style="display: inline-block; margin-right: 5px;">
+                        <%=startDate%>
                     </div>
                     End&ensp;<br>Date&ensp;
                     <div class="headerbox" style="display: inline-block;">
-                        <!-- <%=endDate%> -->
-                        yyyy/mm/dd
+                        <%=endDate%>
                     </div>
                 </div>
                 <div style="display:flex; flex-direction:column;">
@@ -207,13 +218,12 @@
             </div>
             <div id=rightbox class="sidebox">
                 <div style="width:94%;display: inline-block; padding:1%">
-                    <!-- TODO make a pop up containing all valid participants -->
-                    <button class="participantBtn" style="float:left">
-                        Add Participant
+                    <button class="participantBtn" style="float:left" onclick="addMemPopUp()">
+                        Add Participants
                     </button>
                     <!-- TODO make a pop up containing all valid participants  -->
-                    <button class="participantBtn" style="float:right">
-                        Delete Participant
+                    <button class="participantBtn" style="float:right" onclick="deleteMemPopUp()">
+                        Delete Participants
                     </button>
                 </div>
                 <div style="display: flex; flex-direction: row; border-style: solid; width: 89%; padding:5% 5% 2% 2%">
@@ -267,7 +277,6 @@
                                         </li>
                                         <% }) %>
                                 </ol>
-
                             </div>
 
                         </div>
@@ -288,12 +297,51 @@
                     </form>
                 </div>
             </div>
-
         </div>
 
-    </div>
-    </div>
+        <div id="addMemPopUp">
+            <form>
+                <div style="display: flex; flex-direction:column; padding:5%">
+                    <div style="float:left; display:flex; flex-direction:row; margin:1% 0%;">
+                        <form method="post" action="/searchAdd">
+                            <label style="margin:1% 1%">
+                                Search: 
+                            </label>
 
+                            <input style="margin:1% 1%" placeholder="Member Name" name="memberLike" value="">
+
+                            <button type="submit" style="margin:1% 1%; font-size:larger"> submit</button>
+                        </form>
+                    </div>
+                    <div style="margin:1% 0%; padding: 1% 0%; border-style:solid; display:flex; flex-direction:column;">
+                        <h1  style="border-bottom: solid black;"> Search results: </h1>
+                        <form method="post" action="/addMembers">
+                            <ul style="list-style: none; overflow:scroll;">
+                                <input type="checkbox" onclick="toggle(this)"> select all
+                                <% matchingMembers.forEach( element=> { %>
+                                <li>
+                                    <div style="display: flex; flex-direction:row">
+                                        <input type="checkbox" value="element.memName" style="margin:0% 5%" name="addMemCb">
+                                        <label style="width:85%"><%=element.memName%></label>
+                                    </div>
+                                </li>
+                                <% }) %>
+                            </ul>
+                            <div style="display: flex; flex-direction:column; width: 10%; margin-left: 5%">
+                                <button type="submit" style="margin-bottom: 3%;"> Add Selected Mambers</button>
+                                <button onclick="addMemPopClose()" > Cancel</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+    </div>
+    
+
+     <!-- TODO implement javascript function to select all visible members -->
     <script>
         var cur_time = new Date();
         document.getElementById("current_time ").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0 "+cur_time.getMinutes()) : cur_time.getMinutes()}`
@@ -320,6 +368,34 @@
             forms[i].appendChild(hiddenUserIn);
             forms[i].appendChild(hiddenCipherIn);
         }
+
+        //enable and disable add meembers pop-up
+        function addMemPopUp(){
+            const element = document.getElementById("addMemPopUp")
+            element.style.display = "block"
+        }
+        function addMemPopClose(){
+            const element = document.getElementById("addMemPopUp")
+            element.style.display = "none"
+        }
+        
+        //enable and disable delete meembers pop-up
+        function deletePopUp(){
+            const element = document.getElementById("deleteMemPopUp")
+            element.style.display = "block"
+        }
+        function deleteMemPopClose(){
+            const element = document.getElementById("deleteMemPopUp")
+            element.style.display = "none"
+        }
+
+        function toggle(source) {
+            checkboxes = document.getElementsByName("addMemCb");
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+              checkboxes[i].checked = source.checked;
+            }
+        }
+
     </script>
 </body>
 
