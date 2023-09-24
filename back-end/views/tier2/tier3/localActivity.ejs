@@ -95,6 +95,29 @@
             background-color: whitesmoke;
             box-shadow: 2px 2px 2px 3px #4e4e4e;
         }
+        #deleteMemPopUp{
+            display:none;
+            position: absolute;
+            width: 98%;
+            height: 80%;
+            margin: 0% 1%;
+            margin-bottom: 5%;
+            min-width: max-content;
+            background-color: whitesmoke;
+            box-shadow: 2px 2px 2px 3px #4e4e4e;
+        }
+        #confirmAddition{
+            position: absolute;
+            display: none;
+            flex-direction: row;
+            width: 100%;
+        }
+        #confirmdeletion{
+            position: absolute;
+            display: none;
+            flex-direction: row;
+            width: 100%;
+        }
     </style>
 </head>
 
@@ -221,7 +244,6 @@
                     <button class="participantBtn" style="float:left" onclick="addMemPopUp()">
                         Add Participants
                     </button>
-                    <!-- TODO make a pop up containing all valid participants  -->
                     <button class="participantBtn" style="float:right" onclick="deleteMemPopUp()">
                         Delete Participants
                     </button>
@@ -298,7 +320,7 @@
                 </div>
             </div>
         </div>
-
+        <!--  -->
         <div id="addMemPopUp">
             <form>
                 <div style="display: flex; flex-direction:column; padding:5%">
@@ -318,17 +340,25 @@
                         <form method="post" action="/addMembers">
                             <ul style="list-style: none; overflow:scroll;">
                                 <input type="checkbox" onclick="toggle(this)"> select all
-                                <% matchingMembers.forEach( element=> { %>
                                 <li>
                                     <div style="display: flex; flex-direction:row">
-                                        <input type="checkbox" value="element.memName" style="margin:0% 5%" name="addMemCb">
-                                        <label style="width:85%"><%=element.memName%></label>
+                                            <div style="margin:0% 5%; width:15.2px;"></div>
+                                            <label style="width:42%">Member Number</label>
+                                            <label style="width:42%">Member Name</label>
+                                    </div>
+                                </li>
+                                <% matchingMembersAdd.forEach( element=> { %>
+                                <li>
+                                    <div style="display: flex; flex-direction:row">
+                                        <input type="checkbox" value="element.memNum" style="width:15.2px; height:15.2px;margin:0% 5%" name="addMemCb">
+                                        <label style="width:42%"><%=element.memNum%></label>
+                                        <label style="width:42%"><%=element.memName%></label>
                                     </div>
                                 </li>
                                 <% }) %>
                             </ul>
                             <div style="display: flex; flex-direction:column; width: 10%; margin-left: 5%">
-                                <button type="submit" style="margin-bottom: 3%;"> Add Selected Mambers</button>
+                                <button   onclick="confirmAddPopUp()" style="margin-bottom: 3%;"> Add Selected Mambers</button>
                                 <button onclick="addMemPopClose()" > Cancel</button>
                             </div>
 
@@ -337,19 +367,82 @@
                 </div>
             </form>
         </div>
-        
+
+        <div id="deleteMemPopUp">
+            <form>
+                <div style="display: flex; flex-direction:column; padding:5%">
+                    <div style="float:left; display:flex; flex-direction:row; margin:1% 0%;">
+                        <form method="post" action="/searchAdd">
+                            <label style="margin:1% 1%">
+                                Search: 
+                            </label>
+
+                            <input style="margin:1% 1%" placeholder="Member Name" name="memberLike" value="">
+
+                            <button type="submit" style="margin:1% 1%; font-size:larger"> submit</button>
+                        </form>
+                    </div>
+                    <div style="margin:1% 0%; padding: 1% 0%; border-style:solid; display:flex; flex-direction:column;">
+                        <h1  style="border-bottom: solid black;"> Search results: </h1>
+                        <form method="post" action="/delMembers">
+                            <ul style="list-style: none; overflow:scroll;">
+                                <input type="checkbox" onclick="toggle(this)"> select all
+                                <li>
+                                    <div style="display: flex; flex-direction:row">
+                                            <div style="margin:0% 5%; width:15.2px;"></div>
+                                            <label style="width:42%">Member Number</label>
+                                            <label style="width:42%">Member Name</label>
+                                    </div>
+                                </li>
+                                <% matchingMembersDel.forEach( element=> { %>
+                                <li>
+                                    <div style="display: flex; flex-direction:row">
+                                        <input type="checkbox" value="element.memNun" style="width:15.2px; height:15.2px;margin:0% 5%" name="addMemCb">
+                                        <label style="width:42%"><%=element.memName%></label>
+                                        <label style="width:42%"><%=element.memName%></label>
+                                    </div>
+                                </li>
+                                <% }) %>
+                            </ul>
+                            <div style="display: flex; flex-direction:column; width: 10%; margin-left: 5%">
+                                <button type="submit" onclick="confirmDelPopUp()" style="margin-bottom: 3%;"> Delete Selected Mambers</button>
+                                <button onclick="deleteMemPopClose()" > Cancel</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="confirmAddition">
+            <div style="width:30%"></div>
+            <div style="width: 40%; display:block ;position: relative;background-color: whitesmoke;box-shadow: 2px 2px 2px 3px #4e4e4e;">
+                <h1 style="padding:05px 20px; margin: 5px; ">All selected members have been added</h1>
+                <button onclick="confirmAddPopclose()" style="padding:05px 20px; margin: 5px"> OK</button>
+            </div>
+            <div style="width:30%"></div>
+        </div>
+        <div id="confirmdeletion">
+            <div style="width:30%"></div>
+            <div style="width: 40%; display:block ;position: relative;background-color: whitesmoke;box-shadow: 2px 2px 2px 3px #4e4e4e;">
+                <h1 style="padding:05px 20px; margin: 5px; ">All selected members have been deleted</h1>
+                <button onclick="confirmDelPopclose()" style="padding:05px 20px; margin: 5px"> OK</button>
+            </div>
+            <div style="width:30%"></div>
+        </div>    
     </div>
     
 
      <!-- TODO implement javascript function to select all visible members -->
     <script>
         var cur_time = new Date();
-        document.getElementById("current_time ").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0 "+cur_time.getMinutes()) : cur_time.getMinutes()}`
-        document.getElementById("current_date ").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0 "+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0 "+cur_time.getDate()):(cur_time.getDate())}`
+        document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0 "+cur_time.getMinutes()) : cur_time.getMinutes()}`
+        document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0 "+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0 "+cur_time.getDate()):(cur_time.getDate())}`
         var intervalId = setInterval(function() {
             var cur_time = new Date();
-            document.getElementById("current_time ").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0 "+cur_time.getMinutes()) : cur_time.getMinutes()}`
-            document.getElementById("current_date ").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0 "+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0 "+cur_time.getDate()):(cur_time.getDate())}`
+            document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0 "+cur_time.getMinutes()) : cur_time.getMinutes()}`
+            document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0 "+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0 "+cur_time.getDate()):(cur_time.getDate())}`
         }, 1000);
 
         const hiddenUserIn = document.createElement('input');
@@ -368,6 +461,13 @@
             forms[i].appendChild(hiddenUserIn);
             forms[i].appendChild(hiddenCipherIn);
         }
+        
+        if ("<%=addMem%>" === "open"){
+            addMemPopUp()
+        }
+        if ("<%=deleteMem%>" == "close"){
+            deleteMemPopUp()
+        }
 
         //enable and disable add meembers pop-up
         function addMemPopUp(){
@@ -378,9 +478,19 @@
             const element = document.getElementById("addMemPopUp")
             element.style.display = "none"
         }
+        function confirmAddPopUp(){
+            const element = document.getElementById("confirmAddition")
+            console.log(element.style.display)
+            element.style.display = "flex"
+        }
+        function confirmAddPopclose(){
+            const element = document.getElementById("confirmAddition")
+            console.log(element.style.display)
+            element.style.display = "none"
+        }
         
         //enable and disable delete meembers pop-up
-        function deletePopUp(){
+        function deleteMemPopUp(){
             const element = document.getElementById("deleteMemPopUp")
             element.style.display = "block"
         }
@@ -388,7 +498,16 @@
             const element = document.getElementById("deleteMemPopUp")
             element.style.display = "none"
         }
+        function confirmDelPopUp(){
+            const element = document.getElementById("confirmDeletion")
+            element.style.display = "flex"
+        }
+        function confirmDelPopclose(){
+            const element = document.getElementById("confirmDeletion")
+            element.style.display = "none"
+        }
 
+        //select all
         function toggle(source) {
             checkboxes = document.getElementsByName("addMemCb");
             for(var i=0, n=checkboxes.length;i<n;i++) {
