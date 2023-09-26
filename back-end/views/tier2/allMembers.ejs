@@ -318,21 +318,25 @@
             </div>
             <div style="display: flex; flex-direction: column; min-width: max-content; padding-top: 1%; width : 10%">
                 <form method="post" action="/membersNext">
+                    <input type="hidden" name="curMemNum" value="<%=curMemNum%>">
                     <button class="cyclePartBtn" type="submit">
                     Next
                     </button>
                 </form>
                 <form method="post" action="/membersPrev">
+                    <input type="hidden" name="curMemNum" value="<%=curMemNum%>">
                     <button class="cyclePartBtn" type="submit">
                     Prev
                     </button>
                 </form>
+                <!-- TOOD: add pop-up for member insertion -->
                 <form method="post" action="/membersAdd">
                     <button class="cyclePartBtn" type="submit">
                     Add
                     </button>
                 </form>
                 <form method="post" action="/membersDelete">
+                <!-- TOOD: add pop-up for member insertion -->
                     <button class="cyclePartBtn" type="submit">
                     Delete
                     </button>
