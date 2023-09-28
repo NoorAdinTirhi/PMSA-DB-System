@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html>
+  <!-- TODO add button on right side of activity list -->
+  <!-- TODO filter activities based on pressed button for secgen disallow all other local secgens to see non-local activities -->
 
 <head>
     <link rel="stylesheet" href="../styles/common.css">
@@ -222,16 +224,16 @@
             </tr>
             <tr style="text-align: center;">
                 <td style="width: 10%;">
-                    SCORF
+                    SCORE
                 </td>
                 <td style="width: 10%;">
-                    <%=scorfActNum%>
+                    <%=scoreActNum%>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
-                            <option selected hidden value="-1">SCORF Activities</option>
-                            <% scorfActivities.forEach( element=> { %>
+                            <option selected hidden value="-1">SCORE Activities</option>
+                            <% SCOREActivities.forEach( element=> { %>
                                 <option value="<%=element.actID%>"><%= element.actName %></option>
                             <% }) %>
                         </select>
