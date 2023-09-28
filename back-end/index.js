@@ -24,6 +24,8 @@ app.use(express.json())
 app.use(audit())
 
 var con;
+//TODO add ajax to the ejs files
+
 
 //TODO implement Nablus members event
 //TODO implement Jerusalem members event
@@ -54,9 +56,10 @@ app.post("/login", function(req, res) {
         //try to login to establish mysql connection
     con = mysql.createConnection({
         host: "localhost",
-        user: username,
-        password: password,
+        user: 'root',
+        password: 'fur124365',
     })
+    //TODO: check that user is in databse
     con.connect(function(err) {
         if (err) {
             res.render("login", { login_string: "login unsuccesful" })

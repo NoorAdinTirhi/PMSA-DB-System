@@ -18,7 +18,8 @@
     margin-top: 4%;
     box-shadow: 5px 5px 5px #0887f0;
     position: absolute;
-    float: left
+    float: left;
+    scale: 0.9;
 }
 
 body {

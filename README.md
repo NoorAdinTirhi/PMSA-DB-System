@@ -14,3 +14,4 @@ we'll need to install MySQL, NodeJS and npm
 $ sudo ap update && sudo apt upgrade
 $ sudo apt install mysql NodeJS npm
 ```
+
