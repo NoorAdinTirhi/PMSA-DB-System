@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
-<!-- TODO add black list status -->
-<!-- TODO add an edit button -->
+<!-- TODO add search -->
 <head>
     <link rel="stylesheet" href="../styles/common.css">
     <style>
@@ -105,17 +104,270 @@
             transform: scale(1.01);
             cursor: pointer;
         }
+
+        .updateMemberWindow{
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            background: whitesmoke;
+            box-shadow: 2px 2px 0px 2px #4e4e4e;
+            width: 99%;
+            margin: 0.5%;
+            margin-bottom: 1%;
+            height: 98%;
+            z-index: 50;
+        }
+        #newMemberForm>* {
+            padding-bottom: .7%;
+            padding-top: .7%;
+            padding-left:5px;
+            padding-right:5px;
+            border-bottom: solid 1px #545353
+        }
+        #editMemberForm>* {
+            padding-bottom: .7%;
+            padding-top: .7%;
+            padding-left:5px;
+            padding-right:5px;
+            border-bottom: solid 1px #545353
+        }
+        #searchlist >*:not(#exception) :hover {
+            background-color: #848484;
+            cursor:pointer;
+        }
+
     </style>
 </head>
 
 <body>
     <div class="fullbox" style="display: flex; flex-direction: column;">
+        <div class="updateMemberWindow" id = "searchWindow">
+            <form>
+                <div style="display: flex; flex-direction:column; padding:5%">
+                    <div style="float:left; display:flex; flex-direction:row; margin:1% 0%;">
+                        <form method="post" action="/searchMember">
+                            <label style="margin:1% 1%">
+                                Search: 
+                            </label>
+
+                            <input style="margin:1% 1%" placeholder="Member Name" name="memberLike" value="">
+
+                            <button type="submit" style="margin:1% 1%; font-size:larger"> submit</button>
+                        </form>
+                    </div>
+                    <div style="margin:1% 0%; padding: 1% 0%; border-style:solid; display:flex; flex-direction:column;">
+                        <h1  style="border-bottom: solid black;"> Search results: </h1>
+                            <ul id="searchlist" style="list-style: none; overflow:scroll;">
+                                <li id = "exception"> 
+                                    <div style="display: flex; flex-direction:row; border-bottom:1px solid #4e4e4e; padding-bottom:5px; margin-bottom: 5px;">
+                                            <div style="margin:0% 5%; width:15.2px;"></div>
+                                            <label style="width:42%">Member Number</label>
+                                            <label style="width:42%">Member Name</label>
+                                    </div>
+                                </li>
+                                <% matchingMembers.forEach( element=> { %>
+                                <li>
+                                    <div style="display: flex; flex-direction:row; border-bottom:1px solid #4e4e4e; margin-bottom: 5px; padding-bottom: 5px" onclick="selectMember('<%=element.memNumber%>')">
+                                        <div style="margin:0% 5%; width:15.2px;"></div>
+                                        <label style="width:42%"><%=element.memNumber%></label>
+                                        <label style="width:42%"><%=element.memName%></label>
+                                    </div>
+                                </li>
+                                <% }) %>
+                            </ul>
+                            <div style="display: flex; flex-direction:column; width: 10%; margin-left: 5%">
+                                <button onclick="searchMemClose()" type="button" > Cancel</button>
+                            </div>  
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class ="updateMemberWindow" id="newMemberWindow">
+                <form id="newMemberForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%">
+                    <h1>Add a New Member</h1>
+                    <div style="display: flex; flex-direction:row; width:100%; padding-bottom:7px; border-bottom:none">
+                        <div style="width:15%"></div>
+                        <div style="border-bottom: solid 2px rgb(0, 119, 255); color: rgb(0, 119, 255); width:15%; padding-bottom:3px; padding-top:5px; padding:0% 5%">English</div>
+                        <div style="border-bottom: solid 2px rgb(0, 119, 255); color: rgb(0, 119, 255); width:15%; padding-bottom:3px; padding-top:5px; padding:0% 5%">Arabic</div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            First Name
+                        </label>
+                        <input required type="text" pattern="[a-zA-Z]*" style="width: 15%; margin:0% 5%" placeholder="english first name " name="engFname">
+                        <input required type="text" pattern="[ء-ي]*" style="width: 15%; margin:0% 5%"  placeholder="arabic first name" name="arabFname">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Father Name
+                        </label>
+                        <input required type="text" pattern="[a-zA-Z]*" style="width: 15%; margin:0% 5%" placeholder="english father name" name="engFather">
+                        <input required type="text" pattern="[ء-ي]*" style="width: 15%; margin:0% 5%" placeholder="arabic father name" name="arabFather">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Grandfather Name
+                        </label>
+                        <input required type="text" pattern="[a-zA-Z]*" style="width: 15%; margin:0% 5%" placeholder="english grandfather name" name="engGfather">
+                        <input required type="text" pattern="[ء-ي]*" style="width: 15%; margin:0% 5%" placeholder="arabic grandfather name" name="arabGfather">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Family Name
+                        </label>
+                        <input required type="text" pattern="[a-zA-Z]*" style="width: 15%; margin:0% 5%" placeholder="english last name" name="engLname">
+                        <input required type="text" pattern="[ء-ي]*" style="width: 15%; margin:0% 5%" placeholder="arabic last name" name="arabLname">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Phone NO
+                        </label>
+                        <label style="margin-left:10%">+</label>
+                        <input required type="text" pattern="^[0-9]{3}$" style="width: 3%;" placeholder="+970" name="areaCode">
+                        <input required type="text" pattern="^[0-9]{9}$" style="width: 27%; margin:0% 2%" placeholder="phone number" name="phoneNo">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Email
+                        </label>
+                        <input required type="email" style="margin: 0% 12.5%; width: 20%" placeholder="E-Mail" name="email">
+                    </div>
+                    <div  style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            First Year
+                        </label>
+                        <input id="firstYearField" required type="number" min="1999" style="margin: 0% 12.5%; width: 20%" placeholder="first year of university" name="firstYear">
+                    </div>
+                    <div  style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            University Number
+                        </label>
+                        <input id="firstYearField" required type="number" style="margin: 0% 12.5%; width: 20%" placeholder="University ID" name="uniNum">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Member Status
+                        </label>
+                        <label style="width: 15% ; margin:0% 5%"><input required type="radio" value="active" name="memberStatus">Active</label>
+                        <label style="width: 15% ; margin:0% 5%"><input required type="radio" value="inactive" name="memberStatus">Inactive</label>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Trainer Status
+                        </label>
+                        <label style="width: 15%; margin:0% 5%"><input required type="radio" value="active" name="trainerStatus">Active</label>
+                        <label style="width: 15%; margin:0% 5%"><input required type="radio" value="inactive" name="trainerStatus">Inactive</label>
+                    </div>
+
+                    <div style="margin-top: 3%;">
+                        <button type="submit">Submit</button>
+                        <button type="button" onclick="addMemClose()"> Cancel</button>
+                    </div>
+                </form>
+        </div>
+
+        <div id="editMemberWindow" class="updateMemberWindow">
+                <form id="editMemberForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%">
+                    <h1>Edit Member <%=UniId%></h1>
+                    <div style="display: flex; flex-direction:row; width:100%; padding-bottom:7px; border-bottom:none">
+                        <div style="width:15%"></div>
+                        <div style="border-bottom: solid 2px rgb(0, 119, 255); color: rgb(0, 119, 255); width:15%; padding-bottom:3px; padding-top:5px; padding:0% 5%">English</div>
+                        <div style="border-bottom: solid 2px rgb(0, 119, 255); color: rgb(0, 119, 255); width:15%; padding-bottom:3px; padding-top:5px; padding:0% 5%">Arabic</div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            First Name
+                        </label>
+                        <input required type="text" pattern="[a-zA-Z]*" style="width: 15%; margin:0% 5%" placeholder="english first name " name="engFname" value="<%=engFname%>">
+                        <input required type="text" pattern="[ء-ي]*" style="width: 15%; margin:0% 5%"  placeholder="arabic first name" name = "arabFname" value="<%=arabFname%>">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Father Name
+                        </label>
+                        <input required type="text" pattern="[a-zA-Z]*" style="width: 15%; margin:0% 5%" placeholder="english father name" name="engFather" value="<%=engFather%>">
+                        <input required type="text" pattern="[ء-ي]*" style="width: 15%; margin:0% 5%" placeholder="arabic father name" name ="arabFather"value="<%=arabFather%>">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Grandfather Name
+                        </label>
+                        <input required type="text" pattern="[a-zA-Z]*" style="width: 15%; margin:0% 5%" placeholder="english grandfather name" name="engGfather"value="<%=engGfather%>">
+                        <input required type="text" pattern="[ء-ي]*" style="width: 15%; margin:0% 5%" placeholder="arabic grandfather name" name="arabGfather"value="<%=arabGfather%>">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Family Name
+                        </label>
+                        <input required type="text" pattern="[a-zA-Z]*" style="width: 15%; margin:0% 5%" placeholder="english last name" name="engLname" value="<%=engLname%>">
+                        <input required type="text" pattern="[ء-ي]*" style="width: 15%; margin:0% 5%" placeholder="arabic last name" name="arabLname" value="<%=arabLname%>">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Phone NO
+                        </label>
+                        <label style="margin-left:10%">+</label>
+                        <input required type="text" pattern="^[0-9]{3}$" style="width: 3%;" placeholder="+970" name="areaCode" value="<%=areaCode%>">
+                        <input required type="text" pattern="^[0-9]{9}$" style="width: 27%; margin:0% 2%" placeholder="phone number" name="phoneNo" value="<%=phoneNo%>">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Email
+                        </label>
+                        <input required type="email" style="margin: 0% 12.5%; width: 20%" placeholder="E-Mail" name="email" value="<%=email%>">
+                    </div>
+                    <div  style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            First Year
+                        </label>
+                        <input id="firstYearField" required type="number" min="1999" style="margin: 0% 12.5%; width: 20%" placeholder="first year of university" name="firstYear" value="<%=firstYear%>">
+                    </div>
+                    <div  style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            University Number
+                        </label>
+                        <input id="firstYearField" required type="number" style="margin: 0% 12.5%; width: 20%" placeholder="University ID" name="uniNum" value="<%=uniNum%>">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Member Status
+                        </label>
+                        <label style="width: 15% ; margin:0% 5%"><input required type="radio" value="active" name="memberStatus" id="memStatusEditActive">Active</label>
+                        <label style="width: 15% ; margin:0% 5%"><input required type="radio" value="inactive" name="memberStatus" id="memStatusEditInactive">Inactive</label>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Trainer Status
+                        </label>
+                        <label style="width: 15%; margin:0% 5%"><input required type="radio" value="active" name="trainerStatus" id="trainerStatusEditActive">Active</label>
+                        <label style="width: 15%; margin:0% 5%"><input required type="radio" value="inactive" name="trainerStatus" id="trainerStatusEditInactive">Inactive</label>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            BlackList Status
+                        </label>
+                        <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "blred"    value="red" name="blackListStatus" >Red</label>
+                        <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "blorange" value="orange" name="blackListStatus" >Orange</label>
+                        <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "blyellow" value="yellow" name="blackListStatus" >Yellow</label>
+                        <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "blblue" value="blue" name="blackListStatus" >Blue</label>
+                        <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "blgreen" value="green" name="blackListStatus" >Green</label>
+                        <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "blexchange" value="exchange" name="blackListStatus" >Exchange</label>
+                        <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "blclear" value="clear" name="blackListStatus" >Clear</label>
+                    </div>
+
+                    <div style="margin-top: 3%;">
+                        <button type="submit">Submit</button>
+                        <button type="button" onclick="editMemClose()"> Cancel</button>
+                    </div>
+                </form>
+        </div>
+            
         <div style="display: flex; flex-direction: column;">
             <div class="line" style=" position: relative; width:max-content; margin-left : 3%">
                 <div style="display: inline-block; padding-right : 5% auto">
                     <!-- title -->
                     <h1 style="margin-right:25px">Welcome
-                        <%= user%>
+                        <%=user%>
                     </h1>
                 </div>
                 <!-- time and date -->
@@ -186,34 +438,34 @@
                     <div style="grid-area: main;">
                         <div style="display:flex; flex-direction: column; font-size: 20px;">
                             <div style="display: flex; flex-direction: row;">
-                                <div style="padding-left: 5%; padding-right: 5%; width: 40%;">
+                                <div id="engFname" style="padding-left: 5%; padding-right: 5%; width: 40%;">
                                     <%=engFname%>
                                 </div>
-                                <div style="padding-left: 5%; padding-right: 5%; width: 40%;">
+                                <div id="arabFname" style="padding-left: 5%; padding-right: 5%; width: 40%;">
                                     <%=arabFname%>
                                 </div>
                             </div>
                             <div style="display: flex; flex-direction: row;">
-                                <div style="padding-left: 5%; padding-right: 5%; width: 40%;">
+                                <div id="engFather" style="padding-left: 5%; padding-right: 5%; width: 40%;">
                                     <%=engFather%>
                                 </div>
-                                <div style="padding-left: 5%; padding-right: 5%; width: 40%;">
+                                <div id="arabFather" style="padding-left: 5%; padding-right: 5%; width: 40%;">
                                     <%=arabFather%>
                                 </div>
                             </div>
                             <div style="display: flex; flex-direction: row;">
-                                <div style="padding-left: 5%; padding-right: 5%; width: 40%;">
+                                <div id="engGfather" style="padding-left: 5%; padding-right: 5%; width: 40%;">
                                     <%=engGfather%>
                                 </div>
-                                <div style="padding-left: 5%; padding-right: 5%; width: 40%;">
+                                <div id="arabGfather" style="padding-left: 5%; padding-right: 5%; width: 40%;">
                                     <%=arabGfather%>
                                 </div>
                             </div>
                             <div style="display: flex; flex-direction: row;">
-                                <div style="padding-left: 5%; padding-right: 5%; width: 40%;">
+                                <div id="engLname" style="padding-left: 5%; padding-right: 5%; width: 40%;">
                                     <%=engLname%>
                                 </div>
-                                <div style="padding-left: 5%; padding-right: 5%; width: 40%;">
+                                <div id="arabLname" style="padding-left: 5%; padding-right: 5%; width: 40%;">
                                     <%=arabLname%>
                                 </div>
                             </div>
@@ -240,11 +492,10 @@
                         Phone No.
                     </div>
                     <div style=" width: 67%; text-align: center; font-size: 20px; display: flex; flex-direction: row;">
-                        <div style="width: 15%; padding:1px; border: solid; min-width: fit-content">
-                            +
-                            <%=areaCode%>
+                        <div id="areaCode"style="width: 15%; padding:1px; border: solid; min-width: fit-content">
+                            +<%=areaCode%>
                         </div>
-                        <div style="margin-left: 4%;width: 80%; padding:1px; border: solid; min-width: fit-content">
+                        <div id="phoneNo"style="margin-left: 4%;width: 80%; padding:1px; border: solid; min-width: fit-content">
                             <%=phoneNo%>
                         </div>
                     </div>
@@ -253,23 +504,23 @@
                     <div style="width: 33%; text-align: center; font-size: 20px;">
                         Email
                     </div>
-                    <div style=" width: 67%; text-align: center; font-size: 20px;">
-                        <%=participantEmail%>
+                    <div id="Email"style=" width: 67%; text-align: center; font-size: 20px;">
+                        <%=email%>
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
                     <div style="width: 33%; text-align: center; font-size: 20px;">
                         Freshmen Year
                     </div>
-                    <div style=" width: 67%; text-align: center; font-size: 20px;">
-                        <%=freshmenYear%>
+                    <div id="firstYear"style=" width: 67%; text-align: center; font-size: 20px;">
+                        <%=firstYear%>
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
                     <div style="width: 33%; text-align: center; font-size: 20px;">
                         University Number
                     </div>
-                    <div style=" width: 67%; text-align: center; font-size: 20px;">
+                    <div id="uniNum"style=" width: 67%; text-align: center; font-size: 20px;">
                         <%=uniNum%>
                     </div>
                 </div>
@@ -277,7 +528,7 @@
                     <div style="width: 33%; text-align: center; font-size: 20px;">
                         Membership Status
                     </div>
-                    <div style=" width: 67%; text-align: center; font-size: 20px;">
+                    <div id="memStatus"style=" width: 67%; text-align: center; font-size: 20px;">
                         <%=memStatus%>
                     </div>
                 </div>
@@ -285,16 +536,16 @@
                     <div style="width: 33%; text-align: center; font-size: 20px;">
                         Trainer Status
                     </div>
-                    <div style=" width: 67%; text-align: center; font-size: 20px;">
+                    <div id="trainerStatus"style=" width: 67%; text-align: center; font-size: 20px;">
                         <%=trainerStatus%>
                     </div>
                 </div>
-                <div style="background-color: #000000; color:white; display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
+                <div style="background-color: #000000; color:white; display: flex; flex-direction: row; width: 95%; margin-left:2.5%; margin-right:2.5% ;margin-top: 0.5%;">
                     <div style="width: 33%; text-align: center; font-size: 20px;">
                         Blacklist Status
                     </div>
-                    <div style=" width: 67%; text-align: center; font-size: 20px;">
-                        <%=%>
+                    <div id="blacklistStatus"style=" width: 67%; text-align: center; font-size: 20px;">
+                        <%=blacklistStatus%>
                     </div>
                 </div>
             </div>
@@ -325,39 +576,42 @@
                 </div>
 
             </div>
-            <div style="display: flex; flex-direction: column; min-width: max-content; padding-top: 1%; width : 10%">
-                <form method="post" action="/membersNext">
-                    <input type="hidden" name="curMemNum" value="<%=curMemNum%>">
-                    <button class="cyclePartBtn" type="submit">
+            <div style="display: flex; flex-direction: column; min-width: max-content; padding-top: 1%; width : 10%; align-items:center">
+                <button class="cyclePartBtn" onclick="nextMemCycle()">
                     Next
-                    </button>
-                </form>
-                <form method="post" action="/membersPrev">
-                    <input type="hidden" name="curMemNum" value="<%=curMemNum%>">
-                    <button class="cyclePartBtn" type="submit">
+                </button>
+                <button class="cyclePartBtn" onclick="prevMemCycle()">
                     Prev
-                    </button>
-                </form>
-                <!-- TOOD: add pop-up for member insertion -->
-                <form method="post" action="/membersAdd">
-                    <button class="cyclePartBtn" type="submit">
+                </button>
+                <button class="cyclePartBtn" onclick="searchMemPopUp()">
+                    Search
+                </button>
+                <button class="cyclePartBtn" onclick="addMemPopUp()">
                     Add
-                    </button>
-                </form>
-                <form method="post" action="/membersDelete">
-                <!-- TOOD: add pop-up for member insertion -->
-                    <button class="cyclePartBtn" type="submit">
+                </button>
+                <button class="cyclePartBtn" onclick="editMemPopUp()">
+                    Edit
+                </button>
+                <button class="cyclePartBtn" onclick="DeleteMemPopUp()">
                     Delete
-                    </button>
-                </form>
+                </button>
             </div>
+            
         </div>
     </div>
 
 
 
-    <script>
+    <script>       
+        //TODO filter by nat or local for the secgen buttons
+        //TODO add a search results mode
+        // if (<%=matchingMembers%> not empty)
+        // then show the search, something like that
+        let curMemNumber = Number("<%=curMemNumber%>");
+        const firstYearField = document.getElementById("firstYearField")
         var cur_time = new Date();
+        console.log( `${cur_time.getFullYear()}`)
+        firstYearField.setAttribute("max", Number(`${cur_time.getFullYear()}`))
         document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
         document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
         var intervalId = setInterval(function() {
@@ -382,6 +636,126 @@
             forms[i].appendChild(hiddenUserIn);
             forms[i].appendChild(hiddenCipherIn);
         }
+        const user_details = {
+            username : "<%=user%>",
+            cipher : "<%=cipher%>"
+        };
+
+        function nextMemCycle(){
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST","/nextMember",true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            const data = user_details;
+            data["curMemNumber"] = Number(curMemNumber);
+            const reqString = JSON.stringify(data);
+            xhr.send(reqString)
+        }
+
+        function prevMemCycle(){
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST","/prevMember",true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            const data = user_details;
+            data["curMemNumber"] = Number(curMemNumber);
+            const reqString = JSON.stringify(data);
+            xhr.send(reqString)
+        }
+
+        function addMemPopUp(){
+            const element = document.getElementById("newMemberWindow")
+            element.style.display = "flex"
+        }
+        function addMemClose(){
+            const element = document.getElementById("newMemberWindow")
+            element.style.display= "none"
+        }
+
+        const blacklistMap = new Map();
+        blacklistMap.set('clear', 0);
+        blacklistMap.set('red', 1);
+        blacklistMap.set('orange', 2);
+        blacklistMap.set('yellow', 3);
+        blacklistMap.set('blue', 4);
+        blacklistMap.set('green', 5);
+        blacklistMap.set('exchange', 6);
+
+        function editMemPopUp(){
+            const element = document.getElementById("editMemberWindow")
+            element.style.display = "flex"
+            //set known values
+            if("<%=memStatus%>" == "active"){
+            document.getElementById("memStatusEditActive").setAttribute("checked",true)
+            }else{
+                document.getElementById("memStatusEditInactive").setAttribute("checked",true)
+            }
+            if("<%=trainerStatus%>" == "active"){
+                document.getElementById("trainerStatusEditActive").setAttribute("checked",true)
+            }else{
+                document.getElementById("trainerStatusEditInactive").setAttribute("checked",true)
+            }
+
+            document.forms["editMemberForm"][`bl${"<%=blacklistStatus%>"}`].checked=true
+
+        }
+
+        function editMemClose(){
+            const element = document.getElementById("editMemberWindow")
+            element.style.display = "none"
+        }
+
+
+        document.getElementById("newMemberForm").addEventListener('submit', (event) => {
+            event.preventDefault();
+            fetch(event.target.action, {
+            method: 'POST',
+            body: new URLSearchParams(new FormData(event.target)) // event.target is the form
+            }).then((response) => {
+                if(!response.ok){
+                    alarm(`HTTP ERROR! STATUS: ${response.status}`)
+                }
+                else{
+                    alarm(response.text())
+                }
+            })
+        
+        })
+
+        document.getElementById("editMemberForm").addEventListener('submit', (event) => {
+            event.preventDefault();
+            fetch(event.target.action, {
+            method: 'POST',
+            body: new URLSearchParams(new FormData(event.target)) // event.target is the form
+            }).then((response) => {
+                if(!response.ok){
+                    alarm(`HTTP ERROR! STATUS: ${response.status}`)
+                }
+                else{
+                    alarm(response.text())
+                }
+            })
+        })
+
+        function searchMemPopUp(){
+            console.log("noor")
+            const element = document.getElementById("searchWindow")
+            element.style.display = "flex"
+        }
+        function searchMemClose(){
+            const element = document.getElementById("searchWindow")
+            element.style.display = "none"
+        }
+        function selectMember(memNumber){
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST","/selectMember",true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            const data = user_details;
+            data["memNumber"] = Number(memNumber);
+            const reqString = JSON.stringify(data);
+            xhr.send(reqString)
+        }
+
+
+
     </script>
 
 </body>

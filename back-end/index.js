@@ -94,6 +94,11 @@ app.post("/allTrainers", function(req, res) {
     console.log(`***\nusername : ${req.body.username}\n `)
 })
 
+app.post("/nextMember", function(reg, res) {
+    console.log(req.body.username)
+})
+
+
 
 app.get("*.css", function(req, res) {
     //HTML Files Path
@@ -117,6 +122,7 @@ app.get("/scripts/*", function(req, res) {
 
     res.sendFile(fileName, options)
 })
+
 
 app.listen(8081, function(err) {
     if (err) throw err
