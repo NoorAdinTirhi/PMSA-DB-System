@@ -42,4 +42,6 @@ body {
             height:100%;
             font-size: 22px;
             padding: 14px 0;
+            transition-property: box-shadow border-radius transform;
+            transition-duration: .5s;
         }

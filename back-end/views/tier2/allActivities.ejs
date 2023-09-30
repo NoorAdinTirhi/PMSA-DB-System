@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html>
-  <!-- TODO add button on right side of activity list -->
-  <!-- TODO filter activities based on pressed button for secgen disallow all other local secgens to see non-local activities -->
 
 <head>
     <link rel="stylesheet" href="../styles/common.css">
@@ -10,20 +8,21 @@
             margin-top: 5%;
             height: 70%;
             align-items: center;
+            position: relative;
         }
         
-        #natBox {
+        #nationalBtn {
             float: left;
             display: inline-block;
-            margin-left: 25%;
+            margin-left: 15%;
+            margin-right: 10%;
             padding: 40px;
             text-align: center;
             font-size: 30px;
             border-style: solid;
-            border-width: 3px;
             border-color: #000000;
             transition-property: box-shadow border-radius transform;
-            transition-duration: .25s;
+            transition-duration: .5s;
         }
         
         #natBox:hover {
@@ -112,49 +111,39 @@
             </div>
         </div>
         <div id="boxesSec">
-            <form method="post" action="/actsNational">
-            <button id=natBox type="submit">
-                National
-            </button>
+            <form method="post" action="/filterActivities">
+                <button id=nationalBtn onclick="setFilter('national')" name="filter" value="national" type="submit" >
+                    National
+                </button>
             </form>
-            <table id="boxesTable">
-                <tr>
-                    <td>
-                        <form  method="post" action="/actsNablus">
-                            <button class="localbutton" type="submit"> Nablus</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form  method="post" action="/actsJerusalem">
-                            <button class="localbutton" type="submit"> Jerusalem</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form  method="post" action="/actsGaza">
-                            <button class="localbutton" type="submit"> Gaza</button>
-                        </form>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <form  method="post" action="/actsPPU">
-                            <button class="localbutton" type="submit"> PPU</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form  method="post" action="/actsHU">
-                            <button class="localbutton" type="submit"> HU</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form  method="post" action="/actsJinin">
-                            <button class="localbutton" type="submit"> Jinin</button>
-                        </form>
-                    </td>
-                </tr>
 
-            </table>
-        </div><br>
+                <div style="display:flex; flex-direction:column; width:30%;  position:relative; border-style:solid">
+                    <div style="display:flex; flex-direction:row">
+                        <form method="post" action="/filterActivities" style="width: 100%;">
+                            <button id="nablusBtn"class="localbutton" onclick="setFilter('nablus')" name="filter" value="nablus" type="submit"> Nablus</button>
+                        </form>
+                        <form  method="post" action="/filterActivities" style="width: 100%;" >
+                            <button id="jerusalemBtn"class="localbutton" onclick="setFilter('jerusalem')" name="filter" value="jerusalem" type="submit"> Jerusalem</button>
+                        </form>
+                        <form  method="post" action="/filterActivities" style="width: 100%;">
+                            <button id="gazaBtn"class="localbutton" onclick="setFilter('gaza')" name="filter" value="gaza" type="submit"> Gaza</button>
+                        </form>
+                        
+                    </div>
+                    <div style="display:flex; flex-direction:row">
+                        <form  method="post" action="/filterActivities" style="width: 100%;">
+                         <button id="ppuBtn"class="localbutton" onclick="setFilter('ppu')" name="filter" value="ppu" type="submit"> PPU</button>
+                        </form>
+                        <form  method="post" action="/filterActivities" style="width: 100%;">
+                            <button id="huBtn"class="localbutton" onclick="setFilter('hu')" name="filter" value="hu" type="submit"> HU</button>
+                        </form>
+                        <form method="post" action="/filterActivities" style="width: 100%;">
+                            <button id="jininBtn"class="localbutton" onclick="setFilter('jinin')" name="filter" value="jinin" type="submit"> Jinin</button>
+                        </form>
+                    </div>
+
+                </div>
+             </div>
         <table id="activities-table" style="margin-top: 5%; border-style: solid; width:80%; float:left; margin-left: 10%;">
             <tr style="position: relative;">
                 <th style="width: 10%; border-bottom:2px solid #000000">
@@ -162,6 +151,9 @@
                 </th>
                 <th style="width: 10%;border-bottom:2px solid #000000">
                     Number of Activities
+                </th>
+                <th style="width: 10%;border-bottom:2px solid #000000">
+                    Add Activity
                 </th>
                 <th style="border-bottom:2px solid #000000">
                     Activities
@@ -173,6 +165,9 @@
                 </td>
                 <td style="width: 10%;">
                     <%=allActNum%>
+                </td>
+                <td style="width: 10%;">
+                    <button onclick="addActivity('all')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -192,6 +187,9 @@
                 <td style="width: 10%;">
                     <%=genActNum%>
                 </td>
+                <td style="width: 10%;">
+                    <button onclick="addActivity('general')">Add Activity</button>
+                </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
@@ -209,6 +207,9 @@
                 </td>
                 <td style="width: 10%;">
                     <%=CBActNum%>
+                </td>
+                <td style="width: 10%;">
+                    <button onclick="addActivity('cb')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -229,6 +230,9 @@
                 <td style="width: 10%;">
                     <%=scoreActNum%>
                 </td>
+                <td style="width: 10%;">
+                    <button onclick="addActivity('score')">Add Activity</button>
+                </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
@@ -246,6 +250,9 @@
                 </td>
                 <td style="width: 10%;">
                     <%=scopeActNum%>
+                </td>
+                <td style="width: 10%;">
+                    <button onclick="addActivity('scope')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -265,6 +272,9 @@
                 <td style="width: 10%;">
                     <%=scomeActNum%>
                 </td>
+                <td style="width: 10%;">
+                    <button onclick="addActivity('scome')">Add Activity</button>
+                </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
@@ -282,6 +292,9 @@
                 </td>
                 <td style="width: 10%;">
                     <%=scorpActNum%>
+                </td>
+                <td style="width: 10%;">
+                    <button onclick="addActivity('scorp')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -301,6 +314,9 @@
                 <td style="width: 10%;">
                     <%=scoraActNum%>
                 </td>
+                <td style="width: 10%;">
+                    <button onclick="addActivity('scora')">Add Activity</button>
+                </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
@@ -319,6 +335,9 @@
                 <td style="width: 10%;">
                     <%=scophActNum%>
                 </td>
+                <td style="width: 10%;">
+                    <button onclick="addActivity('scoph')">Add Activity</button>
+                </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
@@ -335,14 +354,6 @@
 
 
     <script>
-        var cur_time = new Date();
-        document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
-        document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
-        var intervalId = setInterval(function() {
-            var cur_time = new Date();
-            document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
-            document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
-        }, 1000);
         const hiddenUserIn = document.createElement('input');
         hiddenUserIn.setAttribute('type', 'hidden');
         hiddenUserIn.setAttribute('name', "username");
@@ -353,11 +364,53 @@
         hiddenCipherIn.setAttribute('name', "cipher");
         hiddenCipherIn.setAttribute('value',"<%=cipher%>");
 
+        const hiddenFilterin = document.createElement('input');
+        hiddenFilterin.setAttribute('type', 'hidden');
+        hiddenFilterin.setAttribute('name', "filter");
+
         const forms = document.forms;
         
         for (let i = 0; i <forms.length; i++){
             forms[i].appendChild(hiddenUserIn);
             forms[i].appendChild(hiddenCipherIn);
+        }
+
+        var cur_time = new Date();
+        document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
+        document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+        var intervalId = setInterval(function() {
+            var cur_time = new Date();
+            document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
+            document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+        }, 1000);
+        
+
+        var filterLC;
+        
+        if ("<%=userLC%>" != "national"){
+            document.getElementById("boxesSec").style.display="none"
+        }
+
+        lcs = ['national','nablus', 'jerusalem', 'gaza', 'ppu', 'hu', 'jinin']
+        setFilter("<%=userLC%>")
+
+        function setFilter(localCommittee){
+            console.log(filterLC)
+            lcs.forEach((element) =>{
+                temp = document.getElementById(`${element}Btn`)
+                temp.style.borderStyle = "none"
+                if (element == "national")
+                    temp.style.borderStyle = "solid"
+                temp.style.borderColor = "black"
+                temp.style.scale = 1;
+                temp.style.zIndex = 1;
+            })
+            lcBtn = document.getElementById(`${localCommittee}Btn`)
+            lcBtn.style.borderColor = "rgb(0, 119, 255)"
+            lcBtn.style.borderStyle = "solid"
+            lcBtn.style.scale = 1.2;
+            lcBtn.style.zIndex = 100;
+            lcBtn.style.position = "relative"
         }
     </script>
 

@@ -8,12 +8,14 @@
             margin-top: 5%;
             height: 70%;
             align-items: center;
+            position: relative;
         }
         
-        #natBox {
+        #nationalBtn {
             float: left;
             display: inline-block;
-            margin-left: 25%;
+            margin-left: 15%;
+            margin-right: 10%;
             padding: 40px;
             text-align: center;
             font-size: 30px;
@@ -23,7 +25,7 @@
             transition-duration: .5s;
         }
         
-        #natBox:hover {
+        #nationalBtn:hover {
             box-shadow: 2px 2px 3px 1px rgb(5, 5, 5);
             border-radius: 2%;
             transform: scale(1.01);
@@ -41,9 +43,11 @@
             height: 122px;
             align-items: center;
             font-size: large;
+            position: relative;
         }
         
         #boxesTable td {
+            position: relative;
             text-align: center;
             border-style: solid;
             border-width: 2px;
@@ -51,12 +55,15 @@
             width: 10%;
             transition-property: box-shadow border-radius transform;
             transition-duration: .5s;
+            z-index: 1;
         }
         
         td:hover {
             box-shadow: 2px 2px 3px 1px rgb(5, 5, 5);
             border-radius: 2%;
-            transform: scale(1.01);
+            transform: scale(1.1);
+            z-index: 100;
+            border-style: solid;
         }
         
         #boxesTable tr {
@@ -64,6 +71,7 @@
             width: max-content;
             min-height: max-content;
             height: max-content;
+            z-index: 1;
         }
         
         #personalInfo {
@@ -242,7 +250,7 @@
                         <label style="margin-right:5%; width:10%">
                             University Number
                         </label>
-                        <input id="firstYearField" required type="number" style="margin: 0% 12.5%; width: 20%" placeholder="University ID" name="uniNum">
+                        <input required type="text" pattern="^[0-9]*$" style="margin: 0% 12.5%; width: 20%" placeholder="University ID" name="uniNum">
                     </div>
                     <div style="display: flex; flex-direction:row; width:100%">
                         <label style="margin-right:5%; width:10%">
@@ -326,7 +334,7 @@
                         <label style="margin-right:5%; width:10%">
                             University Number
                         </label>
-                        <input id="firstYearField" required type="number" style="margin: 0% 12.5%; width: 20%" placeholder="University ID" name="uniNum" value="<%=uniNum%>">
+                        <input  required type="text" pattern="^[0-9]*$" style="margin: 0% 12.5%; width: 20%" placeholder="University ID" name="uniNum" value="<%=uniNum%>">
                     </div>
                     <div style="display: flex; flex-direction:row; width:100%">
                         <label style="margin-right:5%; width:10%">
@@ -376,50 +384,28 @@
                     <text id="current_time"></text>
                 </div>
             </div>
-            <div id="boxesSec">
-            <form method="post" action="/membersNational">
-            <button id=natBox type="submit" >
-                National
-            </button>
-            </form>
-            <table id="boxesTable">
-                <tr>
-                    <td>
-                        <form  method="post" action="/membersNablus">
-                            <button class="localbutton" type="submit"> Nablus</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form  method="post" action="/membersJerusalem">
-                            <button class="localbutton" type="submit"> Jerusalem</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form  method="post" action="/membersGaza">
-                            <button class="localbutton" type="submit"> Gaza</button>
-                        </form>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <form  method="post" action="/membersPPU">
-                            <button class="localbutton" type="submit"> PPU</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form  method="post" action="/membersHU">
-                            <button class="localbutton" type="submit"> HU</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form  method="post" action="/membersJinin">
-                            <button class="localbutton" type="submit"> Jinin</button>
-                        </form>
-                    </td>
-                </tr>
+            
 
-            </table>
-        </div><br>
+             <div id="boxesSec">
+                <button id=nationalBtn onclick="setFilter('national')" >
+                    National
+                </button>
+
+                <div style="display:flex; flex-direction:column; width:30%;  position:relative; border-style:solid">
+                    <div style="display:flex; flex-direction:row">
+                        <button id="nablusBtn"class="localbutton" onclick="setFilter('nablus')"> Nablus</button>
+                        <button id="jerusalemBtn"class="localbutton" onclick="setFilter('jerusalem')"> Jerusalem</button>
+                        <button id="gazaBtn"class="localbutton" onclick="setFilter('gaza')"> Gaza</button>
+                    </div>
+                    <div style="display:flex; flex-direction:row">
+                        <button id="ppuBtn"class="localbutton" onclick="setFilter('ppu')"> PPU</button>
+                        <button id="huBtn"class="localbutton" onclick="setFilter('hu')"> HU</button>
+                        <button id="jininBtn"class="localbutton" onclick="setFilter('jinin')"> Jinin</button>
+                    </div>
+
+                </div>
+             </div>
+
         <div style=" display: flex; flex-direction: row; text-align: center; margin-top: 2%;">
             <div style="width: 50%; min-width: 920px;;display: flex; flex-direction: column; margin-right: 1%;">
                 <div id="personalInfo">
@@ -607,6 +593,60 @@
         //TODO add a search results mode
         // if (<%=matchingMembers%> not empty)
         // then show the search, something like that
+
+        if ("<%=userLC%>" != "national"){
+            document.getElementById("boxesSec").style.display="none"
+        }
+
+        var filterLC;
+        lcs = ['national','nablus', 'jerusalem', 'gaza', 'ppu', 'hu', 'jinin']
+        setFilter("<%=userLC%>")
+
+         const hiddenUserIn = document.createElement('input');
+        hiddenUserIn.setAttribute('type', 'hidden');
+        hiddenUserIn.setAttribute('name', "username");
+        hiddenUserIn.setAttribute('value',"<%=user%>");
+
+        const hiddenCipherIn = document.createElement('input');
+        hiddenCipherIn.setAttribute('type', 'hidden');
+        hiddenCipherIn.setAttribute('name', "cipher");
+        hiddenCipherIn.setAttribute('value',"<%=cipher%>");
+
+        const hiddenFilterin = document.createElement('input');
+        hiddenFilterin.setAttribute('type', 'hidden');
+        hiddenFilterin.setAttribute('name', "filter");
+
+        const forms = document.forms;
+        
+        for (let i = 0; i <forms.length; i++){
+            forms[i].appendChild(hiddenUserIn);
+            forms[i].appendChild(hiddenCipherIn);
+            forms[i].appendChild(hiddenFilterin);
+        }
+
+        function setFilter(localCommittee){
+            filterLC = localCommittee;
+            lcs.forEach((element) =>{
+                temp = document.getElementById(`${element}Btn`)
+                temp.style.borderStyle = "none"
+                if (element == "national")
+                    temp.style.borderStyle = "solid"
+                temp.style.borderColor = "black"
+                temp.style.scale = 1;
+                temp.style.zIndex = 1;
+            })
+            lcBtn = document.getElementById(`${localCommittee}Btn`)
+            lcBtn.style.borderColor = "rgb(0, 119, 255)"
+            lcBtn.style.borderStyle = "solid"
+            lcBtn.style.scale = 1.2;
+            lcBtn.style.zIndex = 100;
+            lcBtn.style.position = "relative"
+            hiddenFilterin.setAttribute('value', localCommittee)
+            for (let i = 0; i < forms.length; i++){
+                forms[i].appendChild(hiddenFilterin);
+            }
+        }
+
         let curMemNumber = Number("<%=curMemNumber%>");
         const firstYearField = document.getElementById("firstYearField")
         var cur_time = new Date();
@@ -620,22 +660,9 @@
             document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
         }, 1000);
 
-        const hiddenUserIn = document.createElement('input');
-        hiddenUserIn.setAttribute('type', 'hidden');
-        hiddenUserIn.setAttribute('name', "username");
-        hiddenUserIn.setAttribute('value',"<%=user%>");
+       
 
-        const hiddenCipherIn = document.createElement('input');
-        hiddenCipherIn.setAttribute('type', 'hidden');
-        hiddenCipherIn.setAttribute('name', "cipher");
-        hiddenCipherIn.setAttribute('value',"<%=cipher%>");
-
-        const forms = document.forms;
         
-        for (let i = 0; i <forms.length; i++){
-            forms[i].appendChild(hiddenUserIn);
-            forms[i].appendChild(hiddenCipherIn);
-        }
         const user_details = {
             username : "<%=user%>",
             cipher : "<%=cipher%>"
@@ -694,7 +721,7 @@
                 document.getElementById("trainerStatusEditInactive").setAttribute("checked",true)
             }
 
-            document.forms["editMemberForm"][`bl${"<%=blacklistStatus%>"}`].checked=true
+            document.getElementById(`bl${"<%=blacklistStatus%>"}`).setAttribute("checked", true)
 
         }
 

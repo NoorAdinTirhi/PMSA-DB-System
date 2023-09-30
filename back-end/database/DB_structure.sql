@@ -80,7 +80,14 @@ CREATE TABLE members_activities(
 	UniID INT,
     ActivityID INT,
     CertCode INT NOT NULL,
-    Constraint PkeyUIDAID PRIMARY KEY (UniID, ActivityID)
+    CONSTRAINT PkeyUIDAID PRIMARY KEY (UniID, ActivityID),
+    CONSTRAINT FKeyUniIDMemAct FOREIGN KEY (UniID) REFERENCES members(UniID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+    CONSTRAINT FKeyAIDMemAct FOREIGN KEY (ActivityID) REFERENCES activities(ActivityID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+    
 );
 
 CREATE TABLE localActivities(
