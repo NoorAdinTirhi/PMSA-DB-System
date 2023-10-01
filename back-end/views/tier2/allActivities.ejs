@@ -92,11 +92,90 @@
             border-radius: 2%;
             transform: scale(1.01);
         }
+        .newActivity{
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            background: whitesmoke;
+            box-shadow: 2px 2px 0px 2px #4e4e4e;
+            width: 99%;
+            margin: 0.5%;
+            margin-bottom: 1%;
+            height: 98%;
+            z-index: 50;
+        }
+        #newActivityForm > *{
+            padding-bottom: .7%;
+            padding-top: .7%;
+            padding-left:5px;
+            padding-right:5px;
+            border-bottom: solid 1px #545353
+        }
     </style>
 </head>
 
 <body>
     <div class="fullbox">
+        <div class ="newActivity" id="newActivityWindow">
+                <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/">
+                    <h1 id="addActivityTitle"></h1>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Activity Name
+                            </label>
+                            <input required type="text" maxlength="50" style="margin: 0% 12.5%; width: 20%" placeholder="Activity Name" name="activityName">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Activity Description
+                            </label>
+                             <textarea style="margin:0% 5%; width:50%; height:100px; resize:none"type="textarea" rows="4" cols="125" maxlength="500" id="aDescription"  name="activityDescription" placeholder="write a max of 500 character to describe the activity"></textarea>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Proposal Link
+                            </label>
+                            <input required type="url"  style="margin: 0% 12.5%; width: 20%" placeholder="Proposal Link" name="proposalLink">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Report Link
+                            </label>
+                            <input required type="url"  style="margin: 0% 12.5%; width: 20%" placeholder="Report Link" name="reportLink">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Start Date
+                            </label>
+                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="StartDate" name="startDate">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                End Date
+                            </label>
+                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="EndDate" name="endDate">
+                        </div>
+                    </div>
+                
+                    <div style="margin-top: 0.5%;">
+                        <button type="submit">Submit</button>
+                        <button type="button" onclick="addActivityClose()"> Cancel</button>
+                    </div>
+                   
+                </form>
+        </div>
+        
         <div class="line" style=" position: relative; width:max-content; margin-left : 3%">
             <div style="display: inline-block; padding-right : 5% auto">
                 <!-- title -->
@@ -167,7 +246,7 @@
                     <%=allActNum%>
                 </td>
                 <td style="width: 10%;">
-                    <button onclick="addActivity('all')">Add Activity</button>
+                    <button disabled onclick="addActivityWindow('all')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -188,7 +267,7 @@
                     <%=genActNum%>
                 </td>
                 <td style="width: 10%;">
-                    <button onclick="addActivity('general')">Add Activity</button>
+                    <button onclick="addActivityWindow('general')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -209,7 +288,7 @@
                     <%=CBActNum%>
                 </td>
                 <td style="width: 10%;">
-                    <button onclick="addActivity('cb')">Add Activity</button>
+                    <button onclick="addActivityWindow('cb')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -231,7 +310,7 @@
                     <%=scoreActNum%>
                 </td>
                 <td style="width: 10%;">
-                    <button onclick="addActivity('score')">Add Activity</button>
+                    <button onclick="addActivityWindow('score')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -252,7 +331,7 @@
                     <%=scopeActNum%>
                 </td>
                 <td style="width: 10%;">
-                    <button onclick="addActivity('scope')">Add Activity</button>
+                    <button onclick="addActivityWindow('scope')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -273,7 +352,7 @@
                     <%=scomeActNum%>
                 </td>
                 <td style="width: 10%;">
-                    <button onclick="addActivity('scome')">Add Activity</button>
+                    <button onclick="addActivityWindow('scome')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -294,7 +373,7 @@
                     <%=scorpActNum%>
                 </td>
                 <td style="width: 10%;">
-                    <button onclick="addActivity('scorp')">Add Activity</button>
+                    <button onclick="addActivityWindow('scorp')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -315,7 +394,7 @@
                     <%=scoraActNum%>
                 </td>
                 <td style="width: 10%;">
-                    <button onclick="addActivity('scora')">Add Activity</button>
+                    <button onclick="addActivityWindow('scora')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -336,7 +415,7 @@
                     <%=scophActNum%>
                 </td>
                 <td style="width: 10%;">
-                    <button onclick="addActivity('scoph')">Add Activity</button>
+                    <button onclick="addActivityWindow('scoph')">Add Activity</button>
                 </td>
                 <td>
                     <form method="post" action="/selectAct" style="width:100%">
@@ -367,6 +446,19 @@
         const hiddenFilterin = document.createElement('input');
         hiddenFilterin.setAttribute('type', 'hidden');
         hiddenFilterin.setAttribute('name', "filter");
+
+        const hiddenCommitteein = document.createElement('input');
+        hiddenCommitteein.setAttribute('id', "hiddenCommitteein")
+        hiddenCommitteein.setAttribute('type', 'hidden');
+        hiddenCommitteein.setAttribute('name', "filter");
+        
+        const hiddenlocalCommitteein = document.createElement('input');
+        hiddenlocalCommitteein.setAttribute('id', "hiddenlocalCommitteein")
+        hiddenlocalCommitteein.setAttribute('type', 'hidden')
+        hiddenlocalCommitteein.setAttribute('name', 'localCommittee')
+        hiddenlocalCommitteein.setAttribute('value', "<%=userLC%>")
+
+        const newActivityForm = document.getElementById("newActivityForm");
 
         const forms = document.forms;
         
@@ -412,6 +504,36 @@
             lcBtn.style.zIndex = 100;
             lcBtn.style.position = "relative"
         }
+
+        
+
+        function addActivityWindow(committee){
+            let properString;
+            if(committee == "general"){
+                properString = committee.charAt(0).toUpperCase() + committee.slice(1);
+            }else{
+                properString = committee.toUpperCase();
+            }
+
+            document.getElementById("addActivityTitle").innerHTML = `Add ${properString} Activity`
+            document.getElementById("newActivityWindow").style.display = "flex"
+
+            hiddenCommitteein.setAttribute('value', properString);
+
+            document.getElementById("newActivityForm").appendChild(hiddenCommitteein);  
+            document.getElementById("newActivityForm").appendChild(hiddenlocalCommitteein);
+        }
+
+        function addActivityClose(){
+            document.getElementById("newActivityWindow").style.display = "none"
+            document.getElementById("newActivityForm").removeChild(hiddenCommitteein)
+        }
+
+        document.getElementById("newActivityForm").addEventListener('submit', (event) => {
+            event.preventDefault();
+            console.log(event);
+        })
+
     </script>
 
 </body>

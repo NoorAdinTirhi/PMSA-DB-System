@@ -118,11 +118,121 @@
             flex-direction: row;
             width: 100%;
         }
+        .newActivity{
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            background: whitesmoke;
+            box-shadow: 2px 2px 0px 2px #4e4e4e;
+            width: 99%;
+            margin: 0.5%;
+            margin-bottom: 1%;
+            height: 98%;
+            z-index: 50;
+        }
+        #newActivityForm > *{
+            padding-bottom: .7%;
+            padding-top: .7%;
+            padding-left:5px;
+            padding-right:5px;
+            border-bottom: solid 1px #545353
+        }
+        .tagsContainer{
+            display:flex;
+            flex-direction:row;
+            height:fit-content
+        }
+        .tagContainer{
+            display:flex;
+            border-style:solid;
+            border-width:1px;
+        }
+        .tagButton{
+            height: fit-content;
+             border-style:none;
+              background-color:transparent
+        }
     </style>
 </head>
 
 <body>
     <div class="fullbox" style="justify-content: start;">
+        <div class ="newActivity" id="newActivityWindow">
+                <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/">
+                    <h1 id="addActivityTitle"></h1>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Activity Name
+                            </label>
+                            <input required type="text" maxlength="50" style="margin: 0% 12.5%; width: 20%" placeholder="Activity Name" name="activityName" value="<%=activityName%>">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Activity Description
+                            </label>
+                             <textarea style="margin:0% 5%; width:50%; height:100px; resize:none"type="textarea" rows="4" cols="125" maxlength="500" id="aDescription"  name="activityDescription" placeholder="write a max of 500 character to describe the activity"><%=activityDescription%></textarea>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Proposal Link
+                            </label>
+                            <input required type="url"  style="margin: 0% 12.5%; width: 20%" placeholder="Proposal Link" name="proposalLink" value="<%=proposalLink%>">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Report Link
+                            </label>
+                            <input required type="url"  style="margin: 0% 12.5%; width: 20%" placeholder="Report Link" name="reportLink" value="<%=reportLink%>">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Start Date
+                            </label>
+                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="StartDate" name="startDate" value="<%=startDate%>">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                End Date
+                            </label>
+                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="EndDate" name="endDate" value="<%=endDate%>">
+                        </div>
+                    </div>
+                    <div id = "participatingCommittees" style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            
+                            <label style="margin-right:5%; width:10%">
+                                Participating Local Committees
+                            </label>
+                            <select id="lcSelect" style="width:7%; margin-right:10%"onchange="createTag(this)">
+                                <option selected> --none-- </option>
+                            </select>
+                            <div id="participatingLcs" class="tagsContainer">
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                
+                    <div style="margin-top: 0.5%;">
+                        <button type="submit">Submit</button>
+                        <button type="button" onclick="addActivityClose()"> Cancel</button>
+                    </div>
+                   
+                </form>
+        </div>
+
         <div style="display: block; height: max-content; width: fit-content; text-align: center; margin: 0% 2%; overflow: hidden; justify-self: left;">
             <div class="line" style="position: relative; width:100%">
                 <div style="display: inline-block; padding-right : 5% auto">
@@ -240,12 +350,15 @@
                 </div>
             </div>
             <div id=rightbox class="sidebox">
-                <div style="width:94%;display: inline-block; padding:1%">
-                    <button class="participantBtn" style="float:left" onclick="addMemPopUp()">
+                <div style="width:94%;display: flex; flex-direction:row ; padding:1%">
+                    <button class="participantBtn" style="width:25%; margin-right:7.5%" onclick="addMemPopUp()">
                         Add Participants
                     </button>
-                    <button class="participantBtn" style="float:right" onclick="deleteMemPopUp()">
+                    <button class="participantBtn" style="width:25%; margin-right:7.5%" onclick="deleteMemPopUp()">
                         Delete Participants
+                    </button>
+                    <button class="participantBtn" style="width:25%; border-color: rgb(0, 119, 255); color: rgb(0, 119, 255)" onclick="addActivityWindow()">
+                        Edit Activity
                     </button>
                 </div>
                 <div style="display: flex; flex-direction: row; border-style: solid; width: 89%; padding:5% 5% 2% 2%">
@@ -453,6 +566,77 @@
         hiddenCipherIn.setAttribute('name', "cipher");
         hiddenCipherIn.setAttribute('value',"<%=cipher%>");
 
+        const tagList = []
+        const allLCs = ['Jerusalem', 'Nablus', 'Jinin', 'PPU', 'HU', 'Gaza', 'CB', 'General']
+        allLCs.forEach((element) =>{
+            if (tagList.includes(element)){
+                createTag(element)
+            }else{
+                removeTag(element)
+            }
+        })
+        //const listString = <%- JSON.stringify(participatingCommittees)%>;
+        //TODO process the array when you render it
+
+        function createTag(LC){
+            LCname = LC.value;
+            if (LCname != "--none--"){
+                console.log("selected " + LCname)
+            }
+            let node = document.getElementById(`${LCname}opt`)
+            if (typeof(node) != 'undefined' && node != null)
+            {
+                node.remove();
+            }
+            
+            lcTag = document.createElement("div")
+            lcTag.classList.add('tagContainer')
+            lcTag.setAttribute('id', `${LCname}tag`)
+
+            lcButton=document.createElement("button")
+            lcButton.classList.add('tagButton')
+            lcButton.setAttribute("type", "button")
+            lcButton.setAttribute("value", LCname)
+            lcButton.setAttribute("onClick","removeTag(this.value)")
+            
+            lcXimg = document.createElement("img")
+            lcXimg.setAttribute("width", "10px")
+            lcXimg.setAttribute("height", "10px")
+            lcXimg.setAttribute("src", "../../images/x_transparent.jpeg")
+            
+            lcButton.appendChild(lcXimg)
+
+            lclabel = document.createElement("label")
+            lclabel.innerHTML = LCname[0].toUpperCase() + LCname.slice(1)
+
+            lcTag.appendChild(lcButton)
+            lcTag.appendChild(lclabel)
+
+            document.getElementById("participatingLcs").appendChild(lcTag)
+
+
+        }
+        function removeTag(src){
+            console.log(src)
+            let node = document.getElementById(`${src}tag`);
+            if (typeof(node) != 'undefined' && node != null)
+            {
+                node.remove();
+            }
+            let option = document.createElement("option")
+            option.id = `${src}opt`
+            option.text = src
+            option.value = src
+            option.onselect = "createTag(value)"
+            document.getElementById("lcSelect").add(option)
+        }
+
+
+
+        if ("<%=userLC%>" == "national"){
+
+        }
+
         const forms = document.forms;
         
         for (let i = 0; i <forms.length; i++){
@@ -512,6 +696,24 @@
               checkboxes[i].checked = source.checked;
             }
         }
+
+        function addActivityWindow(){
+            let properString;
+            committee="<%=committee%>"
+            if( committee == "General"){
+                properString = committee.charAt(0).toUpperCase() + committee.slice(1);
+            }else{
+                properString = committee.toUpperCase();
+            }
+            document.getElementById("addActivityTitle").innerHTML = `Add ${properString} Activity`
+
+            document.getElementById("newActivityWindow").style.display = "flex"
+        }
+
+        function addActivityClose(){
+            document.getElementById("newActivityWindow").style.display = "none"
+        }
+
 
     </script>
 </body>
