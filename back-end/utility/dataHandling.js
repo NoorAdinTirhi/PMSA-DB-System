@@ -14,8 +14,12 @@ function mainPageInformer(username, con,  pageData, callback){
                 results.forEach(row =>{
                     varNameLTG = `${(row.Locality == "National") ? "nat" : row.Locality}${row.Position}LTG`
                     varNameLC = `${(row.Locality == "National") ? "nat" : row.Locality}${row.Position}LTC`
+                    varNameStartDate = `${row.Locality}StartDate`
                     pageData[varNameLTG] = row.LastActionTime;
-                    pageData[varNameLC] = row.LastChange
+                    pageData[varNameLC] = row.LastChange;
+                    pageData[varNameStartDate] = row.StartDate;
+                    if (row.StartDate == null)
+                        pageData[varNameStartDate] = "unassigned"
                     if (row.LastAction == null)
                         pageData[varNameLC] = "unassigned"
                     if (row.LastActionTime == null)
