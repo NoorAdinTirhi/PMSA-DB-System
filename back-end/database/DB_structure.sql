@@ -6,13 +6,18 @@ CREATE DATABASE PMSA_DB;
 
 USE PMSA_DB; 
 
+INSERT INTO Users  (Username, Hmac, Hkey, Position, Locality) VALUES ("noor", "f5a6e601b62e0c69348a472afaf3459dbf168a6625305c9005446e4d4ec24bb8", "234,195,136,89,245,10,69,32,116,255,132,207,162,209,119,220,113,127,119,245,219,25,94,194,191,192,86,63,24,190,201,175", "SECGEN", "National");
+
+
 
 CREATE TABLE Users(
 	Username VARCHAR(50) PRIMARY KEY,
     Hmac VARCHAR(64) NOT NULL,
-    Hkey BIGINT NOT NULL,
-    Position ENUM('SECGEN', 'CBDirector') NOT NULL,
-    Locality ENUM('National','Nablus', 'Jerusalem', 'Gaza', 'HU', 'PPU', 'Jinin') NOT NULL
+    Hkey VARCHAR(128) NOT NULL,
+    Position ENUM('Secgen', 'CBD') NOT NULL,
+    Locality ENUM('National','Nablus', 'Jerusalem', 'Gaza', 'HU', 'PPU', 'Jinin') NOT NULL,
+    LastAction VARCHAR(500),
+    LastActionTime DATE
 );
 
 CREATE TABLE LocalCommittees

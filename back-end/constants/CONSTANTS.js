@@ -6,8 +6,10 @@ module.exports = {
     },
 
     mainPage_varialbes: {
-        privelege: "secgen",
-        user: "",
+        position: "temp",
+        userLC: "temp",
+        cipher:" ",
+        user : "",
         natSecgenLTG: "temp",
         natSecgenLC: "temp",
         NablusSecgenLTG: "temp",

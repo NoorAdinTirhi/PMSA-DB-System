@@ -394,7 +394,6 @@
         </div>
 
         <script>
-            filterSelection("<%=privelege%>")
             var cur_time = new Date();
             document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
             document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
@@ -418,6 +417,11 @@
             hiddenUserIn.setAttribute('name', "username");
             hiddenUserIn.setAttribute('value',"<%=user%>");
 
+            const hiddenLCIn = document.createElement('input');
+            hiddenLCIn.setAttribute('type', 'hidden');
+            hiddenLCIn.setAttribute('name', "cipher");
+            hiddenLCIn.setAttribute('value',"<%=userLC%>");
+
             const hiddenCipherIn = document.createElement('input');
             hiddenCipherIn.setAttribute('type', 'hidden');
             hiddenCipherIn.setAttribute('name', "cipher");
@@ -428,6 +432,7 @@
             for (let i = 0; i <forms.length; i++){
                 forms[i].appendChild(hiddenUserIn);
                 forms[i].appendChild(hiddenCipherIn);
+                forms[i].appendChild(hiddenLCIn);
             }
             
 

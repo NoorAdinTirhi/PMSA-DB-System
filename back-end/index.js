@@ -3,13 +3,14 @@ const express = require('express')
 const path = require('path')
 const bodyparaer = require('body-parser')
 const fs = require('fs')
-const audit = require('express-requests-logger')
+// const audit = require('express-requests-logger')
 
-const { authUser } = require('./authentication/auth')
+const { stat, authUser, registerSession } = require('./authentication/auth')
 const { mainPage_varialbes, activityPage_variables } = require('./constants/CONSTANTS')
+const {mainPageInformer} = require('./utility/dataHandling')
 
 
-let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
+// let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
 
 
 app = express()
@@ -21,7 +22,7 @@ app.use(bodyparaer.urlencoded({
 }))
 
 app.use(express.json())
-app.use(audit())
+// app.use(audit())
 
 var con;
 //TODO add ajax to the ejs files
@@ -37,8 +38,29 @@ var con;
 //TODO implement user registration
 
 
-// /////////////////////////
-// login page stuff (GET the login page and well as POST the username and password)
+//Connect to Database and listen on port 8081
+app.listen(8081, function(err) {
+    if (err) throw err
+    con = mysql.createConnection({
+        host: "localhost",
+        user: 'root',
+        password: 'fur124365',
+        database: 'PMSA_DB',
+    })
+    //TODO: check that user is in databse
+    con.connect(function(err) {
+        if (err) {
+            throw err;
+        } else {
+            console.log("Connected")
+        }
+    })
+
+    console.log("server is listening at 8081")
+    console.log(" ")
+})
+
+//send the login page to all that require it
 app.get('/login', function(req, res) {
     //HTML Files Path
     const options = {
@@ -49,28 +71,41 @@ app.get('/login', function(req, res) {
     res.render(fileName, { login_string: "Please enter Username and password" })
 })
 
+// check login credential and register the start of the session
 app.post("/login", function(req, res) {
+    const fileName = 'login'
     var username = req.body.username
     var password = req.body.password
-    console.log(`***\nusername : ${username}\n password : ${password}\n****`)
-        //try to login to establish mysql connection
-    con = mysql.createConnection({
-        host: "localhost",
-        user: 'root',
-        password: 'fur124365',
-    })
-    //TODO: check that user is in databse
-    con.connect(function(err) {
-        if (err) {
-            res.render("login", { login_string: "login unsuccesful" })
-        } else {
-            console.log("Connected")
-                // TODO: figure out what's the privelege of the user and assign it
-            mainPage_varialbes.user = username
-            res.render('main', mainPage_varialbes)
+    
+    authUser(username, password, con, function(stat){
+        if(stat == 0){
+        registerSession(username, con, function (regStat){
+            if (regStat == 1){
+                res.status(500);
+                res.render(fileName, {login_string : "Internal Server Error"})
+            }else{
+                mainPageInformer(username, con, mainPage_varialbes, function(data){
+                    console.log(data)
+                    res.render("main", data);
+                })
+            }
+        })
+        }else if (stat == 1){
+            console.log(`${stat}`)
+            res.render(fileName, {login_string : "You have entered the wrong password"})
+        }else if (stat == 2){
+            console.log(`${stat}`)
+            res.render(fileName, {login_string : "User not registered"})
+        }else{
+            console.log(`${stat}`)
+            res.render(fileName, {login_string : "Internal Server Error"})
         }
     })
+    
+    
 })
+
+
 
 // /////////////////////////
 // Main page GET processing
@@ -121,10 +156,4 @@ app.get("/scripts/*", function(req, res) {
 
 
     res.sendFile(fileName, options)
-})
-
-
-app.listen(8081, function(err) {
-    if (err) throw err
-    console.log("server is listening at 8081")
 })
