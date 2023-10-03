@@ -18,10 +18,6 @@ CREATE TABLE Users(
     StartDate DATE
 );
 
-DELETE FROM Users WHERE Username = "noor"
-INSERT INTO Users  (Username, Hmac, Hkey, Position, Locality, StartDate) VALUES ("noor", "f5a6e601b62e0c69348a472afaf3459dbf168a6625305c9005446e4d4ec24bb8", "234,195,136,89,245,10,69,32,116,255,132,207,162,209,119,220,113,127,119,245,219,25,94,194,191,192,86,63,24,190,201,175", "SECGEN", "National", '2023-9-17');
-
-
 CREATE TABLE LocalCommittees
 (
 	city ENUM('Nablus', 'Jerusalem', 'Gaza', 'HU', 'PPU', 'Jinin') PRIMARY KEY,
@@ -131,5 +127,17 @@ CREATE TABLE standingCommittees(
     ComitteeName varchar(50) NOT NULL,
     ActStatus ENUM ('Active', 'Inactive') NOT NULL
 );
+
+ALTER TABLE LocalCommittees RENAME LC;
+ALTER TABLE members RENAME M;
+ALTER TABLE memeber_trainers RENAME Mt;
+ALTER TABLE memberBlacklist RENAME MBl;
+ALTER TABLE activities RENAME A;
+ALTER TABLE members_activities RENAME M_A;
+ALTER TABLE localActivities RENAME La;
+ALTER TABLE nationalActivities RENAME Na;
+ALTER TABLE nationalActivities_localCommittees RENAME NaLC;
+ALTER TABLE standingCommittees RENAME SC;
+
 
 -- create Activities
