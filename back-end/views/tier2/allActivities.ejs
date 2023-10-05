@@ -469,11 +469,11 @@
 
         var cur_time = new Date();
         document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
-        document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+        document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()+1<10)?("0"+cur_time.getMonth()+1):cur_time.getMonth()+1}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
         var intervalId = setInterval(function() {
             var cur_time = new Date();
             document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
-            document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()<10)?("0"+cur_time.getMonth()):cur_time.getMonth()}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+            document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()+1<10)?("0"+cur_time.getMonth()+1):cur_time.getMonth()+1}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
         }, 1000);
         
 

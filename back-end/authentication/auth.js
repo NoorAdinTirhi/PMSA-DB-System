@@ -3,6 +3,25 @@ const crypto = require('node:crypto')
 
 var stat;
 
+//check if the request is made by a user
+function verifyUser(username,cipher,con, callback){
+    con.query(`SELECT * FROM Users WHERE Username = "${username}"`, function(err, result){
+        if (err){
+            return callback(3)
+        }
+
+        if (result.length > 0){
+            if (result[0].Hmac == cipher){
+                return callback(0)
+            }else{
+                return callback(1)
+            }
+        } else{
+            return callback(2)
+        }
+    })
+}
+
 // check if user is registered and validate the password useing hmac sha3-256
 function authUser(username,pwd, con, callback) {
     con.query(`SELECT * FROM Users WHERE Username = "${username}"`, function(err, result) {
@@ -37,13 +56,14 @@ function authUser(username,pwd, con, callback) {
 }
 
 //register a new Hmac for the user to be used throughout this session
-function registerSession(username, con, callback){
+function registerSession(username, pwd, con, callback){
     const secret = new Uint8Array(32);
     crypto.getRandomValues(secret);
     const secretString = String(secret)
-    const hashString = String(crypto.createHmac('sha3-256', secret).update("noor"+"fur124365").digest('hex'))
-    let stat = 0;
-    con.query(`UPDATE Users Set Hkey = '${secretString}', Hmac = '${hashString}' WHERE Username = '${username}'`, function(err, result, fields) {
+    const hashString = String(crypto.createHmac('sha3-256', secret).update(username+pwd).digest('hex'))
+    const current_time = new Date();
+    console.log(`'${current_time.getFullYear()}-${current_time.getMonth()+1}-${current_time.getDay()+1}'`)
+    con.query(`UPDATE Users Set Hkey = '${secretString}', Hmac = '${hashString}', LastActionTime = '${current_time.getFullYear()}-${current_time.getMonth()+1}-${current_time.getDay()+1}' WHERE Username = '${username}'`, function(err, result, fields) {
         if (err){
             //something went wrong
             return callback(1);
@@ -58,5 +78,6 @@ function registerSession(username, con, callback){
 module.exports = {
     stat,
     authUser,
-    registerSession
+    registerSession,
+    verifyUser
 }

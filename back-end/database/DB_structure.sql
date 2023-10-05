@@ -12,15 +12,17 @@ CREATE TABLE Users(
     Hmac VARCHAR(64) NOT NULL,
     Hkey VARCHAR(128) NOT NULL,
     Position ENUM('Secgen', 'CBD') NOT NULL,
-    Locality ENUM('National','Nablus', 'Jerusalem', 'Gaza', 'HU', 'PPU', 'Jinin') NOT NULL,
+    
+    Locality ENUM('national','nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') NOT NULL,
     LastAction VARCHAR(500),
     LastActionTime DATE,
     StartDate DATE
 );
 
+-- INSERT INTO Users (Username, Hmac, Hkey,Position, Locality) VALUES ('noor', '14b95c8a801504ac2bd1aeddcbdd74adbe91e951db1f435355538be6cd9391fe', '28,54,23,16,252,42,160,50,245,169,9,88,221,113,238,156,243,238,109,5,55,207,102,189,229,88,102,125,242,164,1,57', 'Secgen', 'National');
 CREATE TABLE LocalCommittees
 (
-	city ENUM('Nablus', 'Jerusalem', 'Gaza', 'HU', 'PPU', 'Jinin') PRIMARY KEY,
+	city ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') PRIMARY KEY,
     membershipStatus ENUM('Full','Canditate') NOT NULL
     -- will want to know number of members
     -- will want to know number of activities
@@ -29,22 +31,22 @@ CREATE TABLE LocalCommittees
 
 
 CREATE TABLE members(
-	UniID INT PRIMARY KEY,
-    FirstName VARCHAR(50) NOT NULL,
-    FatherName VARCHAR(50) NOT NULL,
-    GFatherName VARCHAR(50) NOT NULL,
-    FamilyName VARCHAR(50) NOT NULL,
-	AFirstName VARCHAR(50) NOT NULL,
-    AFatherName VARCHAR(50) NOT NULL,
-    AGFatherName VARCHAR(50) NOT NULl,
-    AFamilyName VARCHAR(50) NOT NULL,
-    Gender Enum('male', 'female') NOT NULL,
-    PhoneNo VARCHAR(15) NOT NULL,
-    E_mail VARCHAR(320) NOT NULL,
-    Facebook_Link VARCHAR(75) NOT NULL,
-    UniStartYear int NOT NULL,
-    MembershipStatus ENUM('Active', 'Inactive') NOT NULL,
-    LC ENUM('Nablus', 'Jerusalem', 'Gaza', 'HU', 'PPU', 'Jinin') NOT NULL,
+	UniID INT           PRIMARY KEY,
+    FirstName           VARCHAR(50) NOT NULL,
+    FatherName          VARCHAR(50) NOT NULL,
+    GFatherName         VARCHAR(50) NOT NULL,
+    FamilyName          VARCHAR(50) NOT NULL,
+	AFirstName          VARCHAR(50) NOT NULL,
+    AFatherName         VARCHAR(50) NOT NULL,
+    AGFatherName        VARCHAR(50) NOT NULl,
+    AFamilyName         VARCHAR(50) NOT NULL,
+    Gender              Enum('male', 'female') NOT NULL,
+    PhoneNo             VARCHAR(15) NOT NULL,
+    E_mail              VARCHAR(320) NOT NULL,
+    Facebook_Link       VARCHAR(75) NOT NULL,
+    UniStartYear        int NOT NULL,
+    MembershipStatus    ENUM('Active', 'Inactive') NOT NULL,
+    LC                  ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') NOT NULL,
     CONSTRAINT FkeyLC FOREIGN KEY (LC) REFERENCES LocalCommittees (city) 
     ON UPDATE CASCADE,
     CONSTRAINT chk_year CHECK ( UniStartYear > 1960 )
@@ -63,6 +65,7 @@ CREATE TABLE memeber_trainers (
 
 CREATE TABLE memberBlacklist(
 	UniID INT PRIMARY KEY,
+    Status ENUM ("red, orange, yellow, blue, green, exchange") NOT NULL,
     CONSTRAINT FkeyUniID1 FOREIGN KEY (UniID) REFERENCES members(UniID)
     ON DELETE CASCADE
     ON UPDATE CASCADE
@@ -95,7 +98,7 @@ CREATE TABLE members_activities(
 
 CREATE TABLE localActivities(
 	ActivityID INT PRIMARY KEY,
-    LC ENUM('Nablus', 'Jerusalem', 'Gaza', 'HU', 'PPU', 'Jinin') NOT NULL,
+    LC ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') NOT NULL,
     CONSTRAINT FkeyActivityID FOREIGN KEY (ActivityID) REFERENCES activities(ActivityID)
     ON DELETE CASCADE
     ON UPDATE CASCADE, 
@@ -112,7 +115,7 @@ CREATE TABLE nationalActivities(
 
 CREATE TABLE nationalActivities_localCommittees(
 	ActivityID INT NOT NULL,
-	LC ENUM('Nablus', 'Jerusalem', 'Gaza', 'HU', 'PPU', 'Jinin') NOT NULL,
+	LC ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') NOT NULL,
     CONSTRAINT PkeyAIDLC PRIMARY KEY (ActivityID, LC),
     CONSTRAINT FkeyActivityIDRel FOREIGN KEY (ActivityID) REFERENCES nationalActivities (ActivityID)
     ON DELETE CASCADE
@@ -138,6 +141,10 @@ ALTER TABLE localActivities RENAME La;
 ALTER TABLE nationalActivities RENAME Na;
 ALTER TABLE nationalActivities_localCommittees RENAME NaLC;
 ALTER TABLE standingCommittees RENAME SC;
+
+SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;
+
+UPDATE M  SET MembershipStatus = 'Inactive' WHERE LC = 'national';
 
 
 -- create Activities
