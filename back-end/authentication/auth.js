@@ -62,7 +62,6 @@ function registerSession(username, pwd, con, callback){
     const secretString = String(secret)
     const hashString = String(crypto.createHmac('sha3-256', secret).update(username+pwd).digest('hex'))
     const current_time = new Date();
-    console.log(`'${current_time.getFullYear()}-${current_time.getMonth()+1}-${current_time.getDay()+1}'`)
     con.query(`UPDATE Users Set Hkey = '${secretString}', Hmac = '${hashString}', LastActionTime = '${current_time.getFullYear()}-${current_time.getMonth()+1}-${current_time.getDay()+1}' WHERE Username = '${username}'`, function(err, result, fields) {
         if (err){
             //something went wrong

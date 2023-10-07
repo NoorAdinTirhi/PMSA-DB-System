@@ -230,6 +230,7 @@
                     <form method="post" action="/allMembers">
                         <input type="hidden" name="username" value="<%=user%>">
                         <input type="hidden" name="cipher" value="<%=cipher%>">
+                        <input type="hidden" name="localCommittee" value="<%=userLC%>">
                         <button class="allButoon zoom secgen" type="submit">
                         All Members
                     </button>
@@ -363,6 +364,30 @@
         </div>
 
         <script>
+
+            const hiddenUserIn = document.createElement('input');
+            hiddenUserIn.setAttribute('type', 'hidden');
+            hiddenUserIn.setAttribute('name', "username");
+            hiddenUserIn.setAttribute('value',"<%=user%>");
+
+            const hiddenLCIn = document.createElement('input');
+            hiddenLCIn.setAttribute('type', 'hidden');
+            hiddenLCIn.setAttribute('name', "localCommittee");
+            hiddenLCIn.setAttribute('value',"<%=userLC%>");
+
+            const hiddenCipherIn = document.createElement('input');
+            hiddenCipherIn.setAttribute('type', 'hidden');
+            hiddenCipherIn.setAttribute('name', "cipher");
+            hiddenCipherIn.setAttribute('value',"<%=cipher%>");
+
+            const forms = document.forms;
+            console.log(forms)
+            for (let i = 0; i <forms.length; i++){
+                forms[i].appendChild(hiddenUserIn);
+                forms[i].appendChild(hiddenCipherIn);
+                forms[i].appendChild(hiddenLCIn);
+            }
+
             
             var cur_time = new Date();
             document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
@@ -382,28 +407,7 @@
                 }
             }
 
-            const hiddenUserIn = document.createElement('input');
-            hiddenUserIn.setAttribute('type', 'hidden');
-            hiddenUserIn.setAttribute('name', "username");
-            hiddenUserIn.setAttribute('value',"<%=user%>");
-
-            const hiddenLCIn = document.createElement('input');
-            hiddenLCIn.setAttribute('type', 'hidden');
-            hiddenLCIn.setAttribute('name', "localCommittee");
-            hiddenLCIn.setAttribute('value',"<%=userLC%>");
-
-            const hiddenCipherIn = document.createElement('input');
-            hiddenCipherIn.setAttribute('type', 'hidden');
-            hiddenCipherIn.setAttribute('name', "cipher");
-            hiddenCipherIn.setAttribute('value',"<%=cipher%>");
-
-            const forms = document.forms;
             
-            for (let i = 0; i <forms.length; i++){
-                forms[i].appendChild(hiddenUserIn);
-                forms[i].appendChild(hiddenCipherIn);
-                forms[i].appendChild(hiddenLCIn);
-            }
             
             function formConfirm(form_id){
                 myForm = document.getElementById(form_id)

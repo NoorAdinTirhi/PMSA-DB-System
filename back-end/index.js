@@ -90,13 +90,10 @@ app.post("/login", function(req, res) {
             }
         })
         }else if (stat == 1){
-            console.log(`${stat}`)
             res.render(fileName, {login_string : "You have entered the wrong password"})
         }else if (stat == 2){
-            console.log(`${stat}`)
             res.render(fileName, {login_string : "User not registered"})
         }else{
-            console.log(`${stat}`)
             res.render(fileName, {login_string : "Internal Server Error"})
         }
     })
@@ -156,7 +153,7 @@ app.post("/allMembers", function(req, res) {
                 verifyUser(req.body.username, req.body.cipher, con, function(flag){
                     if (flag == 0){
                         //succesful, attempt to get information and render the allMembers page
-                        allMembersInformer(req.body.username, allMembers_variables, req.body.userLC, con, function(flag, data){
+                        allMembersInformer(req.body.username, allMembers_variables, req.body.localCommittee, con, function(flag, data){
                             if (flag == 3){
                                 res.status(500)
                                 res.send("Internal Server Error, Database issue")
@@ -182,7 +179,6 @@ app.post("/allMembers", function(req, res) {
                 res.send("Your request does not include a cipher, please login and use the website as intended")
             }
         }else{
-            console.log(req.body)
             res.render("login", {login_string : "you need to login to make a request"})
         }
     }else{

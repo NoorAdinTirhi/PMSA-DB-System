@@ -543,6 +543,14 @@
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
                     <div style="width: 33%; text-align: center; font-size: 20px;">
+                        Facebook
+                    </div>
+                    <a id="firstYear"style=" width: 67%; text-align: center; font-size: 20px;" href="https://www.facebook.com/nooraldeen.tirhi/" target="_blank">
+                        <%=facebook%>
+                    </a>
+                </div>
+                <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
+                    <div style="width: 33%; text-align: center; font-size: 20px;">
                         Freshmen Year
                     </div>
                     <div id="firstYear"style=" width: 67%; text-align: center; font-size: 20px;">
@@ -590,26 +598,26 @@
                     </div>
                 </div>
             </div>
-            <div style="max-height: 93%;display: flex; flex-direction: row; border-style: solid;">
-                <div style="float:left ;margin-left: 2%; margin-right: 2%; max-width: 40%; max-height: 80%;">
+            <div style="max-height: 93%;display: flex; flex-direction: row; width: 500px; border-style: solid;">
+                <div style="float:left ;margin-left: 2%; margin-right: 2%; ; width: 45%; max-height: 80%;">
                     <h1>National</h1>
                     <ol style="max-height: calc(15*20px); overflow-y: scroll;">
                         <% nationalActivities.forEach( element=> { %>
                             <li>
-                                <%= element.actName %>
+                                <%= element %>
                             </li>
                             <% }) %>
                     </ol>
 
                 </div>
-                <div style="width:10%; background-color:  #4e4e4e;">
+                <div style="width:10%; background-color:  #4e4e4e; width:10%">
                 </div>
-                <div style="float:left ;margin-left: 2%; margin-right: 2%; max-width: 40%; max-height: 80%;">
+                <div style="float:left ;margin-left: 2%; margin-right: 2%; width: 40%; max-height: 80%;">
                     <h1>Local</h1>
                     <ol style="max-height: calc(15*20px); overflow-y: scroll;">
                         <% localActivities.forEach( element=> { %>
                             <li>
-                                <%= element.actName %>
+                                <%= element %>
                             </li>
                             <% }) %>
                     </ol>
