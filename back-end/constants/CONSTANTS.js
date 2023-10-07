@@ -37,6 +37,10 @@ module.exports = {
         JeninStartDate: "temp"
     },
     allMembers_variables :{
+        position            :"temp",
+        userLC              :"temp",
+        cipher              : "",
+        user                : "",
         engFname            : "",
         engFather           : "",
         engGfather          : "",
@@ -55,9 +59,10 @@ module.exports = {
         memStatus           : "",
         trainerStatus       : "",
         blacklistStatus     : "",
+        blacklistReason     : "",
         nationalActivities  : [],
         localActivities     : [],
-        matchingMemeber     : [],
+        curMemNumber        : "",
     },
 
     activityPage_variables: {

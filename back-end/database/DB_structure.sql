@@ -20,6 +20,7 @@ CREATE TABLE Users(
 );
 
 -- INSERT INTO Users (Username, Hmac, Hkey,Position, Locality) VALUES ('noor', '14b95c8a801504ac2bd1aeddcbdd74adbe91e951db1f435355538be6cd9391fe', '28,54,23,16,252,42,160,50,245,169,9,88,221,113,238,156,243,238,109,5,55,207,102,189,229,88,102,125,242,164,1,57', 'Secgen', 'National');
+
 CREATE TABLE LocalCommittees
 (
 	city ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') PRIMARY KEY,
@@ -66,6 +67,7 @@ CREATE TABLE memeber_trainers (
 CREATE TABLE memberBlacklist(
 	UniID INT PRIMARY KEY,
     Status ENUM ("red, orange, yellow, blue, green, exchange") NOT NULL,
+    Reason VARCHAR(50)  NOT NULL,
     CONSTRAINT FkeyUniID1 FOREIGN KEY (UniID) REFERENCES members(UniID)
     ON DELETE CASCADE
     ON UPDATE CASCADE
@@ -142,9 +144,9 @@ ALTER TABLE nationalActivities RENAME Na;
 ALTER TABLE nationalActivities_localCommittees RENAME NaLC;
 ALTER TABLE standingCommittees RENAME SC;
 
-SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;
+-- SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;
 
-UPDATE M  SET MembershipStatus = 'Inactive' WHERE LC = 'national';
+-- UPDATE M  SET MembershipStatus = 'Inactive' WHERE LC = 'national';
 
 
 -- create Activities

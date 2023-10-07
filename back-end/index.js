@@ -156,7 +156,7 @@ app.post("/allMembers", function(req, res) {
                 verifyUser(req.body.username, req.body.cipher, con, function(flag){
                     if (flag == 0){
                         //succesful, attempt to get information and render the allMembers page
-                        allMembersInformer(allMembers_variables, req.body.userLC, con, function(flag, data){
+                        allMembersInformer(req.body.username, allMembers_variables, req.body.userLC, con, function(flag, data){
                             if (flag == 3){
                                 res.status(500)
                                 res.send("Internal Server Error, Database issue")

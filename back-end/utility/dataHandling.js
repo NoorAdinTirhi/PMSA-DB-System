@@ -65,7 +65,7 @@ function resetLC(LC, con, callback){
     })
 }
 
-function allMembersInformer(pageData,LC, con, callback){
+function allMembersInformer(username, pageData,LC, con, callback){
     data = ""
     if (LC == "national")
         chosenLC = ""
@@ -78,44 +78,64 @@ function allMembersInformer(pageData,LC, con, callback){
             return callback(3, data);
         } else{
             if (results.length > 0){
-                pageData.engFname           = results[0].FirstName
-                pageData.engFather          = results[0].FatherName
-                pageData.engGfather         = results[0].GFatherName
-                pageData.engLname           = results[0].FamilyName
-                pageData.arabFname          = results[0].AFirstName  
-                pageData.arabFather         = results[0].AFatherName 
-                pageData.arabGfather        = results[0].AGFatherName
-                pageData.arabLname          = results[0].AFamilyName 
-                pageData.areaCode           = results[0].PhoneNo.slice(0,3)
-                pageData.phoneNo            = results[0].PhoneNo.slice(3)
-                pageData.email              = results[0].E_mail
-                pageData.firstYear          = results[0].Facebook_Link
-                pageData.uniNum             = results[0].UniID
-                pageData.localCommittee     = results[0].LC
-                pageData.memStatus          = results[0].MembershipStatus
+                getUserInfo(username, con, function(userData, err){
+                    pageData.user               = userData.user
+                    pageData.position           = userData.position
+                    pageData.userLC             = userData.LC;
+                    pageData.cipher             = userData.cipher
+                    pageData.engFname           = results[0].FirstName
+                    pageData.engFather          = results[0].FatherName
+                    pageData.engGfather         = results[0].GFatherName
+                    pageData.engLname           = results[0].FamilyName
+                    pageData.arabFname          = results[0].AFirstName  
+                    pageData.arabFather         = results[0].AFatherName 
+                    pageData.arabGfather        = results[0].AGFatherName
+                    pageData.arabLname          = results[0].AFamilyName 
+                    pageData.areaCode           = results[0].PhoneNo.slice(0,3)
+                    pageData.phoneNo            = results[0].PhoneNo.slice(3)
+                    pageData.email              = results[0].E_mail
+                    pageData.firstYear          = results[0].Facebook_Link
+                    pageData.uniNum             = results[0].UniID
+                    pageData.localCommittee     = results[0].LC
+                    pageData.memStatus          = results[0].MembershipStatus
+                    pageData.curMemNumber       = results[0].UniID
 
-                checkTrainerStatus(results[0].UniID, function(flag, trainerStatus) {
-                    if (flag == 0)
-                        pageData.trainerStatus  = trainerStatus
-                    else
-                        callback(flag, pageData)
-                })
+                    checkTrainerStatus(results[0].UniID, function(flag, trainerStatus) {
+                        if (flag == 0)
+                            pageData.trainerStatus  = trainerStatus
+                        else
+                            callback(flag, pageData)
+                    })
 
-                checkBlackListStatus(results[0].UniID, function(flag, blStatus) {
-                    if (flag == 0)
-                        pageData.blacklistStatus  = pageData
-                    else
-                        callback(flag, pageData)
-                })    
+                    checkBlackListStatus(results[0].UniID, function(flag, blStatus, blReason) {
+                        if (flag == 0){
+                            pageData.blacklistStatus  = blStatus
+                            pageData.blacklistReason = blReason
+                        }else
+                            callback(flag, pageData)
+                    })    
+                    })
+                
                 //TODO COMPLETE QUERY TO GET national activities 
                 //TODO COMPLETE QUERY TO GET local activities
 
             } else {
+
                 Object.keys(pageData).forEach(key => {
-                    pageData[key] = "no Members"
+                    temp = pageData[key]
+                    if (typeof temp == "string")
+                        pageData[key] = "no Members"
+                    else
+                        pageData[key] = [];
+                })
+                getUserInfo(username, con, function(userData, err){
+                    pageData.user               = userData.user
+                    pageData.position           = userData.position
+                    pageData.userLC             = userData.LC;
+                    pageData.cipher             = userData.cipher
+                    return callback(0, pageData)
                 })
             }
-            return callback(0, pageData);
         }
     } )
 }
@@ -129,7 +149,7 @@ function checkTrainerStatus(uniNum, callback){
             if (trainerResults.length != 0){
                 callback(0,"Inactive")
             }else{
-                callback(0,results[0].TStatus)
+                callback(0,results[0].TStatus, results[0].Reason)
             }
         }
     })

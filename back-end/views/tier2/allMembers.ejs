@@ -198,17 +198,7 @@
                                             <label style="width:42%">Member Name</label>
                                     </div>
                                 </li>
-                                <!-- TODO: create a javascript function below to handle the request for search and append children -->
-
-                                <!-- <%// matchingMembers.forEach( element=> { %>
-                                <li>
-                                    <div style="display: flex; flex-direction:row; border-bottom:1px solid #4e4e4e; margin-bottom: 5px; padding-bottom: 5px" onclick="selectMember('<%=element.memNumber%>')">
-                                        <div style="margin:0% 5%; width:15.2px;"></div>
-                                        <label style="width:42%"><%//=element.memNumber%></label>
-                                        <label style="width:42%"><%//=element.memName%></label>
-                                    </div>
-                                </li>
-                                <% //}) %> -->
+                                
                             </ul>
                             <div style="display: flex; flex-direction:column; width: 10%; margin-left: 5%">
                                 <button onclick="searchMemClose()" type="button" > Cancel</button>
@@ -313,7 +303,7 @@
 
         <div id="editMemberWindow" class="updateMemberWindow">
                 <form id="editMemberForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%;">
-                    <h1>Edit Member <%=UniId%></h1>
+                    <h1>Edit Member <%=uniNum%></h1>
                     <div style="display: flex; flex-direction:row; width:100%; padding-bottom:7px; border-bottom:none">
                         <div style="width:15%"></div>
                         <div style="border-bottom: solid 2px rgb(0, 119, 255); color: rgb(0, 119, 255); width:15%; padding-bottom:3px; padding-top:5px; padding:0% 5%">English</div>
@@ -604,7 +594,7 @@
                 <div style="float:left ;margin-left: 2%; margin-right: 2%; max-width: 40%; max-height: 80%;">
                     <h1>National</h1>
                     <ol style="max-height: calc(15*20px); overflow-y: scroll;">
-                        <% nationalActivites.forEach( element=> { %>
+                        <% nationalActivities.forEach( element=> { %>
                             <li>
                                 <%= element.actName %>
                             </li>
@@ -617,7 +607,7 @@
                 <div style="float:left ;margin-left: 2%; margin-right: 2%; max-width: 40%; max-height: 80%;">
                     <h1>Local</h1>
                     <ol style="max-height: calc(15*20px); overflow-y: scroll;">
-                        <% localActivites.forEach( element=> { %>
+                        <% localActivities.forEach( element=> { %>
                             <li>
                                 <%= element.actName %>
                             </li>
@@ -653,12 +643,8 @@
 
 
 
-    <script>       
-        //TODO filter by nat or local for the secgen buttons
-        //TODO add a search results mode
-        // if (<%=matchingMembers%> not empty)
-        // then show the search, something like that
-
+    <script>      
+        // TODO fix the search for God's sake 
         if ("<%=userLC%>" != "national"){
             document.getElementById("boxesSec").style.display="none"
         }
