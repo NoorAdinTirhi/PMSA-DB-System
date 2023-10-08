@@ -142,7 +142,7 @@
             margin: 0.5%;
             margin-bottom: 1%;
             height: 98%;
-            z-index: 50;
+            z-index: 101;
         }
         #newMemberForm>* {
             padding-bottom: .7%;
@@ -668,21 +668,28 @@
         hiddenUserIn.setAttribute('name', "username");
         hiddenUserIn.setAttribute('value',"<%=user%>");
 
+        const hiddenLCIn = document.createElement('input');
+        hiddenLCIn.setAttribute('type', 'hidden');
+        hiddenLCIn.setAttribute('name', "localCommittee");
+        hiddenLCIn.setAttribute('value',"<%=userLC%>");
+
         const hiddenCipherIn = document.createElement('input');
         hiddenCipherIn.setAttribute('type', 'hidden');
         hiddenCipherIn.setAttribute('name', "cipher");
         hiddenCipherIn.setAttribute('value',"<%=cipher%>");
 
-        const hiddenFilterin = document.createElement('input');
-        hiddenFilterin.setAttribute('type', 'hidden');
-        hiddenFilterin.setAttribute('name', "filter");
+        const hiddenPositionIn = document.createElement('input');
+        hiddenPositionIn.setAttribute('type', 'hidden');
+        hiddenPositionIn.setAttribute('name', "position");
+        hiddenPositionIn.setAttribute('value',"<%=position%>");
 
         const forms = document.forms;
-        
+        console.log(forms)
         for (let i = 0; i <forms.length; i++){
-            forms[i].appendChild(hiddenUserIn);
-            forms[i].appendChild(hiddenCipherIn);
-            forms[i].appendChild(hiddenFilterin);
+            forms[i].appendChild(document.importNode(hiddenUserIn, true))
+            forms[i].appendChild(document.importNode(hiddenLCIn, true))
+            forms[i].appendChild(document.importNode(hiddenCipherIn, true))
+            forms[i].appendChild(document.importNode(hiddenPositionIn, true))
         }
 
         function setFilter(localCommittee){

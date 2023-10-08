@@ -142,7 +142,8 @@
             margin: 0.5%;
             margin-bottom: 1%;
             height: 98%;
-            z-index: 50;
+            overflow-y: scroll;
+            z-index: 101;
         }
         #newMemberForm>* {
             padding-bottom: .7%;
@@ -191,15 +192,6 @@
                                             <label style="width:42%">Member Name</label>
                                     </div>
                                 </li>
-                                <% matchingMembers.forEach( element=> { %>
-                                <li>
-                                    <div style="display: flex; flex-direction:row; border-bottom:1px solid #4e4e4e; margin-bottom: 5px; padding-bottom: 5px" onclick="selectMember('<%=element.memNumber%>')">
-                                        <div style="margin:0% 5%; width:15.2px;"></div>
-                                        <label style="width:42%"><%=element.memNumber%></label>
-                                        <label style="width:42%"><%=element.memName%></label>
-                                    </div>
-                                </li>
-                                <% }) %>
                             </ul>
                             <div style="display: flex; flex-direction:column; width: 10%; margin-left: 5%">
                                 <button onclick="searchMemClose()" type="button" > Cancel</button>
@@ -304,7 +296,7 @@
 
         <div id="editMemberWindow" class="updateMemberWindow">
                 <form id="editMemberForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%;">
-                    <h1>Edit Member <%=UniId%></h1>
+                    <h1>Edit Member <%=uniNum%></h1>
                     <div style="display: flex; flex-direction:row; width:100%; padding-bottom:7px; border-bottom:none">
                         <div style="width:15%"></div>
                         <div style="border-bottom: solid 2px rgb(0, 119, 255); color: rgb(0, 119, 255); width:15%; padding-bottom:3px; padding-top:5px; padding:0% 5%">English</div>
@@ -383,13 +375,7 @@
                         <label style="width: 15% ; margin:0% 5%"><input required type="radio" value="active" name="memberStatus" id="memStatusEditActive">Active</label>
                         <label style="width: 15% ; margin:0% 5%"><input required type="radio" value="inactive" name="memberStatus" id="memStatusEditInactive">Inactive</label>
                     </div>
-                    <div style="display: flex; flex-direction:row; width:100%">
-                        <label style="margin-right:5%; width:10%">
-                            Trainer Status
-                        </label>
-                        <label style="width: 15%; margin:0% 5%"><input required type="radio" value="active" name="trainerStatus" id="trainerStatusEditActive">Active</label>
-                        <label style="width: 15%; margin:0% 5%"><input required type="radio" value="inactive" name="trainerStatus" id="trainerStatusEditInactive">Inactive</label>
-                    </div>
+                    
                     <div style="display: flex; flex-direction:column; width:100%">
                         <div style="display: flex; flex-direction: row; width:100%">
                             <label style="margin-right:5%; width:10%">
@@ -410,6 +396,32 @@
                             <textarea style="margin:0% 5%; width:50%; height:100px; resize:none"type="textarea" rows="4" cols="125" maxlength="500" id="blreason" value="<%=blacklistReason%>" name="blackListReason" placeholder="write a max of 500 character to describe reason for blacklisting"></textarea>
                         </div>
                     </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Trainer Status
+                        </label>
+                        <label style="width: 15%; margin:0% 5%"><input required type="radio" value="active" name="trainerStatus" id="trainerStatusEditActive">Active</label>
+                        <label style="width: 15%; margin:0% 5%"><input required type="radio" value="inactive" name="trainerStatus" id="trainerStatusEditInactive">Inactive</label>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                           Trainer Category
+                        </label>
+                        <input required type="text" maxlength=30 style="margin: 0% 12.5%; width: 20%" placeholder="Trainer Type" name="trainerCategory" value="<%=trainerCategory%>">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Graduation Activity
+                        </label>
+                        <input required type="text" maxlength=50 style="margin: 0% 12.5%; width: 20%" placeholder="Graduation Activity" name="gradActivity" value="<%=gradActivity%>">
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <label style="margin-right:5%; width:10%">
+                            Graduation Date
+                        </label>
+                        <input required type="date" style="margin: 0% 12.5%; width: 20%" placeholder="Graduation Activity" name="gradDate" value="<%=gradDate%>">
+                    </div>
+                    
 
                     <div style="margin-top: 0.5%;">
                         <button type="submit">Submit</button>
@@ -423,7 +435,7 @@
                 <div style="display: inline-block; padding-right : 5% auto">
                     <!-- title -->
                     <h1 style="margin-right:25px">Welcome
-                        <%=user%>
+                        <%=user%>x
                     </h1>
                 </div>
                 <!-- time and date -->
@@ -644,10 +656,6 @@
 
 
     <script>       
-        //TODO filter by nat or local for the secgen buttons
-        //TODO add a search results mode
-        // if (<%=matchingMembers%> not empty)
-        // then show the search, something like that
 
         if ("<%=userLC%>" != "national"){
             document.getElementById("boxesSec").style.display="none"
@@ -664,21 +672,28 @@
         hiddenUserIn.setAttribute('name', "username");
         hiddenUserIn.setAttribute('value',"<%=user%>");
 
+        const hiddenLCIn = document.createElement('input');
+        hiddenLCIn.setAttribute('type', 'hidden');
+        hiddenLCIn.setAttribute('name', "localCommittee");
+        hiddenLCIn.setAttribute('value',"<%=userLC%>");
+
         const hiddenCipherIn = document.createElement('input');
         hiddenCipherIn.setAttribute('type', 'hidden');
         hiddenCipherIn.setAttribute('name', "cipher");
         hiddenCipherIn.setAttribute('value',"<%=cipher%>");
 
-        const hiddenFilterin = document.createElement('input');
-        hiddenFilterin.setAttribute('type', 'hidden');
-        hiddenFilterin.setAttribute('name', "filter");
+        const hiddenPositionIn = document.createElement('input');
+        hiddenPositionIn.setAttribute('type', 'hidden');
+        hiddenPositionIn.setAttribute('name', "position");
+        hiddenPositionIn.setAttribute('value',"<%=position%>");
 
         const forms = document.forms;
-        
+        console.log(forms)
         for (let i = 0; i <forms.length; i++){
-            forms[i].appendChild(hiddenUserIn);
-            forms[i].appendChild(hiddenCipherIn);
-            forms[i].appendChild(hiddenFilterin);
+            forms[i].appendChild(document.importNode(hiddenUserIn, true))
+            forms[i].appendChild(document.importNode(hiddenLCIn, true))
+            forms[i].appendChild(document.importNode(hiddenCipherIn, true))
+            forms[i].appendChild(document.importNode(hiddenPositionIn, true))
         }
 
         function setFilter(localCommittee){

@@ -4,14 +4,17 @@ const crypto = require('node:crypto')
 var stat;
 
 //check if the request is made by a user
-function verifyUser(username,cipher,con, callback){
+function verifyUser(username,cipher, LC, position, con, callback){
+    // console.log(username + " " + cipher + " " + LC)
     con.query(`SELECT * FROM Users WHERE Username = "${username}"`, function(err, result){
         if (err){
             return callback(3)
         }
 
         if (result.length > 0){
-            if (result[0].Hmac == cipher){
+            console.log(`${result[0].Locality} == ${LC} = ${result[0].Locality == LC}`)
+            console.log(`${result[0].Position} == ${position} = ${result[0].Position == position}`)
+            if (result[0].Hmac == cipher && result[0].Locality == LC && result[0].Position == position){
                 return callback(0)
             }else{
                 return callback(1)

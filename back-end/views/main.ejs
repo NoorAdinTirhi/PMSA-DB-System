@@ -228,11 +228,16 @@
                 <div style="position: relative; float: left; margin-left: 10%">
                     <!-- all members -->
                     <form method="post" action="/allMembers">
-                        <input type="hidden" name="username" value="<%=user%>">
-                        <input type="hidden" name="cipher" value="<%=cipher%>">
-                        <input type="hidden" name="localCommittee" value="<%=userLC%>">
+                        <input type="hidden" name="memNum" value=0>
                         <button class="allButoon zoom secgen" type="submit">
                         All Members
+                    </button>
+                    </form>
+                    <!-- all trainers -->
+                    <form method="post" action="/allTrainers">
+                        <input type="hidden" name="memNum" value=0>
+                        <button class="allButoon zoom secgen" type="submit">
+                        All Trainers
                     </button>
                     </form>
                     <!-- all activities -->
@@ -241,13 +246,9 @@
                         All Activities
                     </button>
                     </form>
-                    <!-- all trainers -->
-                    <form method="post" action="/allTrainers">
-                        <button class="allButoon zoom secgen" type="submit">
-                        All Trainers
-                    </button>
-                    </form>
+                    
                     <form method="post" action="/blackList">
+                        
                         <button class="allButoon zoom secgen" type="submit">
                         Black List
                     </button>
@@ -357,13 +358,17 @@
                 </div>
             </div>
             <div style="display:flex; flex-direction:column; width:10%; position:relative">
-                    <form id="resetMemForm" method="post"  style="width:100%; margin-top: 40%" action="/resetMember">
-                        <button class="allButoon zoom secgen" type="button" onclick="formConfirm('resetMemForm')" >Reset All Local Member</button>
-                    </button>
-                </div>
+                <form id="resetMemForm" method="post"  style="width:100%; margin-top: 40%" action="/resetMember">
+                    <button class="allButoon zoom secgen" type="button" onclick="formConfirm('resetMemForm')" >Reset All Local Member</button>
+                </form>
+                </button>
+                    <button class="allButoon zoom secgen" type="button" onclick="addNewUserWin()" >Register New User</button>
+                    
+            </div>
         </div>
 
         <script>
+
 
             const hiddenUserIn = document.createElement('input');
             hiddenUserIn.setAttribute('type', 'hidden');
@@ -380,12 +385,18 @@
             hiddenCipherIn.setAttribute('name', "cipher");
             hiddenCipherIn.setAttribute('value',"<%=cipher%>");
 
+            const hiddenPositionIn = document.createElement('input');
+            hiddenPositionIn.setAttribute('type', 'hidden');
+            hiddenPositionIn.setAttribute('name', "position");
+            hiddenPositionIn.setAttribute('value',"<%=position%>");
+
             const forms = document.forms;
             console.log(forms)
             for (let i = 0; i <forms.length; i++){
-                forms[i].appendChild(hiddenUserIn);
-                forms[i].appendChild(hiddenCipherIn);
-                forms[i].appendChild(hiddenLCIn);
+                forms[i].appendChild(document.importNode(hiddenUserIn, true))
+                forms[i].appendChild(document.importNode(hiddenLCIn, true))
+                forms[i].appendChild(document.importNode(hiddenCipherIn, true))
+                forms[i].appendChild(document.importNode(hiddenPositionIn, true))
             }
 
             
@@ -406,7 +417,7 @@
                         collection[i].style.display = "block";
                 }
             }
-
+ 
             
             
             function formConfirm(form_id){
@@ -416,6 +427,7 @@
                         const xhr  = new XMLHttpRequest();
                         xhr.onload = function() {
                             if (this.status != 200)
+                            console.log(`Status: ${this.status}:: ${this.responseText}`)
                             alert(`Status: ${this.status}:: ${this.responseText}`)
                         }
                         console.log(myForm.action)

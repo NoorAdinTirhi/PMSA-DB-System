@@ -152,4 +152,13 @@
 
 SELECT * FROM M_A;
 
-SELECT A.Aname FROM M_A, A WHERE M_A.ActivityID = A.ActivityID AND UniID = 1190081 AND A.ActivityID IN (SELECT Na.ActivityID FROM Na);
+-- national activities
+-- SELECT A.Aname FROM M_A, A WHERE M_A.ActivityID = A.ActivityID AND UniID = 1190081 AND A.ActivityID IN (SELECT Na.ActivityID FROM Na);
+SELECT A.Aname, A.ActivityID, A.Committee FROM M_A, A WHERE M_A.ActivityID = A.ActivityID AND UniID = 1190081 AND A.ActivityID IN (SELECT Na.ActivityID FROM Na)
+
+SELECT * FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID > 0 ORDER BY M.UniID LIMIT 1;
+
+INSERT INTO Mt VALUE(1190081, "noor's Category","noorification", '1999-03-20',  'Active')
+
+SELECT * FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID > 0 ORDER BY M.UniID LIMIT 1
+

@@ -102,7 +102,7 @@
             margin: 0.5%;
             margin-bottom: 1%;
             height: 98%;
-            z-index: 50;
+            z-index: 101;
         }
         #newActivityForm > *{
             padding-bottom: .7%;
@@ -243,7 +243,7 @@
                     All
                 </td>
                 <td style="width: 10%;">
-                    <%=allActNum%>
+                    <%=allActivities.length%>
                 </td>
                 <td style="width: 10%;">
                     <button disabled onclick="addActivityWindow('all')">Add Activity</button>
@@ -264,7 +264,8 @@
                     General
                 </td>
                 <td style="width: 10%;">
-                    <%=genActNum%>
+                    
+                    <%=allActivities.filter((obj) => obj.Committee == "general" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('general')">Add Activity</button>
@@ -273,8 +274,10 @@
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
                             <option selected hidden value="-1">General Activities</option>
-                            <% generalActivities.forEach( element=> { %>
-                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% allActivities.forEach( element=> { %>
+                                <% if (element.committee == "general")  {%>
+                                    <option value="<%=element.actID%>"><%= element.actName %></option>
+                                <%}%>
                             <% }) %>
                         </select>
                     </form>
@@ -285,7 +288,7 @@
                     CB
                 </td>
                 <td style="width: 10%;">
-                    <%=CBActNum%>
+                   <%=allActivities.filter((obj) => obj.Committee == "cb" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('cb')">Add Activity</button>
@@ -294,8 +297,10 @@
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
                             <option selected hidden value="-1">CB Activities</option>
-                            <% CBActivities.forEach( element=> { %>
-                                <option value="<%=element.actID%>"><%=element.actName%></option>
+                           <% allActivities.forEach( element=> { %>
+                                <% if (element.committee == "cb")  {%>
+                                    <option value="<%=element.actID%>"><%= element.actName %></option>
+                                <%}%>
                             <% }) %>
                         </select>
                     </form>
@@ -307,7 +312,7 @@
                     SCORE
                 </td>
                 <td style="width: 10%;">
-                    <%=scoreActNum%>
+                    <%=allActivities.filter((obj) => obj.Committee == "score" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('score')">Add Activity</button>
@@ -316,8 +321,10 @@
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
                             <option selected hidden value="-1">SCORE Activities</option>
-                            <% SCOREActivities.forEach( element=> { %>
-                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% allActivities.forEach( element=> { %>
+                                <% if (element.committee == "score")  {%>
+                                    <option value="<%=element.actID%>"><%= element.actName %></option>
+                                <%}%>
                             <% }) %>
                         </select>
                     </form>
@@ -328,7 +335,7 @@
                     SCOPE
                 </td>
                 <td style="width: 10%;">
-                    <%=scopeActNum%>
+                    <%=allActivities.filter((obj) => obj.Committee == "scope" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('scope')">Add Activity</button>
@@ -337,8 +344,10 @@
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
                             <option selected hidden value="-1">SCOPE Activities</option>
-                            <% scopeActivities.forEach( element=> { %>
-                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                           <% allActivities.forEach( element=> { %>
+                                <% if (element.committee == "scope")  {%>
+                                    <option value="<%=element.actID%>"><%= element.actName %></option>
+                                <%}%>
                             <% }) %>
                         </select>
                     </form>
@@ -349,7 +358,7 @@
                     SCOME
                 </td>
                 <td style="width: 10%;">
-                    <%=scomeActNum%>
+                    <%=allActivities.filter((obj) => obj.Committee == "scome" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('scome')">Add Activity</button>
@@ -358,8 +367,10 @@
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
                             <option selected hidden value="-1">SCOME Activities</option>
-                            <% scomeActivities.forEach( element=> { %>
-                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% allActivities.forEach( element=> { %>
+                                <% if (element.committee == "scome")  {%>
+                                    <option value="<%=element.actID%>"><%= element.actName %></option>
+                                <%}%>
                             <% }) %>
                         </select>
                     </form>
@@ -370,7 +381,7 @@
                     SCORP
                 </td>
                 <td style="width: 10%;">
-                    <%=scorpActNum%>
+                    <%=allActivities.filter((obj) => obj.Committee == "scorp" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('scorp')">Add Activity</button>
@@ -379,8 +390,10 @@
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
                             <option selected hidden value="-1">SCORP Activities</option>
-                            <% scorpActivities.forEach( element=> { %>
-                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% allActivities.forEach( element=> { %>
+                                <% if (element.committee == "scorp")  {%>
+                                    <option value="<%=element.actID%>"><%= element.actName %></option>
+                                <%}%>
                             <% }) %>
                         </select>
                     </form>
@@ -391,7 +404,7 @@
                     SCORA
                 </td>
                 <td style="width: 10%;">
-                    <%=scoraActNum%>
+                    <%=allActivities.filter((obj) => obj.Committee == "scora" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('scora')">Add Activity</button>
@@ -400,8 +413,10 @@
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
                             <option selected hidden value="-1">SCORA Activities</option>
-                            <% scoraActivities.forEach( element=> { %>
-                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% allActivities.forEach( element=> { %>
+                                <% if (element.committee == "scora")  {%>
+                                    <option value="<%=element.actID%>"><%= element.actName %></option>
+                                <%}%>
                             <% }) %>
                         </select>
                     </form>
@@ -412,7 +427,7 @@
                     SCOPH
                 </td>
                 <td style="width: 10%;">
-                    <%=scophActNum%>
+                    <%=allActivities.filter((obj) => obj.Committee == "scoph" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('scoph')">Add Activity</button>
@@ -421,8 +436,10 @@
                     <form method="post" action="/selectAct" style="width:100%">
                         <select name="activity" style="width: 100%;" onchange="this.form.submit()">
                             <option selected hidden value="-1">SCOPH Activities</option>
-                            <% scophActivities.forEach( element=> { %>
-                                <option value="<%=element.actID%>"><%= element.actName %></option>
+                            <% allActivities.forEach( element=> { %>
+                                <% if (element.committee == "scoph")  {%>
+                                    <option value="<%=element.actID%>"><%= element.actName %></option>
+                                <%}%>
                             <% }) %>
                         </select>
                     </form>
@@ -438,33 +455,28 @@
         hiddenUserIn.setAttribute('name', "username");
         hiddenUserIn.setAttribute('value',"<%=user%>");
 
+        const hiddenLCIn = document.createElement('input');
+        hiddenLCIn.setAttribute('type', 'hidden');
+        hiddenLCIn.setAttribute('name', "localCommittee");
+        hiddenLCIn.setAttribute('value',"<%=userLC%>");
+
         const hiddenCipherIn = document.createElement('input');
         hiddenCipherIn.setAttribute('type', 'hidden');
         hiddenCipherIn.setAttribute('name', "cipher");
         hiddenCipherIn.setAttribute('value',"<%=cipher%>");
 
-        const hiddenFilterin = document.createElement('input');
-        hiddenFilterin.setAttribute('type', 'hidden');
-        hiddenFilterin.setAttribute('name', "filter");
-
-        const hiddenCommitteein = document.createElement('input');
-        hiddenCommitteein.setAttribute('id', "hiddenCommitteein")
-        hiddenCommitteein.setAttribute('type', 'hidden');
-        hiddenCommitteein.setAttribute('name', "filter");
-        
-        const hiddenlocalCommitteein = document.createElement('input');
-        hiddenlocalCommitteein.setAttribute('id', "hiddenlocalCommitteein")
-        hiddenlocalCommitteein.setAttribute('type', 'hidden')
-        hiddenlocalCommitteein.setAttribute('name', 'localCommittee')
-        hiddenlocalCommitteein.setAttribute('value', "<%=userLC%>")
-
-        const newActivityForm = document.getElementById("newActivityForm");
+        const hiddenPositionIn = document.createElement('input');
+        hiddenPositionIn.setAttribute('type', 'hidden');
+        hiddenPositionIn.setAttribute('name', "position");
+        hiddenPositionIn.setAttribute('value',"<%=position%>");
 
         const forms = document.forms;
-        
+        console.log(forms)
         for (let i = 0; i <forms.length; i++){
-            forms[i].appendChild(hiddenUserIn);
-            forms[i].appendChild(hiddenCipherIn);
+            forms[i].appendChild(document.importNode(hiddenUserIn, true))
+            forms[i].appendChild(document.importNode(hiddenLCIn, true))
+            forms[i].appendChild(document.importNode(hiddenCipherIn, true))
+            forms[i].appendChild(document.importNode(hiddenPositionIn, true))
         }
 
         var cur_time = new Date();

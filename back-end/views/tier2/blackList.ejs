@@ -89,6 +89,36 @@
             
         </div>
     </div>
+    <script>
+        const hiddenUserIn = document.createElement('input');
+        hiddenUserIn.setAttribute('type', 'hidden');
+        hiddenUserIn.setAttribute('name', "username");
+        hiddenUserIn.setAttribute('value',"<%=user%>");
+
+        const hiddenLCIn = document.createElement('input');
+        hiddenLCIn.setAttribute('type', 'hidden');
+        hiddenLCIn.setAttribute('name', "localCommittee");
+        hiddenLCIn.setAttribute('value',"<%=userLC%>");
+
+        const hiddenCipherIn = document.createElement('input');
+        hiddenCipherIn.setAttribute('type', 'hidden');
+        hiddenCipherIn.setAttribute('name', "cipher");
+        hiddenCipherIn.setAttribute('value',"<%=cipher%>");
+
+        const hiddenPositionIn = document.createElement('input');
+        hiddenPositionIn.setAttribute('type', 'hidden');
+        hiddenPositionIn.setAttribute('name', "position");
+        hiddenPositionIn.setAttribute('value',"<%=position%>");
+
+        const forms = document.forms;
+        console.log(forms)
+        for (let i = 0; i <forms.length; i++){
+            forms[i].appendChild(document.importNode(hiddenUserIn, true))
+            forms[i].appendChild(document.importNode(hiddenLCIn, true))
+            forms[i].appendChild(document.importNode(hiddenCipherIn, true))
+            forms[i].appendChild(document.importNode(hiddenPositionIn, true))
+        }
+    </script>
 </body>
 
 </html>

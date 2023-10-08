@@ -6,8 +6,8 @@ const fs = require('fs')
 // const audit = require('express-requests-logger')
 
 const { stat, authUser, verifyUser, registerSession } = require('./authentication/auth')
-const { mainPage_varialbes, activityPage_variables, allMembers_variables } = require('./constants/CONSTANTS')
-const { mainPageInformer, resetLC, allMembersInformer} = require('./utility/dataHandling')
+const { mainPage_varialbes, activityPage_variables, allMembers_variables, allTrainers_variables } = require('./constants/CONSTANTS')
+const { mainPageInformer, resetLC, allMembersInformer, allActivitiesInformer, allTrainersInformer} = require('./utility/dataHandling')
 
 
 // let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
@@ -108,16 +108,21 @@ app.post("/resetMember", function(req, res){
     if (req.body){
         if (req.body.username){
             if (req.body.cipher){
-                verifyUser(req.body.username, req.body.cipher, con, function(flag){
+                verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag){
+                    console.log(`verify flag = ${flag}`)
                     if (flag == 0){
                         //succesful, setting all local users to inactive
                         resetLC(req.body.localCommittee, con, function(flag){
                             if (flag == 3){
                                 res.status(500)
                                 res.send("Internal Server Error, Database issue")
+                            }else if (flag == 5){
+                                res.status(401)
+                                res.send("Unauthorized, national secgen is not allowed to reset members")
                             }else{
                                 res.status(200)
                                 res.send(`succesfully reset all ${req.body.localCommittee.toUpperCase()} members`)
+                                console.log("succesful reset")
                             }
                         })
                     } else if (flag == 1){
@@ -150,16 +155,108 @@ app.post("/allMembers", function(req, res) {
     if (req.body){
         if (req.body.username){
             if (req.body.cipher){
-                verifyUser(req.body.username, req.body.cipher, con, function(flag){
+                if (req.body.memNum){
+                    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position,con, function(flag){
+                        if (flag == 0){
+                            //succesful, attempt to get information and render the allMembers page
+                            allMembersInformer(req.body.username, req.body.memNum, allMembers_variables, req.body.localCommittee, con, function(flag, data){
+                                if (flag == 3){
+                                    res.status(500)
+                                    res.send("Internal Server Error, Database issue")
+                                }else{
+                                    res.status(200)
+                                    res.render('tier2/allMembers', data)
+                                }
+                            })
+                        } else if (flag == 1){
+                            //failed, bad cipher
+                            res.status(401)
+                            res.send("Your request has a bad cipher")
+                        } else if (flag == 2){
+                            res.status(401)
+                            res.send("user not registered")
+                        } else if (flag== 3){
+                            res.status(500)
+                            res.send("Internal Server Error")
+                        }
+                    })
+                }else{
+                    res.status(401)
+                    res.send("bad request")
+                }
+            }else{
+                res.status(401)
+                res.send("Your request does not include a cipher, please login and use the website as intended")
+            }
+        }else{
+            res.render("login", {login_string : "you need to login to make a request"})
+        }
+    }else{
+        res.status(400)
+        res.send("Incomplete Request")
+    }
+})
+
+app.post("/allTrainers", function(req, res) {
+    if (req.body){
+        if (req.body.username){
+            if (req.body.cipher){
+                if (req.body.memNum){
+                    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag){
+                        if (flag == 0){
+                            //succesful, attempt to get information and render the allMembers page
+                            allTrainersInformer(req.body.username,req.body.memNum, allTrainers_variables, req.body.localCommittee, con, function(flag, data){
+                                if (flag == 3){
+                                    res.status(500)
+                                    res.send("Internal Server Error, Database issue")
+                                }else{
+                                    res.status(200)
+                                    res.render('tier2/allTrainers', data)
+                                }
+                            })
+                        } else if (flag == 1){
+                            //failed, bad cipher
+                            res.status(401)
+                            res.send("Your request has a bad cipher")
+                        } else if (flag == 2){
+                            res.status(401)
+                            res.send("user not registered")
+                        } else if (flag== 3){
+                            res.status(500)
+                            res.send("Internal Server Error")
+                        }
+                    })
+                }else{
+                    res.status(401)
+                    res.send("bad request")
+                }
+            }else{
+                res.status(401)
+                res.send("Your request does not include a cipher, please login and use the website as intended")
+            }
+        }else{
+            res.render("login", {login_string : "you need to login to make a request"})
+        }
+    }else{
+        res.status(400)
+        res.send("Incomplete Request")
+    }
+})
+
+app.post("/allActivities", function(req, res) {
+    if (req.body){
+        if (req.body.username){
+            if (req.body.cipher){
+                verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag){
                     if (flag == 0){
                         //succesful, attempt to get information and render the allMembers page
-                        allMembersInformer(req.body.username, allMembers_variables, req.body.localCommittee, con, function(flag, data){
+                        allActivitiesInformer(req.body.username, activityPage_variables, req.body.localCommittee, con, function(flag, data){
                             if (flag == 3){
                                 res.status(500)
                                 res.send("Internal Server Error, Database issue")
                             }else{
                                 res.status(200)
-                                res.render('tier2/allMembers', data)
+                                res.render('tier2/allActivities', data)
                             }
                         })
                     } else if (flag == 1){
@@ -187,10 +284,7 @@ app.post("/allMembers", function(req, res) {
     }
 })
 
-app.post("/allActivities", function(req, res) {
-    console.log(`***\nusername : ${req.body.username}\n `)
-    res.render('tier2/allActivities', activityPage_variables)
-})
+
 
 app.post("/selectAct", function(req, res) {
     console.log(req.body.activity)
