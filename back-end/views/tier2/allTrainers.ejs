@@ -2,7 +2,7 @@
 <html>
 <!-- TODO add search -->
 <head>
-    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href=../../public/styles/common.css>
     <style>
         .fullbox {
         background-color: transparent;
@@ -21,6 +21,7 @@
         position: absolute;
         float: left;
         scale: 0.9;
+        overflow-y: scroll;
     }
 
         #boxesSec {
@@ -162,6 +163,11 @@
         #searchlist >*:not(#exception) :hover {
             background-color: #848484;
             cursor:pointer;
+        }
+        #names >div {
+            height: 40px;
+            overflow-y: hidden;
+            overflow-x: hidden;
         }
 
     </style>
@@ -482,7 +488,7 @@
                         </div>
                     </div>
                     <div style="grid-area: main;">
-                        <div style="display:flex; flex-direction: column; font-size: 20px;">
+                        <div id = names style="display:flex; flex-direction: column; font-size: 20px;">
                             <div style="display: flex; flex-direction: row;">
                                 <div id="engFname" style="padding-left: 5%; padding-right: 5%; width: 40%;">
                                     <%=engFname%>
@@ -519,16 +525,16 @@
                         </div>
                     </div>
                     <div style="grid-area: menu; display: flex; flex-direction: column; font-size: 20px;">
-                        <div>
+                        <div style="height:40px">
                             First Name
                         </div>
-                        <div>
+                        <div style="height:40px">
                             Father Name
                         </div>
-                        <div>
+                        <div style="height:40px">
                             Grandfather Name
                         </div>
-                        <div>
+                        <div style="height:40px">
                             Family Name
                         </div>
                     </div>

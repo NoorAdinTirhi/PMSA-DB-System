@@ -2,7 +2,7 @@
 <html>
 <!-- TODO add search -->
 <head>
-    <link rel="stylesheet" href="../styles/common.css">
+    <link rel="stylesheet" href=../../public/styles/common.css>
     <style>
         .fullbox {
         background-color: transparent;
@@ -21,6 +21,7 @@
         position: absolute;
         float: left;
         scale: 0.9;
+        overflow-y: scroll;
     }
 
         #boxesSec {
@@ -95,7 +96,7 @@
         
         #personalInfo {
             display: grid;
-            grid-template-columns: 33% 33% 33%;
+            grid-template-columns: 350px 350px 350px;
             grid-template-rows: auto;
             grid-template-areas: "header header header" "menu main main" "menu main main" "menu main main" "menu main main";
         }
@@ -103,6 +104,7 @@
         #personalInfo>div {
             text-align: center;
             font-size: 20px;
+            overflow:hidden;
         }
         
         .localbox:hover {
@@ -168,6 +170,11 @@
             border-bottom:1px solid #4e4e4e;
             margin-bottom: 5px;
             padding-bottom: 5px
+        }
+        #names>div {
+            height: 40px;
+            overflow-y: hidden;
+            overflow-x: hidden;
         }
 
     </style>
@@ -454,7 +461,7 @@
              </div>
 
         <div style=" display: flex; flex-direction: row; text-align: center; margin-top: 2%;">
-            <div style="width: 50%; min-width: 920px;;display: flex; flex-direction: column; margin-right: 1%;">
+            <div style="width: 50%; min-width: fit-content;;display: flex; flex-direction: column; margin-right: 1%;">
                 <div id="personalInfo">
                     <div style="grid-area: header;">
                         <div style="display:flex; flex-direction: row; color: rgb(0, 119, 255);">
@@ -469,7 +476,7 @@
                         </div>
                     </div>
                     <div style="grid-area: main;">
-                        <div style="display:flex; flex-direction: column; font-size: 20px;">
+                        <div id = "names" style="display:flex; flex-direction: column; font-size: 20px;">
                             <div style="display: flex; flex-direction: row;">
                                 <div id="engFname" style="padding-left: 5%; padding-right: 5%; width: 40%;">
                                     <%=engFname%>
@@ -506,25 +513,25 @@
                         </div>
                     </div>
                     <div style="grid-area: menu; display: flex; flex-direction: column; font-size: 20px;">
-                        <div>
+                        <div style="height: 40px;">
                             First Name
                         </div>
-                        <div>
+                        <div style="height: 40px;">
                             Father Name
                         </div>
-                        <div>
+                        <div style="height: 40px;">
                             Grandfather Name
                         </div>
-                        <div>
+                        <div style="height: 40px;">
                             Family Name
                         </div>
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 1.5%;">
-                    <div style="width: 33%; text-align: center; font-size: 20px;">
+                    <div style="width: 350px; text-align: center; font-size: 20px;">
                         Phone No.
                     </div>
-                    <div style=" width: 67%; text-align: center; font-size: 20px; display: flex; flex-direction: row;">
+                    <div style=" width: 700px; text-align: center; font-size: 20px; display: flex; flex-direction: row;">
                         <div id="areaCode"style="width: 15%; padding:1px; border: solid; min-width: fit-content">
                             +<%=areaCode%>
                         </div>
@@ -534,15 +541,15 @@
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
-                    <div style="width: 33%; text-align: center; font-size: 20px;">
+                    <div style="width: 350px; text-align: center; font-size: 20px;">
                         Email
                     </div>
-                    <div id="Email"style=" width: 67%; text-align: center; font-size: 20px;">
+                    <div id="Email"style=" width: 700px; text-align: center; font-size: 20px;">
                         <%=email%>
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
-                    <div style="width: 33%; text-align: center; font-size: 20px;">
+                    <div style="width: 350px; text-align: center; font-size: 20px;">
                         Facebook
                     </div>
                     <a id="firstYear"style=" width: 67%; text-align: center; font-size: 20px;" href="https://www.facebook.com/nooraldeen.tirhi/" target="_blank">
@@ -550,50 +557,50 @@
                     </a>
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
-                    <div style="width: 33%; text-align: center; font-size: 20px;">
+                    <div style="width: 350px; text-align: center; font-size: 20px;">
                         Freshmen Year
                     </div>
-                    <div id="firstYear"style=" width: 67%; text-align: center; font-size: 20px;">
+                    <div id="firstYear"style=" width: 700px; text-align: center; font-size: 20px;">
                         <%=firstYear%>
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
-                    <div style="width: 33%; text-align: center; font-size: 20px;">
+                    <div style="width: 350px; text-align: center; font-size: 20px;">
                         University Number
                     </div>
-                    <div id="uniNum"style=" width: 67%; text-align: center; font-size: 20px;">
+                    <div id="uniNum"style=" width: 700px; text-align: center; font-size: 20px;">
                         <%=uniNum%>
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
-                    <div style="width: 33%; text-align: center; font-size: 20px;">
+                    <div style="width: 350px; text-align: center; font-size: 20px;">
                         Local Committee
                     </div>
-                    <div id="uniNum"style=" width: 67%; text-align: center; font-size: 20px;">
+                    <div id="uniNum"style=" width: 700px; text-align: center; font-size: 20px;">
                         <%=localCommittee%>
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
-                    <div style="width: 33%; text-align: center; font-size: 20px;">
+                    <div style="width: 350px; text-align: center; font-size: 20px;">
                         Membership Status
                     </div>
-                    <div id="memStatus"style=" width: 67%; text-align: center; font-size: 20px;">
+                    <div id="memStatus"style=" width: 700px; text-align: center; font-size: 20px;">
                         <%=memStatus%>
                     </div>
                 </div>
                 <div style="display: flex; flex-direction: row; width: 100%; margin-top: 0.5%;">
-                    <div style="width: 33%; text-align: center; font-size: 20px;">
+                    <div style="width: 350px; text-align: center; font-size: 20px;">
                         Trainer Status
                     </div>
-                    <div id="trainerStatus"style=" width: 67%; text-align: center; font-size: 20px;">
+                    <div id="trainerStatus"style=" width: 700px; text-align: center; font-size: 20px;">
                         <%=trainerStatus%>
                     </div>
                 </div>
                 <div style="background-color: #000000; color:white; display: flex; flex-direction: row; width: 95%; margin-left:2.5%; margin-right:2.5% ;margin-top: 0.5%;">
-                    <div style="width: 33%; text-align: center; font-size: 20px;">
+                    <div style="width: 350px; text-align: center; font-size: 20px;">
                         Blacklist Status
                     </div>
-                    <div id="blacklistStatus"style=" width: 67%; text-align: center; font-size: 20px;">
+                    <div id="blacklistStatus"style=" width: 700px; text-align: center; font-size: 20px;">
                         <%=blacklistStatus%>
                     </div>
                 </div>

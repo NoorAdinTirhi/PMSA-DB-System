@@ -3,6 +3,8 @@ const express = require('express')
 const path = require('path')
 const bodyparaer = require('body-parser')
 const fs = require('fs')
+const pdf = require('html-pdf')
+const ejs = require('ejs')
 // const audit = require('express-requests-logger')
 
 const { stat, authUser, verifyUser, registerSession } = require('./authentication/auth')
@@ -21,9 +23,9 @@ app.use(bodyparaer.urlencoded({
     extended: true
 }))
 
-app.use(express.json())
+app.use(express.static( path.join(__dirname, './public')))
 // app.use(audit())
-
+console.log(__dirname)
 var con;
 //TODO add ajax to the ejs files
 
@@ -304,13 +306,36 @@ app.post("/nextMember", function(reg, res) {
 app.get("*.css", function(req, res) {
     //HTML Files Path
     const options = {
-        root: path.join(__dirname, "/views")
+        root: path.join(__dirname)
     }
     const fileName = req.originalUrl
 
 
     res.sendFile(fileName, options)
 })
+
+app.get("*.png", function(req, res) {
+    //HTML Files Path
+    const options = {
+        root: path.join(__dirname)
+    }
+    const fileName = req.originalUrl
+
+
+    res.sendFile(fileName, options)
+})
+
+app.get("*.ttf", function(req, res) {
+    //HTML Files Path
+    const options = {
+        root: path.join(__dirname)
+    }
+    const fileName = req.originalUrl
+    console.log(fileName)
+
+    res.sendFile(fileName, options)
+})
+
 
 app.get("/scripts/*", function(req, res) {
     //HTML Files Path
@@ -322,4 +347,31 @@ app.get("/scripts/*", function(req, res) {
 
 
     res.sendFile(fileName, options)
+})
+
+
+app.get("/printCert", function(req,res){
+    console.log("sent")
+    ejs.renderFile("views/certificates/SCORE.ejs", {participantName:"noor", activityName:"noorification", actStartDate:"17-09-2023", actEndDate:"17-10-2023", participentPosition: "organizer", certCode: "A4F412F"}, function(err,data){
+        
+        if (err){
+            res.send(err)
+            console.log(err)
+        }else{
+            let options = {
+                height : "2250px",
+                width  : "1591px"
+            }
+            res.send(data)
+            pdf.create(data, options).toFile("report.pdf", function(err,data){
+                if (err){
+                    res.send(err)
+                    console.log(err)
+                }else{
+                    console.log(__dirname)
+                }
+            })
+        }
+    })
+    
 })
