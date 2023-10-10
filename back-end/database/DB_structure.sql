@@ -16,8 +16,9 @@ CREATE TABLE Users(
     Locality ENUM('national','nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') NOT NULL,
     LastAction VARCHAR(500),
     LastActionTime DATE,
-    StartDate DATE
-);
+    StartDate DATE,
+    UNIQUE KEY localPosition (Position, Locality)
+)ENGINE=INNODB;
 
 INSERT INTO Users (Username, Hmac, Hkey,Position, Locality) VALUES ('noor', '14b95c8a801504ac2bd1aeddcbdd74adbe91e951db1f435355538be6cd9391fe', '28,54,23,16,252,42,160,50,245,169,9,88,221,113,238,156,243,238,109,5,55,207,102,189,229,88,102,125,242,164,1,57', 'Secgen', 'National');
 
@@ -28,7 +29,7 @@ CREATE TABLE LocalCommittees
     -- will want to know number of members
     -- will want to know number of activities
     -- will want to know number of trainers
-);
+)ENGINE=INNODB;
 
 
 CREATE TABLE members(
@@ -51,7 +52,7 @@ CREATE TABLE members(
     CONSTRAINT FkeyLC FOREIGN KEY (LC) REFERENCES LocalCommittees (city) 
     ON UPDATE CASCADE,
     CONSTRAINT chk_year CHECK ( UniStartYear > 1960 )
-);
+)ENGINE=INNODB;
 
 CREATE TABLE memeber_trainers (
 	UniID INT PRIMARY KEY ,
@@ -62,7 +63,7 @@ CREATE TABLE memeber_trainers (
     CONSTRAINT FkeyUniID FOREIGN KEY (UniID) REFERENCES members(UniID)
     ON DELETE CASCADE
     ON UPDATE CASCADE
-);
+)ENGINE=INNODB;
 
 CREATE TABLE memberBlacklist(
 	UniID INT PRIMARY KEY,
@@ -71,7 +72,7 @@ CREATE TABLE memberBlacklist(
     CONSTRAINT FkeyUniID1 FOREIGN KEY (UniID) REFERENCES members(UniID)
     ON DELETE CASCADE
     ON UPDATE CASCADE
-);
+)ENGINE=INNODB;
 
 CREATE TABLE activities(
 	ActivityID INT PRIMARY KEY AUTO_INCREMENT,
@@ -82,7 +83,7 @@ CREATE TABLE activities(
     ReportLink VARCHAR (300) NOT NULL,
     StartDate DATE NOT NULL,
     EndDate DATE NOT NULL
-);
+)ENGINE=INNODB;
 
 CREATE TABLE members_activities(
 		UniID INT,
@@ -96,7 +97,7 @@ CREATE TABLE members_activities(
     ON DELETE CASCADE
     ON UPDATE CASCADE
     
-);
+)ENGINE=INNODB;
 
 CREATE TABLE localActivities(
 	ActivityID INT PRIMARY KEY,
@@ -106,17 +107,14 @@ CREATE TABLE localActivities(
     ON UPDATE CASCADE, 
     CONSTRAINT FkeyLCLA FOREIGN KEY (LC) REFERENCES LocalCommittees (city)
     ON UPDATE CASCADE
-);
+)ENGINE=INNODB;
 
 CREATE TABLE nationalActivities(
 	ActivityID INT PRIMARY KEY,
-    CONSTRAINT FkeyActivityIDNatAct FOREIGN KEY (ActivityID) REFERENCES activities (ActivityID)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-    CONSTRAINT FkeyLActivityID FOREIGN KEY (ActivityID) REFERENCES activities(ActivityID)
+    FOREIGN KEY (ActivityID) REFERENCES activities (ActivityID)
     ON DELETE CASCADE
     ON UPDATE CASCADE
-);
+)ENGINE=INNODB;
 
 CREATE TABLE nationalActivities_localCommittees(
 	ActivityID INT NOT NULL,
@@ -128,13 +126,13 @@ CREATE TABLE nationalActivities_localCommittees(
     CONSTRAINT FkeyLCRel FOREIGN KEY (LC) REFERENCES LocalCommittees (city)
     ON DELETE CASCADE
     ON UPDATE CASCADE
-);
+)ENGINE=INNODB;
 
 CREATE TABLE standingCommittees(
 	ComitteeID INT PRIMARY KEY AUTO_INCREMENT,
     ComitteeName varchar(50) NOT NULL,
     ActStatus ENUM ('Active', 'Inactive') NOT NULL
-);
+)ENGINE=INNODB;
 
 ALTER TABLE LocalCommittees RENAME LC;
 ALTER TABLE members RENAME M;
@@ -170,5 +168,7 @@ INSERT INTO M  VALUES (1190081, 'nooradin', 'fuad', 'haider', 'tirhi', 'نورا
 
 -- SELECT * FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID > 0 ORDER BY M.UniID LIMIT 1
 
--- select * FROM M;
+-- select * FROM Users;
 
+-- INSERT INTO Users(Username,Hkey,Hmac,Position,Locality) VALUES ('Jouba','36,204,25,17,166,146,178,209,56,131,92,45,88,137,211,44,243,152,3,252,208,68,76,5,34,142,179,50,244,116,223,17', '60cc5ea2438e3ae9496a3231370cf62bc85e685651e7d087e933b6b815b7c0e4', 'CBD', 'nablus')
+-- SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;

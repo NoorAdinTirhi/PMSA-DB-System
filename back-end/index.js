@@ -7,9 +7,9 @@ const pdf = require('html-pdf')
 const ejs = require('ejs')
 // const audit = require('express-requests-logger')
 
-const { stat, authUser, verifyUser, registerSession } = require('./authentication/auth')
+const { stat, authUser, verifyUser, registerSession, registerUser, deleteUser } = require('./authentication/auth')
 const { mainPage_varialbes, activityPage_variables, allMembers_variables, allTrainers_variables } = require('./constants/CONSTANTS')
-const { mainPageInformer, resetLC, allMembersInformer, allActivitiesInformer, allTrainersInformer} = require('./utility/dataHandling')
+const { mainPageInformer, resetLC, allMembersInformer, allActivitiesInformer, allTrainersInformer, updateAction, getUserInfo} = require('./utility/dataHandling')
 
 
 // let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
@@ -87,6 +87,7 @@ app.post("/login", function(req, res) {
                 res.render(fileName, {login_string : "Internal Server Error"})
             }else{
                 mainPageInformer(username, con, mainPage_varialbes, function(data){
+                    console.log(data)
                     res.render("main", data);
                 })
             }
@@ -125,6 +126,57 @@ app.post("/resetMember", function(req, res){
                                 res.status(200)
                                 res.send(`succesfully reset all ${req.body.localCommittee.toUpperCase()} members`)
                                 console.log("succesful reset")
+                                updateAction(req.body.username,"Reset Local Members",con, function(flag){
+                                    if (flag == 0)
+                                        console.log("success")
+                                    else
+                                        console.log("failure")
+                                })
+                            }
+                        })
+                    } else if (flag == 1){ 
+                        //failed, bad cipher
+                        res.status(401)
+                        res.send("Your request has a bad cipher")
+                    } else if (flag == 2){
+                        res.status(401)
+                        res.send("user not registered")
+                    } else if (flag== 3){
+                        res.status(500)
+                        res.send("Internal Server Error")
+                    }
+                })
+            }else{
+                res.status(401)
+                res.send("Your request does not include a cipher, please login and use the website as intended")
+            }
+        }else{
+            res.render("login", {login_string : "you need to login to make a request"})
+        }
+    }else{
+        res.status(400)
+        res.send("Incomplete Request")
+    }
+})
+
+app.post("/registerUser", function(req, res){
+    if (req.body){
+        if (req.body.username){
+            if (req.body.cipher){
+                verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag){
+                    console.log(`verify flag = ${flag}`)
+                    if (flag == 0){
+                        //succesful, setting all local users to inactive
+                        registerUser(req.body, con, function(flag){
+                            if (flag == 5){
+                                res.status(401)
+                                res.send("Unauthorized, only National Secgen can add new Users")
+                            }else if (flag == 1){
+                                res.status(501)
+                                res.send("Username already exists or Position is already Held")
+                            }else{
+                                res.status(200)
+                                res.send(`succesfully registered new User ${req.body.nUsername}`)
                             }
                         })
                     } else if (flag == 1){
@@ -152,6 +204,66 @@ app.post("/resetMember", function(req, res){
     }
 })
 
+app.post("/deleteUser", function(req,res){
+    console.log(req.body)
+    if (req.body){
+        if (req.body.username){
+            if (req.body.cipher){
+                verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag){
+                    console.log(`verify flag = ${flag}`)
+                    if (flag == 0){
+                        getUserInfo(req.body.userToDelete, con, function(info, flag){
+                            if (flag == 0){
+                                if (info.LC == "national" && info.position == "Secgen"){
+                                    res.status(401)
+                                    res.send("Unauthorized, must not delete National Secgen")
+                                }else{
+                                    //succesful, deleting user
+                                    deleteUser(req.body, con, function(flag){
+                                        if (flag == 5){
+                                            res.status(401)
+                                            res.send("Unauthorized, only National Secgen can add delete Users")
+                                        }else if (flag == 1){
+                                            res.status(501)
+                                            res.send("Username already exists or Position is already Held")
+                                        }else{
+                                            res.status(200)
+                                            res.send(`succesfully Deleted User ${req.body.userToDelete}`)
+                                        }
+                                    })
+                                }
+                            }else if (flag == 2){
+                                res.status(401)
+                                res.send("user doesn't exist")
+                            }else{
+                                res.status(500)
+                                res.send("Internal Server Error")
+                            }
+                        })
+                    } else if (flag == 1){
+                        //failed, bad cipher
+                        res.status(401)
+                        res.send("Your request has a bad cipher")
+                    } else if (flag == 2){
+                        res.status(401)
+                        res.send("user not registered")
+                    } else if (flag== 3){
+                        res.status(500)
+                        res.send("Internal Server Error")
+                    }
+                })
+            }else{
+                res.status(401)
+                res.send("Your request does not include a cipher, please login and use the website as intended")
+            }
+        }else{
+            res.render("login", {login_string : "you need to login to make a request"})
+        }
+    }else{
+        res.status(400)
+        res.send("Incomplete Request")
+    }
+})
 
 app.post("/allMembers", function(req, res) {
     if (req.body){

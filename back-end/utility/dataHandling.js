@@ -11,20 +11,24 @@ function mainPageInformer(username, con,  pageData, callback){
                 pageData.position = userData.position
                 pageData.userLC = userData.LC;
                 pageData.cipher = userData.cipher
+                
+                pageData.usersLog = [];
                 // console.log(results)
                 results.forEach(row =>{
                     varNameStartDate = `${row.Locality}StartDate`
 
                     pageData[varNameStartDate] = row.StartDate;
-                    pageData.usersLog = [];
 
                     pageData.usersLog.push({ "position" : `${row.Locality.toUpperCase()} ${row.Position}`,
-                                                "lastLogDate" : (row.LastActionTime1)?row.LastActionTime1:"unassigned",
-                                                "lastChange" : (row.LastAction1)?row.LastAction1:"unassigned"})
+                                             "lastLogDate" : (row.LastActionTime1)?row.LastActionTime1:"unassigned",
+                                             "lastChange" : (row.LastAction)?row.LastAction:"unassigned",
+                                             "username"   : row.Username})
+                                             
                     
                     if (row.StartDate == null)
                         pageData[varNameStartDate] = "unassigned"
-                })        
+                })
+                      
                 return callback(pageData)
             } else{
 
@@ -46,6 +50,20 @@ function resetLC(LC, con, callback){
         }
     })
 }
+
+function updateAction(username, action, con, callback){
+    con.query(`UPDATE Users  SET LastAction = '${action}' where Username = '${username}'`, function(err, reuslts){
+        if (err){
+            console.log(err)
+            return callback(3);
+        } else{
+            return callback(0);
+        }
+    })
+}
+
+
+
 
 function allMembersInformer(username, number, pageData,LC, con, callback){
     data = ""
@@ -265,7 +283,7 @@ function allActivitiesInformer(username, pageData, LC, con, callback){
                 pageData.cipher             = userData.cipher
                 pageData.allActivities      = []
                 results.forEach(row => {
-                temp = {actID : row.ActivityID, committee: row.Committee.toLowerCase(), actName: Aname}
+                temp = {actID : row.ActivityID, committee: row.Committee.toLowerCase(), actName: row.Aname}
                 pageData.allActivities.push(temp)
             })
             return callback(0, pageData)
@@ -374,6 +392,7 @@ function getLocalActivites(uniNum,con,callback){
 }
 
 
+
   
 
 
@@ -382,5 +401,7 @@ module.exports = {
     resetLC,
     allMembersInformer,
     allActivitiesInformer,
-    allTrainersInformer
+    allTrainersInformer,
+    updateAction,
+    getUserInfo
 }

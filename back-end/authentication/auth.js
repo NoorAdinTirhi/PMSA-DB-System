@@ -42,8 +42,10 @@ function authUser(username,pwd, con, callback) {
                 key[i] = Number(number);
                 i++;
             })
-            const hash = String(crypto.createHmac('sha3-256', key).update("noor"+"fur124365").digest('hex'));
             
+            const hash = String(crypto.createHmac('sha3-256', key).update(username+pwd).digest('hex'));
+            console.log(hash)
+            console.log(result[0].Hmac)
             if (hash == result[0].Hmac){
                 //means success
                 return callback(0)
@@ -75,11 +77,53 @@ function registerSession(username, pwd, con, callback){
     })
     
 }
+function deleteUser(body, con, callback){
+    console.log(body)
+    if (body.localCommittee.toUpperCase() == "NATIONAL" && body.position.toUpperCase() == 'SECGEN'){
+        con.query(`DELETE FROM Users WHERE Username = '${body.userToDelete}'`, function(err){
+            if (err){
+                console.log(err)
+                return callback(1)
+            }else{
+                return callback(0 )
+            }
+        })
+    }else{
+        return callback(5)
+    }
+
+}
+
+//function to register User
+function registerUser(body, con , callback){
+    if (body.localCommittee.toUpperCase() == "NATIONAL" && body.position.toUpperCase() == 'SECGEN'){
+        const secret = new Uint8Array(32);
+        crypto.getRandomValues(secret);
+        const secretString = String(secret)
+        const hashString = String(crypto.createHmac('sha3-256', secret).update(body.nUsername+body.nPassword).digest('hex'))
+        console.log(`sha3-256(${secret}, ${body.nUsername}, ${body.nPassword})`)
+        const current_time = new Date();
+        console.log(`INSERT INTO Users(Username,Hkey,Hmac,Position,Locality) VALUES ('${body.nUsername}','${secretString}', '${hashString}', '${body.nPosition}', '${body.nLC}')`)
+        con.query(`INSERT INTO Users(Username,Hkey,Hmac,Position,Locality) VALUES ('${body.nUsername}','${secretString}', '${hashString}', '${body.nPosition}', '${body.nLC}')`, function(err, result, fields) {
+            if (err){
+                //something went wrong
+                return callback(1);
+            } else{
+                return callback(0);
+            }
+        })
+    
+    }else
+        return callback(5)
+    
+}
 
 
 module.exports = {
     stat,
     authUser,
     registerSession,
-    verifyUser
+    verifyUser,
+    deleteUser,
+    registerUser
 }
