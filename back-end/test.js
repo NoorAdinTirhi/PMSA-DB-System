@@ -14,7 +14,7 @@ ejs.renderFile("views/certificates/SCORE.ejs", {participantName:"noor", activity
             console.log(err)
         }else{
             let options = {
-                height : "1730px",
+                height : "1735px",
                 width  : "1180px",
                 base   : 'file://' + __dirname + "\\public"
             }
