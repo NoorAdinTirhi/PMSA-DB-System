@@ -59,7 +59,7 @@ app.listen(8081, function(err) {
     })
 
     console.log("server is listening at 8081")
-    console.log("Very Nice")
+    console.log("Very Good Very Nice")
 })
 
 //send the login page to all that require it
