@@ -2,58 +2,56 @@
 <html>
 <!-- BlackList -->
 <!-- will also need to add an edit button -->
+
 <head>
     <link rel="stylesheet" href=../../public/styles/common.css>
     <style>
-        body{
+        body {
             background-color: rgb(10, 10, 10);
-            color:aliceblue;
+            color: aliceblue;
         }
-        #blackListTable{
+        
+        #blackListTable {
             border-style: solid;
-            margin:5%;
-            box-shadow: 10px 0px 10px 5px #0887f0,
-              0 0 10px 5px #0887f0,
-              0 0 10px 5px #0887f0,
-              0 0 10px 5px #0887f0;
+            margin: 5%;
+            box-shadow: 10px 0px 10px 5px #0887f0, 0 0 10px 5px #0887f0, 0 0 10px 5px #0887f0, 0 0 10px 5px #0887f0;
             animation: radiation 10s infinite;
             display: flex;
             flex-direction: column;
         }
-        #listHeader{
+        
+        #listHeader {
             display: flex;
             text-align: center;
             border-bottom: solid 2px;
             font-size: 20px
         }
-        #listHeader>*{
+        
+        #listHeader>* {
             padding: 5px 5px;
         }
-
-
-        .listRow{
+        
+        .listRow {
             display: flex;
             text-align: center;
             border-bottom: solid 2px;
             font-size: 16px;
         }
-        .listRow>*{
+        
+        .listRow>* {
             padding: 5px 5px;
         }
+        
         @keyframes radiation {
-            0% {box-shadow: 10px 0px 10px 5px #0887f0,
-                0 0 10px 5px #0887f0,
-                 0 0 10px 5px #0887f0,
-                0 0 10px 5px #0887f0;}
-            50% {box-shadow: 10px 0px 10px 5px #f00836,
-              0 0 10px 5px #f00836,
-              0 0 10px 5px #f00836,
-              0 0 10px 5px #f00836;}
-            100% {box-shadow: 10px 0px 10px 5px #0887f0,
-              0 0 10px 5px #0887f0,
-              0 0 10px 5px #0887f0,
-              0 0 10px 5px #0887f0;
-            } 
+            0% {
+                box-shadow: 10px 0px 10px 5px #0887f0, 0 0 10px 5px #0887f0, 0 0 10px 5px #0887f0, 0 0 10px 5px #0887f0;
+            }
+            50% {
+                box-shadow: 10px 0px 10px 5px #f00836, 0 0 10px 5px #f00836, 0 0 10px 5px #f00836, 0 0 10px 5px #f00836;
+            }
+            100% {
+                box-shadow: 10px 0px 10px 5px #0887f0, 0 0 10px 5px #0887f0, 0 0 10px 5px #0887f0, 0 0 10px 5px #0887f0;
+            }
         }
     </style>
 </head>
@@ -61,7 +59,7 @@
 <body>
     <div class="fullbox">
         <h1 style="width:100%"> BlackList</h1>
-        <div id = "blackListTable">
+        <div id="blackListTable">
             <div id="listHeader">
                 <div style="width:25%; text-align:center; border-right:solid 2px">
                     Member Name
@@ -75,44 +73,44 @@
             </div>
             <% blackLisitngs.forEach((item) => {%>
                 <div class="listRow">
-                        <div style="width:25%; text-align:center; border-right:solid 2px">
-                            <%=item.Name%>
-                        </div>
-                        <div style="width:25%; text-align:center; border-right:solid 2px">
-                            <%=item.BlackListStatus%>
-                        </div>
-                        <div style="width:50%; text-align:center">
-                            <%=item.BlackListDescription%>
-                        </div>
+                    <div style="width:25%; text-align:center; border-right:solid 2px">
+                        <%=item.Name%>
+                    </div>
+                    <div style="width:25%; text-align:center; border-right:solid 2px">
+                        <%=item.BlackListStatus%>
+                    </div>
+                    <div style="width:50%; text-align:center">
+                        <%=item.BlackListDescription%>
+                    </div>
                 </div>
-            <%})%>
-            
+                <%})%>
+
         </div>
     </div>
     <script>
         const hiddenUserIn = document.createElement('input');
         hiddenUserIn.setAttribute('type', 'hidden');
         hiddenUserIn.setAttribute('name', "username");
-        hiddenUserIn.setAttribute('value',"<%=user%>");
+        hiddenUserIn.setAttribute('value', "<%=user%>");
 
         const hiddenLCIn = document.createElement('input');
         hiddenLCIn.setAttribute('type', 'hidden');
         hiddenLCIn.setAttribute('name', "localCommittee");
-        hiddenLCIn.setAttribute('value',"<%=userLC%>");
+        hiddenLCIn.setAttribute('value', "<%=userLC%>");
 
         const hiddenCipherIn = document.createElement('input');
         hiddenCipherIn.setAttribute('type', 'hidden');
         hiddenCipherIn.setAttribute('name', "cipher");
-        hiddenCipherIn.setAttribute('value',"<%=cipher%>");
+        hiddenCipherIn.setAttribute('value', "<%=cipher%>");
 
         const hiddenPositionIn = document.createElement('input');
         hiddenPositionIn.setAttribute('type', 'hidden');
         hiddenPositionIn.setAttribute('name', "position");
-        hiddenPositionIn.setAttribute('value',"<%=position%>");
+        hiddenPositionIn.setAttribute('value', "<%=position%>");
 
         const forms = document.forms;
         console.log(forms)
-        for (let i = 0; i <forms.length; i++){
+        for (let i = 0; i < forms.length; i++) {
             forms[i].appendChild(document.importNode(hiddenUserIn, true))
             forms[i].appendChild(document.importNode(hiddenLCIn, true))
             forms[i].appendChild(document.importNode(hiddenCipherIn, true))

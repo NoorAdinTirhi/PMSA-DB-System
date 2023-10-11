@@ -92,7 +92,8 @@
             border-radius: 2%;
             transform: scale(1.01);
         }
-        .newActivity{
+        
+        .newActivity {
             display: none;
             flex-direction: column;
             position: absolute;
@@ -104,11 +105,12 @@
             height: 98%;
             z-index: 101;
         }
-        #newActivityForm > *{
+        
+        #newActivityForm>* {
             padding-bottom: .7%;
             padding-top: .7%;
-            padding-left:5px;
-            padding-right:5px;
+            padding-left: 5px;
+            padding-right: 5px;
             border-bottom: solid 1px #545353
         }
     </style>
@@ -116,66 +118,66 @@
 
 <body>
     <div class="fullbox">
-        <div class ="newActivity" id="newActivityWindow">
-                <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/">
-                    <h1 id="addActivityTitle"></h1>
+        <div class="newActivity" id="newActivityWindow">
+            <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/">
+                <h1 id="addActivityTitle"></h1>
+                <div style="display: flex; flex-direction:row; width:100%">
                     <div style="display: flex; flex-direction:row; width:100%">
-                        <div style="display: flex; flex-direction:row; width:100%">
-                            <label style="margin-right:5%; width:10%">
+                        <label style="margin-right:5%; width:10%">
                                 Activity Name
                             </label>
-                            <input required type="text" maxlength="50" style="margin: 0% 12.5%; width: 20%" placeholder="Activity Name" name="activityName">
-                        </div>
+                        <input required type="text" maxlength="50" style="margin: 0% 12.5%; width: 20%" placeholder="Activity Name" name="activityName">
                     </div>
+                </div>
+                <div style="display: flex; flex-direction:row; width:100%">
                     <div style="display: flex; flex-direction:row; width:100%">
-                        <div style="display: flex; flex-direction:row; width:100%">
-                            <label style="margin-right:5%; width:10%">
+                        <label style="margin-right:5%; width:10%">
                                 Activity Description
                             </label>
-                             <textarea style="margin:0% 5%; width:50%; height:100px; resize:none"type="textarea" rows="4" cols="125" maxlength="500" id="aDescription"  name="activityDescription" placeholder="write a max of 500 character to describe the activity"></textarea>
-                        </div>
+                        <textarea style="margin:0% 5%; width:50%; height:100px; resize:none" type="textarea" rows="4" cols="125" maxlength="500" id="aDescription" name="activityDescription" placeholder="write a max of 500 character to describe the activity"></textarea>
                     </div>
+                </div>
+                <div style="display: flex; flex-direction:row; width:100%">
                     <div style="display: flex; flex-direction:row; width:100%">
-                        <div style="display: flex; flex-direction:row; width:100%">
-                            <label style="margin-right:5%; width:10%">
+                        <label style="margin-right:5%; width:10%">
                                 Proposal Link
                             </label>
-                            <input required type="url"  style="margin: 0% 12.5%; width: 20%" placeholder="Proposal Link" name="proposalLink">
-                        </div>
+                        <input required type="url" style="margin: 0% 12.5%; width: 20%" placeholder="Proposal Link" name="proposalLink">
                     </div>
+                </div>
+                <div style="display: flex; flex-direction:row; width:100%">
                     <div style="display: flex; flex-direction:row; width:100%">
-                        <div style="display: flex; flex-direction:row; width:100%">
-                            <label style="margin-right:5%; width:10%">
+                        <label style="margin-right:5%; width:10%">
                                 Report Link
                             </label>
-                            <input required type="url"  style="margin: 0% 12.5%; width: 20%" placeholder="Report Link" name="reportLink">
-                        </div>
+                        <input required type="url" style="margin: 0% 12.5%; width: 20%" placeholder="Report Link" name="reportLink">
                     </div>
+                </div>
+                <div style="display: flex; flex-direction:row; width:100%">
                     <div style="display: flex; flex-direction:row; width:100%">
-                        <div style="display: flex; flex-direction:row; width:100%">
-                            <label style="margin-right:5%; width:10%">
+                        <label style="margin-right:5%; width:10%">
                                 Start Date
                             </label>
-                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="StartDate" name="startDate">
-                        </div>
+                        <input required type="date" style="margin: 0% 12.5%; width: 20%" placeholder="StartDate" name="startDate">
                     </div>
+                </div>
+                <div style="display: flex; flex-direction:row; width:100%">
                     <div style="display: flex; flex-direction:row; width:100%">
-                        <div style="display: flex; flex-direction:row; width:100%">
-                            <label style="margin-right:5%; width:10%">
+                        <label style="margin-right:5%; width:10%">
                                 End Date
                             </label>
-                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="EndDate" name="endDate">
-                        </div>
+                        <input required type="date" style="margin: 0% 12.5%; width: 20%" placeholder="EndDate" name="endDate">
                     </div>
-                
-                    <div style="margin-top: 0.5%;">
-                        <button type="submit">Submit</button>
-                        <button type="button" onclick="addActivityClose()"> Cancel</button>
-                    </div>
-                   
-                </form>
+                </div>
+
+                <div style="margin-top: 0.5%;">
+                    <button type="submit">Submit</button>
+                    <button type="button" onclick="addActivityClose()"> Cancel</button>
+                </div>
+
+            </form>
         </div>
-        
+
         <div class="line" style=" position: relative; width:max-content; margin-left : 3%">
             <div style="display: inline-block; padding-right : 5% auto">
                 <!-- title -->
@@ -191,38 +193,38 @@
         </div>
         <div id="boxesSec">
             <form method="post" action="/filterActivities">
-                <button id=nationalBtn onclick="setFilter('national')" name="filter" value="national" type="submit" >
+                <button id=nationalBtn onclick="setFilter('national')" name="filter" value="national" type="submit">
                     National
                 </button>
             </form>
 
-                <div style="display:flex; flex-direction:column; width:30%;  position:relative; border-style:solid">
-                    <div style="display:flex; flex-direction:row">
-                        <form method="post" action="/filterActivities" style="width: 100%;">
-                            <button id="nablusBtn"class="localbutton" onclick="setFilter('nablus')" name="filter" value="nablus" type="submit"> Nablus</button>
-                        </form>
-                        <form  method="post" action="/filterActivities" style="width: 100%;" >
-                            <button id="jerusalemBtn"class="localbutton" onclick="setFilter('jerusalem')" name="filter" value="jerusalem" type="submit"> Jerusalem</button>
-                        </form>
-                        <form  method="post" action="/filterActivities" style="width: 100%;">
-                            <button id="gazaBtn"class="localbutton" onclick="setFilter('gaza')" name="filter" value="gaza" type="submit"> Gaza</button>
-                        </form>
-                        
-                    </div>
-                    <div style="display:flex; flex-direction:row">
-                        <form  method="post" action="/filterActivities" style="width: 100%;">
-                         <button id="ppuBtn"class="localbutton" onclick="setFilter('ppu')" name="filter" value="ppu" type="submit"> PPU</button>
-                        </form>
-                        <form  method="post" action="/filterActivities" style="width: 100%;">
-                            <button id="huBtn"class="localbutton" onclick="setFilter('hu')" name="filter" value="hu" type="submit"> HU</button>
-                        </form>
-                        <form method="post" action="/filterActivities" style="width: 100%;">
-                            <button id="jininBtn"class="localbutton" onclick="setFilter('jinin')" name="filter" value="jinin" type="submit"> Jinin</button>
-                        </form>
-                    </div>
+            <div style="display:flex; flex-direction:column; width:30%;  position:relative; border-style:solid">
+                <div style="display:flex; flex-direction:row">
+                    <form method="post" action="/filterActivities" style="width: 100%;">
+                        <button id="nablusBtn" class="localbutton" onclick="setFilter('nablus')" name="filter" value="nablus" type="submit"> Nablus</button>
+                    </form>
+                    <form method="post" action="/filterActivities" style="width: 100%;">
+                        <button id="jerusalemBtn" class="localbutton" onclick="setFilter('jerusalem')" name="filter" value="jerusalem" type="submit"> Jerusalem</button>
+                    </form>
+                    <form method="post" action="/filterActivities" style="width: 100%;">
+                        <button id="gazaBtn" class="localbutton" onclick="setFilter('gaza')" name="filter" value="gaza" type="submit"> Gaza</button>
+                    </form>
 
                 </div>
-             </div>
+                <div style="display:flex; flex-direction:row">
+                    <form method="post" action="/filterActivities" style="width: 100%;">
+                        <button id="ppuBtn" class="localbutton" onclick="setFilter('ppu')" name="filter" value="ppu" type="submit"> PPU</button>
+                    </form>
+                    <form method="post" action="/filterActivities" style="width: 100%;">
+                        <button id="huBtn" class="localbutton" onclick="setFilter('hu')" name="filter" value="hu" type="submit"> HU</button>
+                    </form>
+                    <form method="post" action="/filterActivities" style="width: 100%;">
+                        <button id="jininBtn" class="localbutton" onclick="setFilter('jinin')" name="filter" value="jinin" type="submit"> Jinin</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
         <table id="activities-table" style="margin-top: 5%; border-style: solid; width:80%; float:left; margin-left: 10%;">
             <tr style="position: relative;">
                 <th style="width: 10%; border-bottom:2px solid #000000">
@@ -264,7 +266,7 @@
                     General
                 </td>
                 <td style="width: 10%;">
-                    
+
                     <%=allActivities.filter((obj) => obj.Committee == "general" ).length%>
                 </td>
                 <td style="width: 10%;">
@@ -288,7 +290,7 @@
                     CB
                 </td>
                 <td style="width: 10%;">
-                   <%=allActivities.filter((obj) => obj.Committee == "cb" ).length%>
+                    <%=allActivities.filter((obj) => obj.Committee == "cb" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('cb')">Add Activity</button>
@@ -453,26 +455,26 @@
         const hiddenUserIn = document.createElement('input');
         hiddenUserIn.setAttribute('type', 'hidden');
         hiddenUserIn.setAttribute('name', "username");
-        hiddenUserIn.setAttribute('value',"<%=user%>");
+        hiddenUserIn.setAttribute('value', "<%=user%>");
 
         const hiddenLCIn = document.createElement('input');
         hiddenLCIn.setAttribute('type', 'hidden');
         hiddenLCIn.setAttribute('name', "localCommittee");
-        hiddenLCIn.setAttribute('value',"<%=userLC%>");
+        hiddenLCIn.setAttribute('value', "<%=userLC%>");
 
         const hiddenCipherIn = document.createElement('input');
         hiddenCipherIn.setAttribute('type', 'hidden');
         hiddenCipherIn.setAttribute('name', "cipher");
-        hiddenCipherIn.setAttribute('value',"<%=cipher%>");
+        hiddenCipherIn.setAttribute('value', "<%=cipher%>");
 
         const hiddenPositionIn = document.createElement('input');
         hiddenPositionIn.setAttribute('type', 'hidden');
         hiddenPositionIn.setAttribute('name', "position");
-        hiddenPositionIn.setAttribute('value',"<%=position%>");
+        hiddenPositionIn.setAttribute('value', "<%=position%>");
 
         const forms = document.forms;
         console.log(forms)
-        for (let i = 0; i <forms.length; i++){
+        for (let i = 0; i < forms.length; i++) {
             forms[i].appendChild(document.importNode(hiddenUserIn, true))
             forms[i].appendChild(document.importNode(hiddenLCIn, true))
             forms[i].appendChild(document.importNode(hiddenCipherIn, true))
@@ -487,20 +489,20 @@
             document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
             document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()+1<10)?("0"+cur_time.getMonth()+1):cur_time.getMonth()+1}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
         }, 1000);
-        
+
 
         var filterLC;
-        
-        if ("<%=userLC%>" != "national"){
-            document.getElementById("boxesSec").style.display="none"
+
+        if ("<%=userLC%>" != "national") {
+            document.getElementById("boxesSec").style.display = "none"
         }
 
-        lcs = ['national','nablus', 'jerusalem', 'gaza', 'ppu', 'hu', 'jinin']
+        lcs = ['national', 'nablus', 'jerusalem', 'gaza', 'ppu', 'hu', 'jinin']
         setFilter("<%=userLC%>")
 
-        function setFilter(localCommittee){
+        function setFilter(localCommittee) {
             console.log(filterLC)
-            lcs.forEach((element) =>{
+            lcs.forEach((element) => {
                 temp = document.getElementById(`${element}Btn`)
                 temp.style.borderStyle = "none"
                 if (element == "national")
@@ -517,13 +519,13 @@
             lcBtn.style.position = "relative"
         }
 
-        
 
-        function addActivityWindow(committee){
+
+        function addActivityWindow(committee) {
             let properString;
-            if(committee == "general"){
+            if (committee == "general") {
                 properString = committee.charAt(0).toUpperCase() + committee.slice(1);
-            }else{
+            } else {
                 properString = committee.toUpperCase();
             }
 
@@ -532,11 +534,11 @@
 
             hiddenCommitteein.setAttribute('value', properString);
 
-            document.getElementById("newActivityForm").appendChild(hiddenCommitteein);  
+            document.getElementById("newActivityForm").appendChild(hiddenCommitteein);
             document.getElementById("newActivityForm").appendChild(hiddenlocalCommitteein);
         }
 
-        function addActivityClose(){
+        function addActivityClose() {
             document.getElementById("newActivityWindow").style.display = "none"
             document.getElementById("newActivityForm").removeChild(hiddenCommitteein)
         }
@@ -545,7 +547,6 @@
             event.preventDefault();
             console.log(event);
         })
-
     </script>
 
 </body>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!-- TODO add all users  -->
+
 <head>
     <link rel="stylesheet" href="../public/styles/common.css">
     <style>
@@ -12,8 +13,8 @@
             filter: blur(5px);
             background-color: #ccc;
         }
-        .blurr
-        h1 {
+        
+        .blurr h1 {
             margin-left: 30px;
         }
         
@@ -151,20 +152,22 @@
         }
         
         #SecGen {
-          font-family: Arial, Helvetica, sans-serif;
-          border-collapse: collapse;
-          width: 90%;
-          margin-left: 5%;
-          height : 350px;
-          overflow-y: scroll;
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 90%;
+            margin-left: 5%;
+            height: 350px;
+            overflow-y: scroll;
         }
-        .SecGenCell{
+        
+        .SecGenCell {
             border: 1px solid #ddd;
             padding: 8px;
             padding-top: 15px;
             padding-top: 15px;
-            width : 33%;
+            width: 33%;
         }
+        
         .headerCell {
             padding-top: 12px;
             padding-bottom: 12px;
@@ -173,7 +176,6 @@
             color: white;
         }
         
-
         #headerCell {
             border: 1px solid #ddd;
             padding: 8px;
@@ -188,8 +190,6 @@
         #SecGen li:hover {
             background-color: #ddd;
         }
-
-        
         
         #leftbox {
             display: inline-block;
@@ -209,42 +209,44 @@
             margin-top: 2%;
             min-width: max-content;
         }
-
-        .popUpWindow{
+        
+        .popUpWindow {
             display: none;
             flex-direction: column;
             position: absolute;
             background-color: whitesmoke;
             text-align: center;
             box-shadow: 2px 2px 3px 1px rgb(5, 5, 5);
-            width:55%;
+            width: 55%;
             margin: 10% 22.5%;
         }
-        #newUserForm{
+        
+        #newUserForm {
             padding: 0px 30px;
         }
-        #newUserForm > div {
+        
+        #newUserForm>div {
             display: flex;
             padding-bottom: 1%;
             padding-top: 1%;
-            padding-left:5px;
-            padding-right:5px;
+            padding-left: 5px;
+            padding-right: 5px;
             border-bottom: solid 1px #545353
         }
-        #newUserForm > div > input{
+        
+        #newUserForm>div>input {
             width: 300px;
             margin-right: 50px;
             margin-left: 50px;
         }
-
-        #newUserForm > div > div{
+        
+        #newUserForm>div>div {
             width: 400px;
         }
-
-        #newUserForm > div > label {
+        
+        #newUserForm>div>label {
             margin-right: 60px;
         }
-      
     </style>
 </head>
 
@@ -291,9 +293,9 @@
                         All Activities
                     </button>
                     </form>
-                    
+
                     <form method="post" action="/blackList">
-                        
+
                         <button class="allButoon zoom secgen" type="submit">
                         Black List
                     </button>
@@ -318,20 +320,26 @@
                 </div>
 
                 <ul list-style-type="none" id="SecGen">
-                    <li style="display:flex; flex-direction:row" id ="header">
+                    <li style="display:flex; flex-direction:row" id="header">
                         <div class="headerCell SecGenCell">Account Name</div>
                         <div class="headerCell SecGenCell">Last Time Logged</div>
                         <div class="headerCell SecGenCell">Last Action</div>
                     </li>
-                    
+
                     <%usersLog.forEach( (element) => {%>
-                        <li style="display:flex; flex-direction:row" id ="header">
-                        <div class="SecGenCell"><%=element.position%></div>
-                        <div class="SecGenCell"><%=element.lastLogDate%></div>
-                        <div class="SecGenCell"><%=element.lastChange%></div>
-                    </li>
-                   <%});%>
-                    
+                        <li style="display:flex; flex-direction:row" id="header">
+                            <div class="SecGenCell">
+                                <%=element.position%>
+                            </div>
+                            <div class="SecGenCell">
+                                <%=element.lastLogDate%>
+                            </div>
+                            <div class="SecGenCell">
+                                <%=element.lastChange%>
+                            </div>
+                        </li>
+                        <%});%>
+
                 </ul>
 
                 <div class="line" style=" position: relative; width:60%;  margin-bottom: 2%; float: left; margin-left: 20%;">
@@ -403,134 +411,132 @@
                 </div>
             </div>
             <div style="display:flex; flex-direction:column; width:10%; position:relative">
-                <form id="resetMemForm" method="post"  style="width:100%; margin-top: 40%" action="/resetMember">
-                    <button class="allButoon zoom secgen" type="button" onclick="formConfirm('resetMemForm')" >Reset All Local Member</button>
+                <form id="resetMemForm" method="post" style="width:100%; margin-top: 40%" action="/resetMember">
+                    <button class="allButoon zoom secgen" type="button" onclick="formConfirm('resetMemForm')">Reset All Local Member</button>
                 </form>
-                <button class="allButoon zoom secgen"  onclick="addNewUserWin()" >Register New User</button>
-                <button class="allButoon zoom secgen"  onclick="deleteUserWin()" >Delete User</button>
+                <button class="allButoon zoom secgen" onclick="addNewUserWin()">Register New User</button>
+                <button class="allButoon zoom secgen" onclick="deleteUserWin()">Delete User</button>
             </div>
-            
+
         </div>
-        </div>
-        <div id = "deleteUserWin" class="popUpWindow" >
-            <form id="deleteUserForm"method="post" action="/deleteUser" style="display:flex; flex-direction:column">
-                <select name="userToDelete" style="width: 50%; margin: 2.5% 25%">
+    </div>
+    <div id="deleteUserWin" class="popUpWindow">
+        <form id="deleteUserForm" method="post" action="/deleteUser" style="display:flex; flex-direction:column">
+            <select name="userToDelete" style="width: 50%; margin: 2.5% 25%">
                     <%usersLog.forEach( (element) => {%>
                         <option  id = "<%=element.username%>" value = "<%=element.username%>"><%=element.position%></option>
                     </li>
                    <%});%>
                 </select>
-                <div style="display:flex; flex-direction:row">
-                    <button style="width: 50%; margin: 2.5% 25%" type="button" onclick="formConfirm('deleteUserForm')"> Delete Member</button>
-                    <button style="width: 50%; margin: 2.5% 25%" type="button" onclick="deleteUserWin();"> Cancel</button>
+            <div style="display:flex; flex-direction:row">
+                <button style="width: 50%; margin: 2.5% 25%" type="button" onclick="formConfirm('deleteUserForm')"> Delete Member</button>
+                <button style="width: 50%; margin: 2.5% 25%" type="button" onclick="deleteUserWin();"> Cancel</button>
+            </div>
+        </form>
+    </div>
+    <div id="newUserWin" class="popUpWindow">
+        <h1>Register A New User</h1>
+        <form id=n ewUserForm method="post" action="registerUser">
+            <div>
+                <label style="width: 200px; ">Usernaem</label>
+                <input type="text" maxlength="50" required name="nUsername">
+            </div>
+            <div>
+                <label style="width: 200px; ">Password</label>
+                <input type="password" maxlength="50" required id="password" name="nPassword">
+            </div>
+            <div>
+                <label style="width: 200px; ">Confirm Password</label>
+                <input type="password" maxlength="50" onpaste="return false" required id="confirm_password" name="confirmPassword">
+            </div>
+            <div>
+                <label style="width: 200px; ">Position</label>
+                <div style="display: flex; width:200px; margin:0px 100px">
+                    <label><input required type="radio" name="nPosition" value="Secgen">Secgen</label>
+                    <label><input required type="radio" name="nPosition" value="CBD">CBD</label>
                 </div>
-            </form>
-        </div>
-        <div id = "newUserWin" class="popUpWindow">
-                <h1>Register A New User</h1>
-                <form id = newUserForm method="post" action="registerUser">
-                    <div>
-                        <label style="width: 200px; ">Usernaem</label>
-                        <input type="text" maxlength="50" required name="nUsername">
-                    </div>
-                    <div>
-                        <label style="width: 200px; ">Password</label>
-                        <input type="password" maxlength="50" required id = "password" name="nPassword">
-                    </div>
-                    <div>
-                        <label style="width: 200px; ">Confirm Password</label>
-                        <input type="password" maxlength="50" onpaste="return false" required id = "confirm_password" name="confirmPassword">
-                    </div>
-                    <div>
-                        <label style="width: 200px; ">Position</label>
-                        <div style="display: flex; width:200px; margin:0px 100px">
-                            <label><input required type="radio" name="nPosition" value="Secgen">Secgen</label>
-                            <label><input required type="radio" name="nPosition" value="CBD">CBD</label>
-                        </div>
-                    </div>
-                    <div>
-                        <label style="width: 200px; ">Local Committee</label>
-                        <div style="display: flex;">
-                            <label><input required type="radio" name="nLC" value="nablus">Nablus</label>
-                            <label><input required type="radio" name="nLC" value="jinin">Jinin</label>
-                            <label><input required type="radio" name="nLC" value="ppu">PPU</label>
-                            <label><input required type="radio" name="nLC" value="hu">HU</label>
-                            <label><input required type="radio" name="nLC" value="jerusalem">Jerusalem</label>
-                            <label><input required type="radio" name="nLC" value="gaza">Gaza</label>
-                            <label><input required type="radio" name="nLC" value="national">National</label>
-                        </div>
-                    </div>
-                    <div style="width:40%; padding: 0% 30%">
-                        <button type="button" style="margin:10px 10px" onclick="validatePassword()">Submit</button>
-                        <button type="button" style="margin:10px 10px" onclick="addNewUserWin()">Cancel</button>
-                    </div>
-                    
-                    
-                </form>
+            </div>
+            <div>
+                <label style="width: 200px; ">Local Committee</label>
+                <div style="display: flex;">
+                    <label><input required type="radio" name="nLC" value="nablus">Nablus</label>
+                    <label><input required type="radio" name="nLC" value="jinin">Jinin</label>
+                    <label><input required type="radio" name="nLC" value="ppu">PPU</label>
+                    <label><input required type="radio" name="nLC" value="hu">HU</label>
+                    <label><input required type="radio" name="nLC" value="jerusalem">Jerusalem</label>
+                    <label><input required type="radio" name="nLC" value="gaza">Gaza</label>
+                    <label><input required type="radio" name="nLC" value="national">National</label>
+                </div>
+            </div>
+            <div style="width:40%; padding: 0% 30%">
+                <button type="button" style="margin:10px 10px" onclick="validatePassword()">Submit</button>
+                <button type="button" style="margin:10px 10px" onclick="addNewUserWin()">Cancel</button>
             </div>
 
-        <script>
+
+        </form>
+    </div>
+
+    <script>
+        const hiddenUserIn = document.createElement('input');
+        hiddenUserIn.setAttribute('type', 'hidden');
+        hiddenUserIn.setAttribute('name', "username");
+        hiddenUserIn.setAttribute('value', "<%=user%>");
+
+        const hiddenLCIn = document.createElement('input');
+        hiddenLCIn.setAttribute('type', 'hidden');
+        hiddenLCIn.setAttribute('name', "localCommittee");
+        hiddenLCIn.setAttribute('value', "<%=userLC%>");
+
+        const hiddenCipherIn = document.createElement('input');
+        hiddenCipherIn.setAttribute('type', 'hidden');
+        hiddenCipherIn.setAttribute('name', "cipher");
+        hiddenCipherIn.setAttribute('value', "<%=cipher%>");
+
+        const hiddenPositionIn = document.createElement('input');
+        hiddenPositionIn.setAttribute('type', 'hidden');
+        hiddenPositionIn.setAttribute('name', "position");
+        hiddenPositionIn.setAttribute('value', "<%=position%>");
+
+        const forms = document.forms;
+        console.log(forms)
+        for (let i = 0; i < forms.length; i++) {
+            forms[i].appendChild(document.importNode(hiddenUserIn, true))
+            forms[i].appendChild(document.importNode(hiddenLCIn, true))
+            forms[i].appendChild(document.importNode(hiddenCipherIn, true))
+            forms[i].appendChild(document.importNode(hiddenPositionIn, true))
+        }
 
 
-            const hiddenUserIn = document.createElement('input');
-            hiddenUserIn.setAttribute('type', 'hidden');
-            hiddenUserIn.setAttribute('name', "username");
-            hiddenUserIn.setAttribute('value',"<%=user%>");
+        var cur_time = new Date();
+        document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
+        document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()+1<10)?("0"+cur_time.getMonth()+1):cur_time.getMonth()+1}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
 
-            const hiddenLCIn = document.createElement('input');
-            hiddenLCIn.setAttribute('type', 'hidden');
-            hiddenLCIn.setAttribute('name', "localCommittee");
-            hiddenLCIn.setAttribute('value',"<%=userLC%>");
-
-            const hiddenCipherIn = document.createElement('input');
-            hiddenCipherIn.setAttribute('type', 'hidden');
-            hiddenCipherIn.setAttribute('name', "cipher");
-            hiddenCipherIn.setAttribute('value',"<%=cipher%>");
-
-            const hiddenPositionIn = document.createElement('input');
-            hiddenPositionIn.setAttribute('type', 'hidden');
-            hiddenPositionIn.setAttribute('name', "position");
-            hiddenPositionIn.setAttribute('value',"<%=position%>");
-
-            const forms = document.forms;
-            console.log(forms)
-            for (let i = 0; i <forms.length; i++){
-                forms[i].appendChild(document.importNode(hiddenUserIn, true))
-                forms[i].appendChild(document.importNode(hiddenLCIn, true))
-                forms[i].appendChild(document.importNode(hiddenCipherIn, true))
-                forms[i].appendChild(document.importNode(hiddenPositionIn, true))
-            }
-
-            
+        var intervalId = setInterval(function() {
             var cur_time = new Date();
             document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
             document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()+1<10)?("0"+cur_time.getMonth()+1):cur_time.getMonth()+1}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
+        }, 1000);
 
-            var intervalId = setInterval(function() {
-                var cur_time = new Date();
-                document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0"+cur_time.getMinutes()) : cur_time.getMinutes()}`
-                document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()+1<10)?("0"+cur_time.getMonth()+1):cur_time.getMonth()+1}/${(cur_time.getDate()<10)?("0"+cur_time.getDate()):(cur_time.getDate())}`
-            }, 1000);
-
-            function filterSelection(c) {
-                const collection = document.getElementsByClassName("filterDiv");
-                for (let i = 0; i < collection.length; i++) {
-                    if (collection[i].className.indexOf(c) > -1)
-                        collection[i].style.display = "block";
-                }
+        function filterSelection(c) {
+            const collection = document.getElementsByClassName("filterDiv");
+            for (let i = 0; i < collection.length; i++) {
+                if (collection[i].className.indexOf(c) > -1)
+                    collection[i].style.display = "block";
             }
- 
-            var password = document.getElementById("password")
-            , confirm_password = document.getElementById("confirm_password");
+        }
 
-            function validatePassword(){
-              if(password.value != confirm_password.value) {
+        var password = document.getElementById("password"),
+            confirm_password = document.getElementById("confirm_password");
+
+        function validatePassword() {
+            if (password.value != confirm_password.value) {
                 confirm_password.setCustomValidity("Passwords Don't Match");
-              } else {
+            } else {
                 confirm_password.setCustomValidity('');
                 myForm = document.getElementById('newUserForm')
-            
-                const xhr  = new XMLHttpRequest();
+
+                const xhr = new XMLHttpRequest();
                 xhr.onload = function() {
                     console.log(`Status: ${this.status}:: ${this.responseText}`)
                     alert(`Status: ${this.status}:: ${this.responseText}`)
@@ -540,96 +546,95 @@
                 xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
                 let request = ""
                 inputs = myForm.getElementsByTagName("input")
-                for (let i = 0; i <  inputs.length; i++){
-                    if (inputs[i].type == "radio"){
+                for (let i = 0; i < inputs.length; i++) {
+                    if (inputs[i].type == "radio") {
                         if (inputs[i].checked)
                             request = request + inputs[i].name + "=" + inputs[i].value + "&"
-                    }else{
+                    } else {
                         request = request + inputs[i].name + "=" + inputs[i].value + "&"
                     }
                 }
-                request=request.slice(0,-1)
+                request = request.slice(0, -1)
                 console.log(request)
                 xhr.send(request)
-              }
             }
+        }
 
-            function formConfirm(form_id){
-                myForm = document.getElementById(form_id)
-                if (window.confirm('are you sure you want to do this?')){
-                    if (window.confirm('are you absolutely sure you want to do this? this is IRREVERSIBLE')){
-                        const xhr  = new XMLHttpRequest();
-                        xhr.onload = function() {
-                            console.log(`Status: ${this.status}:: ${this.responseText}`)
-                            alert(`Status: ${this.status}:: ${this.responseText}`)
-                        }
-                        xhr.open("POST", `${myForm.action}`)
-                        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-                        let request = ""
-                        inputs = myForm.elements
-                        for (let i = 0; i <  inputs.length; i++){
-                            if (inputs[i].type == "radio"){
-                                if (inputs[i].checked)
-                                    request = request + inputs[i].name + "=" + inputs[i].value + "&"
-                            }else{
-                                request = request + inputs[i].name + "=" + inputs[i].value + "&"
-                            }
-                        }
-                        request=request.slice(0,-1)
-                        if (form_id == "deleteUserForm"){
-                            request.split('&').forEach(row =>{
-                                array = row.split('=')
-                                if (array[0] == "userToDelete" ){
-                                    document.getElementById(array[array.length - 1]).remove()
-                                }
-                            })
-                        }
-                        console.log(request)
-                        xhr.send(request)
+        function formConfirm(form_id) {
+            myForm = document.getElementById(form_id)
+            if (window.confirm('are you sure you want to do this?')) {
+                if (window.confirm('are you absolutely sure you want to do this? this is IRREVERSIBLE')) {
+                    const xhr = new XMLHttpRequest();
+                    xhr.onload = function() {
+                        console.log(`Status: ${this.status}:: ${this.responseText}`)
+                        alert(`Status: ${this.status}:: ${this.responseText}`)
                     }
+                    xhr.open("POST", `${myForm.action}`)
+                    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+                    let request = ""
+                    inputs = myForm.elements
+                    for (let i = 0; i < inputs.length; i++) {
+                        if (inputs[i].type == "radio") {
+                            if (inputs[i].checked)
+                                request = request + inputs[i].name + "=" + inputs[i].value + "&"
+                        } else {
+                            request = request + inputs[i].name + "=" + inputs[i].value + "&"
+                        }
+                    }
+                    request = request.slice(0, -1)
+                    if (form_id == "deleteUserForm") {
+                        request.split('&').forEach(row => {
+                            array = row.split('=')
+                            if (array[0] == "userToDelete") {
+                                document.getElementById(array[array.length - 1]).remove()
+                            }
+                        })
+                    }
+                    console.log(request)
+                    xhr.send(request)
                 }
             }
-            flag = 0;
-            function addNewUserWin(){
-                if (flag == 0){
-                    console.log(document.getElementById("newUserWin").style.display = "none")
-                    flag ++;
-                }
-                    
-                if(document.getElementById("newUserWin").style.display == "none"){
-                    document.getElementById("newUserWin").style.display = "flex"
-                    document.getElementsByClassName("fullbox")[0].classList.add("blurry")
-                }else{
-                    document.getElementById("newUserWin").style.display = "none"
-                    document.getElementsByClassName("fullbox")[0].classList.remove("blurry")
-                    
-                }
-                
+        }
+        flag = 0;
+
+        function addNewUserWin() {
+            if (flag == 0) {
+                console.log(document.getElementById("newUserWin").style.display = "none")
+                flag++;
             }
 
-            function deleteUserWin(){
-                if (flag == 0){
-                    console.log(document.getElementById("deleteUserWin").style.display = "none")
-                    flag++;
-                }
-                    
-                if(document.getElementById("deleteUserWin").style.display == "none"){
-                    document.getElementById("deleteUserWin").style.display = "flex"
-                    document.getElementsByClassName("fullbox")[0].classList.add("blurry")
-                }else{
-                    document.getElementById("deleteUserWin").style.display = "none"
-                    document.getElementsByClassName("fullbox")[0].classList.remove("blurry")
-                    
-                }
-                
+            if (document.getElementById("newUserWin").style.display == "none") {
+                document.getElementById("newUserWin").style.display = "flex"
+                document.getElementsByClassName("fullbox")[0].classList.add("blurry")
+            } else {
+                document.getElementById("newUserWin").style.display = "none"
+                document.getElementsByClassName("fullbox")[0].classList.remove("blurry")
+
             }
 
-            function removeOption(element_id){
-                document.getElementById(element_id).remove()
-            }
-            
+        }
 
-        </script>
+        function deleteUserWin() {
+            if (flag == 0) {
+                console.log(document.getElementById("deleteUserWin").style.display = "none")
+                flag++;
+            }
+
+            if (document.getElementById("deleteUserWin").style.display == "none") {
+                document.getElementById("deleteUserWin").style.display = "flex"
+                document.getElementsByClassName("fullbox")[0].classList.add("blurry")
+            } else {
+                document.getElementById("deleteUserWin").style.display = "none"
+                document.getElementsByClassName("fullbox")[0].classList.remove("blurry")
+
+            }
+
+        }
+
+        function removeOption(element_id) {
+            document.getElementById(element_id).remove()
+        }
+    </script>
 
 
 </body>
