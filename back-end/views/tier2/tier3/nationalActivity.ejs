@@ -278,6 +278,15 @@
                 <div class="headerbox" style="margin-left: 41.8px;">
                     <%=committeeName%>
                 </div>
+                <div class="headerbox" style="margin-left: 41.8px; display: flex; flex-direction: row;">
+                    <%if (involvedLC.length != 0) {%>
+                        <%involvedLC.forEach(element => {%>
+                            <div style="margin:2px 5px;"><%=element%></div>
+                        <%})%>
+                    <%} else {%>
+                        <div>No LCs have participated in the Activity</div>
+                    <%}%>
+                </div>
                 <div style="height: max-content; min-width:max-content; display:flex; flex-direction: row;">
                     Start&ensp;<br>Date&ensp;
                     <div class="headerbox" style="display: inline-block; margin-right: 5px;">

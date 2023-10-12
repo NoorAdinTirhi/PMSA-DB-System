@@ -208,7 +208,7 @@
                             <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="EndDate" name="endDate" value="<%=endDate%>">
                         </div>
                     </div>
-                    <div id = "participatingCommittees" style="display: flex; flex-direction:row; width:100%">
+                    <!-- <div id = "participatingCommittees" style="display: flex; flex-direction:row; width:100%">
                         <div style="display: flex; flex-direction:row; width:100%">
                             
                             <label style="margin-right:5%; width:10%">
@@ -222,7 +222,7 @@
                             </div>
                             
                         </div>
-                    </div>
+                    </div> -->
 
                 
                     <div style="margin-top: 0.5%;">
@@ -286,66 +286,6 @@
                     End&ensp;<br>Date&ensp;
                     <div class="headerbox" style="display: inline-block;">
                         <%=endDate%>
-                    </div>
-                </div>
-                <div style="display:flex; flex-direction:column;">
-                    <div>
-                        <h1 style="border-bottom: solid black;">Committee Participation Percentages</h1>
-                    </div>
-                    <div style="display: flex; flex-direction:row; margin-top:2.5%;">
-                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
-                            <div style="padding:2px; border-right: solid black">
-                                Nablus
-                            </div>
-                            <div style="padding:2px;">
-                                <%=nablusPercent%>
-                            </div>
-                        </div>
-                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
-                            <div style="padding:2px; border-right: solid black">
-                                Gaza
-                            </div>
-                            <div style="padding:2px;">
-                                <%=gazaPercent%>
-                            </div>
-                        </div>
-                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
-                            <div style="padding:2px; border-right: solid black">
-                                PPU
-                            </div>
-                            <div style="padding:2px;">
-                                <%=ppuPercent%>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display: flex; flex-direction:row; margin-top:2.5%">
-                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
-                            <div style="padding:2px; border-right: solid black">
-                                Jerusalem
-                            </div>
-                            <div style="padding:2px;">
-                                <%=jerusalemPercent%>
-                            </div>
-                        </div>
-                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
-                            <div style="padding:2px; border-right: solid black">
-                                Jinin
-                            </div>
-                            <div style="padding:2px;">
-                                <%=jeninPercent%>
-                            </div>
-                        </div>
-                        <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
-                            <div style="padding:2px; border-right: solid black">
-                                HUU
-                            </div>
-                            <div style="padding:2px;">
-                                <%=huPercent%>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display: flex; flex-direction:row">
-
                     </div>
                 </div>
             </div>
@@ -424,13 +364,7 @@
                         <button class="participantBtn " style="float:right ">Next Participant</button>
                     </form>
                 </div>
-                <div style="width:94%;display: inline-block; padding:1% ">
-                    <form method="post" action="/printCert">
-                    <button class="participantBtn " style="float:left ">Print Certificate</button></form>
-                    <form method="post" action="/printAllCert">
-                        <button class="participantBtn " style="float:right ">Print All Certificates</button>
-                    </form>
-                </div>
+                
             </div>
         </div>
         <!--  -->

@@ -7,9 +7,32 @@ const pdf = require('html-pdf')
 const ejs = require('ejs')
     // const audit = require('express-requests-logger')
 
-const { stat, authUser, verifyUser, registerSession, registerUser, deleteUser } = require('./authentication/auth')
-const { mainPage_varialbes, activityPage_variables, allMembers_variables, allTrainers_variables, blackList_variables, localActivity_variables } = require('./constants/CONSTANTS')
-const { mainPageInformer, resetLC, allMembersInformer, allActivitiesInformer, allTrainersInformer, updateAction, getUserInfo, updateLCStartTerm, blackListInformer, nationalActivityInformer } = require('./utility/dataHandling')
+const { stat,
+        authUser,
+        verifyUser, 
+        registerSession,
+        registerUser, 
+        deleteUser } = require('./authentication/auth')
+        
+const { mainPage_varialbes,
+        activityPage_variables, 
+        allMembers_variables, 
+        allTrainers_variables, 
+        blackList_variables, 
+        localActivity_variables, 
+        nationalActivity_variables } = require('./constants/CONSTANTS')
+
+const { mainPageInformer, 
+        resetLC, 
+        allMembersInformer, 
+        allActivitiesInformer, 
+        allTrainersInformer, 
+        updateAction, 
+        getUserInfo, 
+        updateLCStartTerm, 
+        blackListInformer, 
+        nationalActivityInformer,
+        localActivityInformer                         } = require('./utility/dataHandling')
 
 
 // let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
@@ -446,13 +469,26 @@ app.post("/blackList", function(req, res){
 
 // test for the local activity page
 app.get("/nationalActivity", function(req, res) {
-    nationalActivityInformer('noor', 0, 1, 0,localActivity_variables, con, function(flag, data){
+    nationalActivityInformer('noor', 0, 1, nationalActivity_variables, con, function(flag, data){
         if (flag == 0){
             console.log(data)
-            res.render("tier2/tier3/localActivity", data)
+            res.render("tier2/tier3/nationalActivity", data)
         }else {
             console.log(flag)
             console.log(data)
+            res.status(400)
+            res.send("Failed")
+        }
+    })
+})
+
+// test for the local activity page
+app.get("/localActivity", function(req, res) {
+    localActivityInformer('noor', 0, 1, localActivity_variables, con, function(flag, data){
+        if (flag == 0){
+            res.render("tier2/tier3/localActivity", data)
+        }else {
+            console.log(flag)
             res.status(400)
             res.send("Failed")
         }

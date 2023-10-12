@@ -99,7 +99,7 @@ module.exports = {
         blackLisitngs : []
     },
 
-    localActivity_variables: {
+    nationalActivity_variables: {
         position: "temp",
         userLC: "temp",
         cipher: "",
@@ -126,6 +126,32 @@ module.exports = {
         participantFacebook : "",
         nationalActivites : [],
         localActivites : [],
+        involvedLC : []
+
+    },
+
+    localActivity_variables: {
+        position: "temp",
+        userLC: "temp",
+        cipher: "",
+        user: "",
+        activityName : "",
+        activityDescription : "",
+        proposalLink : "",
+        reportLink : "",
+        startDate : "",
+        endDate : "",
+        activityID : "",
+        committeeName : "",
+        participantName : "",
+        participantLocalCommittee : "",
+        participantYearOfStudy : "",
+        participantPhoneNO : "",
+        participantEmail : "",
+        participantFacebook : "",
+        
+        nationalActivites : [],
+        localActivites : []
 
     }
 
