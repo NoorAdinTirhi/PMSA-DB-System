@@ -16,7 +16,7 @@ function mainPageInformer(username, con, pageData, callback) {
                 results.forEach(row => {
                     varNameStartDate = `${row.Locality}StartDate`
 
-                    pageData[varNameStartDate] = row.StartDate;
+                    pageData[varNameStartDate] = row.StartDate1;
 
                     pageData.usersLog.push({
                         "position": `${row.Locality.toUpperCase()} ${row.Position}`,
@@ -26,7 +26,7 @@ function mainPageInformer(username, con, pageData, callback) {
                     })
 
 
-                    if (row.StartDate == null)
+                    if (row.StartDate1 == null)
                         pageData[varNameStartDate] = "unassigned"
                 })
 
@@ -62,8 +62,51 @@ function updateAction(username, action, con, callback) {
         }
     })
 }
+function updateLCStartTerm(username, con, callback){
+    const current_time = new Date();
+    con.query(`UPDATE Users SET StartDate = '${current_time.getFullYear()}-${current_time.getMonth()+1}-${current_time.getDay()+1}' WHERE Username = '${username}'`, function(err){
+        if (err){
+            console.log(err)
+            return callback(1)
+        }else{
+            return callback(0)
+        }
+    })
+}
 
-
+function blackListInformer(username, pageData, con, callback){
+    con.query(`SELECT CONCAT(M.FirstName, M.FatherName, M.GFatherName, M.FamilyName) AS Name, MBl.Status, MBl.Reason  FROM MBl, M WHERE M.UniID = MBl.UniID`, function(err, results){
+        if (err){
+            console.log(err)
+            return callback(3, pageData);
+        }else{ 
+            getUserInfo(username, con, function(userData, flag){
+                if (flag != 0 ){
+                    console.log(flag);
+                    return callback(3, pageData);
+                }else{
+                    pageData.user = userData.user
+                    pageData.position = userData.position
+                    pageData.userLC = userData.LC
+                    pageData.cipher = userData.cipher
+                    pageData.blackLisitngs = [];
+                    results.forEach(row => {
+                        pageData.blackLisitngs.push(
+                            {
+                                Name : row.Name,
+                                BlackListStatus : row.Status,
+                                BlackListDescription : row.Reason
+                            }
+                        )
+                    })
+                    return callback(0, pageData)
+                }
+                
+            })
+        }
+    })
+}
+    
 
 
 function allMembersInformer(username, number, pageData, LC, con, callback) {
@@ -260,6 +303,7 @@ function allTrainersInformer(username, number, pageData, LC, con, callback) {
     })
 }
 
+
 function allActivitiesInformer(username, pageData, LC, con, callback) {
     data = ""
     if (LC.toUpperCase() == "NATIONAL") {
@@ -315,6 +359,27 @@ function getUserInfo(username, con, callback) {
         }
     })
 }
+
+function getMemberActivityInfo(memNum, activityID, con, callback) {
+    con.query(`SELECT *, CONCAT(M.FirstName, M.FatherName, M.GFatherName, M.FamilyName) AS Name FROM M_A, M WHERE M_A.ActivityID = ${activityID} AND M.UniID > ${memNum} ORDER BY M.UniID LIMIT 1`, function(err, results) {
+        data = results[0]
+        if (err) {
+            //error in query
+            console.log(err)
+            return callback(1, data)
+        } else {
+            if (results.length > 0) {
+                data.trainerCategory = results[0].Category
+                data.gradActivity = results[0].GradActivity;
+                data.gradDate = results[0].GradDate1
+                return callback(0, data)
+            }else{
+                return callback(2, data)
+            }
+        }
+    })
+}
+
 
 function getTrainerInfo(memNum, con, callback) {
     con.query(`SELECT * , DATE_FORMAT(GradDate,'%d/%m/%Y') AS GradDate1 FROM MT WHERE UniID = ${memNum}`, function(err, results) {
@@ -396,6 +461,116 @@ function getLocalActivites(uniNum, con, callback) {
     })
 }
 
+function nationalActivityInformer(username, memNum, ActivityID, participantNum, pageData, con, callback) {
+    con.query(`SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(EndDate,'%d/%m/%Y') AS EndDate1 FROM A WHERE ActivityID >= '${ActivityID}' ORDER BY ActivityID LIMIT 1`, function(err, results){
+        if (err){
+            console.log(err)
+            return callback(3, pageData)
+        }else{
+            getUserInfo(username, con, function(userData, flag){
+                if (flag != 0){
+                    return callback(1, pageData)
+                }else{
+                    pageData.user = userData.user
+                    pageData.position = userData.position
+                    pageData.userLC = userData.LC
+                    pageData.cipher = userData.cipher
+                    pageData.activityName = results[0].Aname;
+                    pageData.activityDescription = results[0].Adescription;
+                    pageData.proposalLink = results[0].ProposalLink
+                    pageData.reportLink = results[0].ReportLink
+                    pageData.startDate = results[0].StartDate1
+                    pageData.endDate = results[0].EndDate1
+                    pageData.activityID = results[0].ActivityID
+                    ActivityID = results[0].ActivityID
+                    pageData.committeeName = results[0].Committee
+                    console.log("before getLCParticipation")
+                    getLCParticipation(con , function(flag, data){
+                        if (flag == 0){
+                            sum = 0;
+                            console.log(data)
+                            data.forEach(row =>{
+                                sum += row.LCPart
+                            })
+                            data.forEach(row => {
+                            pageData[`${row.LC}Percent`] =`${Math.round((row.LCPart/sum)*100)}%`
+                            })     
+                            console.log("before getMemberActivityInfo")
+                            pageData.nationalActivites = []
+                            pageData.localActivites = []
+                            getMemberActivityInfo(memNum, ActivityID, con, function(flag, memData){
+                                console.log("before getMemberActivityInfo " + flag)
+                                if (flag != 0){
+                                    if (flag == 2){
+                                        Object.keys(pageData).forEach(key => {
+                                            console.log (typeof pageData["nationalActivites"])
+                                            if ((typeof pageData[key] != "object") && ((pageData[key] == null || pageData[key] == undefined || pageData[key] == ""))){
+                                                pageData[key] = "unassigned"
+                                            }
+                                        }) 
+                                        return callback(0, pageData)
+                                    }else{
+                                        return callback(6, pageData)
+                                    }
+                                }else if (flag == 0 ){
+                                    pageData.participantName = memData.Name
+                                    pageData.participantLocalCommittee = memData.LC
+                                    pageData.participantYearOfStudy = memData.UniStartYear
+                                    pageData.participantPhoneNO = memData.PhoneNo
+                                    pageData.participantEmail = memData.E_mail
+                                    pageData.participantFacebook = memData.Facebook_Link
+                                    console.log("before getNationalActivites")
+                                    
+                                    getNationalActivites(memData.UniId, con, function(flag, NAdata){
+                                        if (flag != 0){
+                                            return callback(4, pageData)
+                                        }else{
+                                            
+                                            NAdata.forEach(element => {
+                                                pageData.nationalActivites.push(element.Aname)
+                                            })
+                                            console.log("before getLocalActivites")
+                                            getLocalActivites(memData.UniID, con, function(flag, LAdata){
+                                                if (flag != 0){
+                                                    return callback(3, pageData)
+                                                }else{
+                                                    
+                                                    LAdata.forEach(element => {
+                                                        pageData.localActivites.push(element.Aname)
+                                                    })                                                       
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }else{
+                            return callback(5, pageData)
+                        }
+                    })
+
+                }
+            })
+        }
+    })
+}
+
+
+function getLCParticipation(con, callback){
+    con.query(`SELECT tbl.LC, SUM(tbl.LCPart) AS totalLCPart FROM 
+               (SELECT LC, COUNT(*)  AS LCPart FROM La GROUP BY LC
+               UNION
+               SELECT LC, COUNT(*) AS LCPart FROM NaLC GROUP BY LC) tbl
+               GROUP BY LC; `, function(err, results){
+                data = [];
+                if (err){
+                    console.log(err)
+                    return callback (3, data)
+                }else{
+                    return callback(0, results)
+                }
+               })
+}
 
 
 
@@ -408,5 +583,8 @@ module.exports = {
     allActivitiesInformer,
     allTrainersInformer,
     updateAction,
-    getUserInfo
+    getUserInfo,
+    updateLCStartTerm,
+    blackListInformer,
+    nationalActivityInformer
 }

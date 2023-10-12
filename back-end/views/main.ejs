@@ -124,6 +124,7 @@
         }
         
         .column {
+            display:flex;
             float: left;
             content: "";
             width: 25%;
@@ -362,7 +363,7 @@
                                 Nablus
                             </div>
                             <div class="minicolumn" style="width:auto">
-                                <%=NablusStartDate%>
+                                <%=nablusStartDate%>
                             </div>
                         </div>
                         <div class="column" style="margin-left:2.5%; margin-right: 2.5%;">
@@ -370,7 +371,7 @@
                                 HU
                             </div>
                             <div class="minicolumn">
-                                <%=HUStartDate%>
+                                <%=huStartDate%>
                             </div>
                         </div>
                         <div class="column" style="margin-left:2.5%; margin-right: 6.5%;">
@@ -378,7 +379,7 @@
                                 Gaza
                             </div>
                             <div class="minicolumn">
-                                <%=GazaStartDate%>
+                                <%=gazaStartDate%>
                             </div>
                         </div>
                     </div>
@@ -388,7 +389,7 @@
                                 Jerusalem
                             </div>
                             <div class="minicolumn" style="width:auto">
-                                <%=JerusalemStartDate%>
+                                <%=jerusalemStartDate%>
                             </div>
                         </div>
                         <div class="column" style="margin-left:2.5%; margin-right: 2.5%;">
@@ -396,7 +397,7 @@
                                 PPU
                             </div>
                             <div class="minicolumn">
-                                <%=PPUStartDate%>
+                                <%=ppuStartDate%>
                             </div>
                         </div>
                         <div class="column" style="margin-left:2.5%; margin-right: 6.5%;">
@@ -404,18 +405,18 @@
                                 Jenin
                             </div>
                             <div class="minicolumn">
-                                <%=JeninStartDate%>
+                                <%=jeninStartDate%>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div style="display:flex; flex-direction:column; width:10%; position:relative">
+            <div  style="display:flex; flex-direction:column; width:10%; position:relative; margin-top: 5.5%">
                 <form id="resetMemForm" method="post" style="width:100%; margin-top: 40%" action="/resetMember">
                     <button class="allButoon zoom secgen" type="button" onclick="formConfirm('resetMemForm')">Reset All Local Member</button>
                 </form>
-                <button class="allButoon zoom secgen" onclick="addNewUserWin()">Register New User</button>
-                <button class="allButoon zoom secgen" onclick="deleteUserWin()">Delete User</button>
+                <button id="registerUserBtn" class="allButoon zoom secgen" onclick="addNewUserWin()">Register New User</button>
+                <button id="deleteUserBtn"class="allButoon zoom secgen" onclick="deleteUserWin()">Delete User</button>
             </div>
 
         </div>
@@ -423,7 +424,7 @@
     <div id="deleteUserWin" class="popUpWindow">
         <form id="deleteUserForm" method="post" action="/deleteUser" style="display:flex; flex-direction:column">
             <select name="userToDelete" style="width: 50%; margin: 2.5% 25%">
-                    <%usersLog.forEach( (element) => {%>
+                    <%usersLog.filter((item) => (item.position != "NATIONAL Secgen")).forEach( (element) => {%>
                         <option  id = "<%=element.username%>" value = "<%=element.username%>"><%=element.position%></option>
                     </li>
                    <%});%>
@@ -436,7 +437,7 @@
     </div>
     <div id="newUserWin" class="popUpWindow">
         <h1>Register A New User</h1>
-        <form id=n ewUserForm method="post" action="registerUser">
+        <form id= newUserForm method="post" action="registerUser">
             <div>
                 <label style="width: 200px; ">Usernaem</label>
                 <input type="text" maxlength="50" required name="nUsername">
@@ -478,6 +479,18 @@
     </div>
 
     <script>
+
+
+        if ("<%=userLC%>" == "national" || "<%=position%>" == "CBD"){
+            document.getElementById("resetMemForm").remove()
+        }
+        if (!("<%=userLC%>" == "national" && "<%=position%>" == "Secgen")){
+            document.getElementById("rightbox").remove();
+            document.getElementById("registerUserBtn").remove();
+            document.getElementById("deleteUserBtn").remove();
+        }
+            
+        
         const hiddenUserIn = document.createElement('input');
         hiddenUserIn.setAttribute('type', 'hidden');
         hiddenUserIn.setAttribute('name', "username");

@@ -15,12 +15,12 @@ module.exports = {
             lastLogDate: "",
             lastChange: ""
         }],
-        NablusStartDate: "temp",
-        HUStartDate: "temp",
-        GazaStartDate: "temp",
-        JerusalemStartDate: "temp",
-        PPUStartDate: "temp",
-        JeninStartDate: "temp"
+        nablusStartDate: "temp",
+        huStartDate: "temp",
+        gazaStartDate: "temp",
+        jerusalemStartDate: "temp",
+        ppuStartDate: "temp",
+        jeninStartDate: "temp"
     },
     allMembers_variables: {
         position: "temp",
@@ -91,11 +91,42 @@ module.exports = {
         allActivities: []
     },
 
-    users: [
-        { username: 'noor', id: 1, }
-    ],
-    files: [
+    blackList_variables: {
+        position: "temp",
+        userLC: "temp",
+        cipher: "",
+        user: "",
+        blackLisitngs : []
+    },
 
-    ],
+    localActivity_variables: {
+        position: "temp",
+        userLC: "temp",
+        cipher: "",
+        user: "",
+        activityName : "",
+        activityDescription : "",
+        proposalLink : "",
+        reportLink : "",
+        startDate : "",
+        endDate : "",
+        activityID : "",
+        committeeName : "",
+        nablusPercent : "",
+        gazaPercent : "",
+        ppuPercent : "",
+        jerusalemPercent : "",
+        jeninPercent : "",
+        huPercent : "",
+        participantName : "",
+        participantLocalCommittee : "",
+        participantYearOfStudy : "",
+        participantPhoneNO : "",
+        participantEmail : "",
+        participantFacebook : "",
+        nationalActivites : [],
+        localActivites : [],
+
+    }
 
 }

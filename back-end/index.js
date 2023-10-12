@@ -8,8 +8,8 @@ const ejs = require('ejs')
     // const audit = require('express-requests-logger')
 
 const { stat, authUser, verifyUser, registerSession, registerUser, deleteUser } = require('./authentication/auth')
-const { mainPage_varialbes, activityPage_variables, allMembers_variables, allTrainers_variables } = require('./constants/CONSTANTS')
-const { mainPageInformer, resetLC, allMembersInformer, allActivitiesInformer, allTrainersInformer, updateAction, getUserInfo } = require('./utility/dataHandling')
+const { mainPage_varialbes, activityPage_variables, allMembers_variables, allTrainers_variables, blackList_variables, localActivity_variables } = require('./constants/CONSTANTS')
+const { mainPageInformer, resetLC, allMembersInformer, allActivitiesInformer, allTrainersInformer, updateAction, getUserInfo, updateLCStartTerm, blackListInformer, nationalActivityInformer } = require('./utility/dataHandling')
 
 
 // let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
@@ -123,14 +123,20 @@ app.post("/resetMember", function(req, res) {
                                 res.status(401)
                                 res.send("Unauthorized, national secgen is not allowed to reset members")
                             } else {
-                                res.status(200)
-                                res.send(`succesfully reset all ${req.body.localCommittee.toUpperCase()} members`)
-                                console.log("succesful reset")
-                                updateAction(req.body.username, "Reset Local Members", con, function(flag) {
-                                    if (flag == 0)
-                                        console.log("success")
-                                    else
-                                        console.log("failure")
+                                updateLCStartTerm(req.body.username, con, function(flag){
+                                    if (flag == 0){
+                                        res.status(200)
+                                        res.send(`succesfully reset all ${req.body.localCommittee.toUpperCase()} members`)
+                                        updateAction(req.body.username, "Reset Local Members", con, function(flag) {
+                                        if (flag == 0)
+                                            console.log("success")
+                                        else
+                                            console.log("failure")
+                                        })
+                                    }else{
+                                        res.status(500)
+                                        res.send("Internal Server Error")
+                                    }
                                 })
                             }
                         })
@@ -398,16 +404,65 @@ app.post("/allActivities", function(req, res) {
     }
 })
 
+app.post("/blackList", function(req, res){
+    if (req.body) {
+        if (req.body.username) {
+            if (req.body.cipher) {
+                verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+                    if (flag == 0) {
+                       blackListInformer(req.body.username, blackList_variables, con, function(flag, data){
+                        if (flag == 0){
+                            res.status(200);
+                            res.render("tier2/blackList", data)
+                        }else{
+                            res.status(500)
+                            res.send("Internal Server Error")
+                        }
+                       })
+                    } else if (flag == 1) {
+                        //failed, bad cipher
+                        res.status(401)
+                        res.send("Your request has a bad cipher")
+                    } else if (flag == 2) {
+                        res.status(401)
+                        res.send("user not registered")
+                    } else if (flag == 3) {
+                        res.status(500)
+                        res.send("Internal Server Error")
+                    }
+                })
+            } else {
+                res.status(401)
+                res.send("Your request does not include a cipher, please login and use the website as intended")
+            }
+        } else {
+            res.render("login", { login_string: "you need to login to make a request" })
+        }
+    } else {
+        res.status(400)
+        res.send("Incomplete Request")
+    }
+})
 
+// test for the local activity page
+app.get("/nationalActivity", function(req, res) {
+    nationalActivityInformer('noor', 0, 1, 0,localActivity_variables, con, function(flag, data){
+        if (flag == 0){
+            console.log(data)
+            res.render("tier2/tier3/localActivity", data)
+        }else {
+            console.log(flag)
+            console.log(data)
+            res.status(400)
+            res.send("Failed")
+        }
+    })
+})
 
 app.post("/selectAct", function(req, res) {
     console.log(req.body.activity)
 })
 
-app.post("/allTrainers", function(req, res) {
-    res.render('tier2/allTrainers')
-    console.log(`***\nusername : ${req.body.username}\n `)
-})
 
 app.post("/nextMember", function(reg, res) {
     console.log(req.body.username)
