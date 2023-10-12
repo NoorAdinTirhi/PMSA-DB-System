@@ -82,7 +82,6 @@ app.listen(8081, function(err) {
     })
 
     console.log("server is listening at 8081")
-    console.log("Very Good Very Nice")
 })
 
 //send the login page to all that require it
@@ -467,7 +466,7 @@ app.post("/blackList", function(req, res){
     }
 })
 
-// test for the local activity page
+// test for the natioanl activity page
 app.get("/nationalActivity", function(req, res) {
     nationalActivityInformer('noor', 0, 1, nationalActivity_variables, con, function(flag, data){
         if (flag == 0){
