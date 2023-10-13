@@ -151,7 +151,11 @@ INSERT INTO LC VALUES ('nablus', 'Full');
 
 INSERT INTO M  VALUES (1190081, 'nooradin', 'fuad', 'haider', 'tirhi', 'نورالدين' , 'فؤاد', 'حيدر', 'ترهي', 'male', '972584280013', 'nooradintirhi@gmail.com', 'https://www.facebook.com/nooraldeen.tirhi/', 2019, 'Active', 'nablus');
 
+SELECT * FROM A;
+SELECT * FROM La;
+INSERT INTO La (SELECT ActivityID, 'nablus' as LC FROM A WHERE ActivityID NOT IN (SELECT * FROM Na))
 
+ SELECT ActivityID FROM A WHERE ActivityID NOT IN (SELECT * FROM Na)
 -- SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;
 
 -- SELECT * FROM M;

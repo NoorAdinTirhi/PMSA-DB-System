@@ -40,8 +40,9 @@
         
         #leftbox>* {
             margin: 4% 0%;
-            width: fit-content;
+            width: 700px;
             float: left;
+            overflow: hidden;
         }
         
         .sidebox>* {
@@ -61,6 +62,7 @@
             font-size: xx-large;
             padding: 15px;
             display: block;
+            width:400px;
         }
         
         .participantBtn {
@@ -144,8 +146,6 @@
         }
         .tagContainer{
             display:flex;
-            border-style:solid;
-            border-width:1px;
         }
         .tagButton{
             height: fit-content;
@@ -161,7 +161,7 @@
                 <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/">
                     <h1 id="addActivityTitle"></h1>
                     <div style="display: flex; flex-direction:row; width:100%">
-                        <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%"> 
                             <label style="margin-right:5%; width:10%">
                                 Activity Name
                             </label>
@@ -214,12 +214,13 @@
                             <label style="margin-right:5%; width:10%">
                                 Participating Local Committees
                             </label>
-                            <select id="lcSelect" style="width:7%; margin-right:10%"onchange="createTag(this)">
+                            <select id="lcSelect" style="width:7%; margin-right:10%" onchange="createTag(this)">
                                 <option selected> --none-- </option>
                             </select>
                             <div id="participatingLcs" class="tagsContainer">
-                                
+                                <input type="hidden" name="paticipatingLCs" value="">
                             </div>
+                            <input type="hidden" name="participatingLCs[]">
                             
                         </div>
                     </div>
@@ -258,14 +259,12 @@
 
         <div id="parentbox">
             <div id=leftbox class="sidebox">
-                <div style="text-align: center;">
-                    <div class="headerbox" style="margin-left: 41.8px;">
-                        <%=activityName%>
-                    </div>
+                <div class="headerbox" style="margin-left: 41.8px;">
+                    <%=activityName%>
                 </div>
 
                 <div class="headerbox" style="margin-left: 41.8px;">
-                    <div style="border-bottom : solid 1px black; width:100%">
+                    <div style="border-bottom : solid 1px black; width:100%; font-size:medium; overflow: scroll">
                         <%=activityDescription%>
                     </div>
                     <div style="font-size: large; margin-top:2%">
@@ -592,7 +591,7 @@
         }
 
         const tagList = []
-        const allLCs = ['Jerusalem', 'Nablus', 'Jinin', 'PPU', 'HU', 'Gaza', 'CB', 'General']
+        const allLCs = ['jerusalem', 'nablus', 'jinin', 'ppu', 'hu', 'gaza']
         allLCs.forEach((element) =>{
             if (tagList.includes(element)){
                 createTag(element)

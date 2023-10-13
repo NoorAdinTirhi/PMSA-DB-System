@@ -21,8 +21,12 @@
             font-size: 30px;
             border-style: solid;
             border-color: #000000;
+            background-color: transparent;
             transition-property: box-shadow border-radius transform;
             transition-duration: .5s;
+        }
+        .localbutton {
+            background-color: white;
         }
         
         #natBox:hover {
@@ -113,13 +117,26 @@
             padding-right: 5px;
             border-bottom: solid 1px #545353
         }
+        .tagsContainer{
+            display:flex;
+            flex-direction:row;
+            height:fit-content
+        }
+        .tagContainer{
+            display:flex;
+        }
+        .tagButton{
+            height: fit-content;
+             border-style:none;
+              background-color:transparent
+        }
     </style>
 </head>
 
 <body>
     <div class="fullbox">
         <div class="newActivity" id="newActivityWindow">
-            <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/">
+            <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/addActivity">
                 <h1 id="addActivityTitle"></h1>
                 <div style="display: flex; flex-direction:row; width:100%">
                     <div style="display: flex; flex-direction:row; width:100%">
@@ -170,6 +187,22 @@
                     </div>
                 </div>
 
+                <div id = "participatingCommittees" style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            
+                            <label style="margin-right:5%; width:10%">
+                                Participating Local Committees
+                            </label>
+                            <select id="lcSelect" style="width:7%; margin-right:10%" onchange="createTag(this)">
+                                <option selected> --none-- </option>
+                            </select>
+                            <div id="participatingLcs" style="display: flex; flex-direction:row" class="tagsContainer">
+                                <input type="hidden" name="participatingLCs" value="">
+                            </div>
+                            
+                        </div>
+                    </div>
+
                 <div style="margin-top: 0.5%;">
                     <button type="submit">Submit</button>
                     <button type="button" onclick="addActivityClose()"> Cancel</button>
@@ -192,7 +225,7 @@
             </div>
         </div>
         <div id="boxesSec">
-            <form method="post" action="/filterActivities">
+            <form method="post" action="/allActivities">
                 <button id=nationalBtn onclick="setFilter('national')" name="filter" value="national" type="submit">
                     National
                 </button>
@@ -200,25 +233,25 @@
 
             <div style="display:flex; flex-direction:column; width:30%;  position:relative; border-style:solid">
                 <div style="display:flex; flex-direction:row">
-                    <form method="post" action="/filterActivities" style="width: 100%;">
+                    <form method="post" action="/allActivities" style="width: 100%;">
                         <button id="nablusBtn" class="localbutton" onclick="setFilter('nablus')" name="filter" value="nablus" type="submit"> Nablus</button>
                     </form>
-                    <form method="post" action="/filterActivities" style="width: 100%;">
+                    <form method="post" action="/allActivities" style="width: 100%;">
                         <button id="jerusalemBtn" class="localbutton" onclick="setFilter('jerusalem')" name="filter" value="jerusalem" type="submit"> Jerusalem</button>
                     </form>
-                    <form method="post" action="/filterActivities" style="width: 100%;">
+                    <form method="post" action="/allActivities" style="width: 100%;">
                         <button id="gazaBtn" class="localbutton" onclick="setFilter('gaza')" name="filter" value="gaza" type="submit"> Gaza</button>
                     </form>
 
                 </div>
                 <div style="display:flex; flex-direction:row">
-                    <form method="post" action="/filterActivities" style="width: 100%;">
+                    <form method="post" action="/allActivities" style="width: 100%;">
                         <button id="ppuBtn" class="localbutton" onclick="setFilter('ppu')" name="filter" value="ppu" type="submit"> PPU</button>
                     </form>
-                    <form method="post" action="/filterActivities" style="width: 100%;">
+                    <form method="post" action="/allActivities" style="width: 100%;">
                         <button id="huBtn" class="localbutton" onclick="setFilter('hu')" name="filter" value="hu" type="submit"> HU</button>
                     </form>
-                    <form method="post" action="/filterActivities" style="width: 100%;">
+                    <form method="post" action="/allActivities" style="width: 100%;">
                         <button id="jininBtn" class="localbutton" onclick="setFilter('jinin')" name="filter" value="jinin" type="submit"> Jinin</button>
                     </form>
                 </div>
@@ -267,7 +300,7 @@
                 </td>
                 <td style="width: 10%;">
 
-                    <%=allActivities.filter((obj) => obj.Committee == "general" ).length%>
+                    <%=allActivities.filter((obj) => obj.committee == "general" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('general')">Add Activity</button>
@@ -290,7 +323,7 @@
                     CB
                 </td>
                 <td style="width: 10%;">
-                    <%=allActivities.filter((obj) => obj.Committee == "cb" ).length%>
+                    <%=allActivities.filter((obj) => obj.committee == "cb" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('cb')">Add Activity</button>
@@ -314,7 +347,7 @@
                     SCORE
                 </td>
                 <td style="width: 10%;">
-                    <%=allActivities.filter((obj) => obj.Committee == "score" ).length%>
+                    <%=allActivities.filter((obj) => obj.committee == "score" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('score')">Add Activity</button>
@@ -337,7 +370,7 @@
                     SCOPE
                 </td>
                 <td style="width: 10%;">
-                    <%=allActivities.filter((obj) => obj.Committee == "scope" ).length%>
+                    <%=allActivities.filter((obj) => obj.committee == "scope" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('scope')">Add Activity</button>
@@ -360,7 +393,7 @@
                     SCOME
                 </td>
                 <td style="width: 10%;">
-                    <%=allActivities.filter((obj) => obj.Committee == "scome" ).length%>
+                    <%=allActivities.filter((obj) => obj.committee == "scome" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('scome')">Add Activity</button>
@@ -383,7 +416,7 @@
                     SCORP
                 </td>
                 <td style="width: 10%;">
-                    <%=allActivities.filter((obj) => obj.Committee == "scorp" ).length%>
+                    <%=allActivities.filter((obj) => obj.committee == "scorp" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('scorp')">Add Activity</button>
@@ -406,7 +439,7 @@
                     SCORA
                 </td>
                 <td style="width: 10%;">
-                    <%=allActivities.filter((obj) => obj.Committee == "scora" ).length%>
+                    <%=allActivities.filter((obj) => obj.committee == "scora" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('scora')">Add Activity</button>
@@ -429,7 +462,7 @@
                     SCOPH
                 </td>
                 <td style="width: 10%;">
-                    <%=allActivities.filter((obj) => obj.Committee == "scoph" ).length%>
+                    <%=allActivities.filter((obj) => obj.committee == "scoph" ).length%>
                 </td>
                 <td style="width: 10%;">
                     <button onclick="addActivityWindow('scoph')">Add Activity</button>
@@ -471,6 +504,16 @@
         hiddenPositionIn.setAttribute('type', 'hidden');
         hiddenPositionIn.setAttribute('name', "position");
         hiddenPositionIn.setAttribute('value', "<%=position%>");
+        
+        const hiddenCurrentFilter = document.createElement('input');
+        hiddenCurrentFilter.setAttribute('type', 'hidden');
+        hiddenCurrentFilter.setAttribute('name', "curFilter");
+        hiddenCurrentFilter.setAttribute('value', "<%=filter%>");
+
+        const hiddenMemNum = document.createElement('input');
+        hiddenMemNum.setAttribute('type', 'hidden');
+        hiddenMemNum.setAttribute('name', "memNum");
+        hiddenMemNum.setAttribute('value', "0");
 
         const forms = document.forms;
         console.log(forms)
@@ -479,6 +522,8 @@
             forms[i].appendChild(document.importNode(hiddenLCIn, true))
             forms[i].appendChild(document.importNode(hiddenCipherIn, true))
             forms[i].appendChild(document.importNode(hiddenPositionIn, true))
+            forms[i].appendChild(document.importNode(hiddenCurrentFilter, true))
+            forms[i].appendChild(document.importNode(hiddenMemNum, true))
         }
 
         var cur_time = new Date();
@@ -494,14 +539,85 @@
         var filterLC;
 
         if ("<%=userLC%>" != "national") {
-            document.getElementById("boxesSec").style.display = "none"
-        }
+            document.getElementById("boxesSec").style.display = "none";
+            document.getElementById("participatingCommittees").style.display = "none";
+        } 
 
         lcs = ['national', 'nablus', 'jerusalem', 'gaza', 'ppu', 'hu', 'jinin']
-        setFilter("<%=userLC%>")
+
+        const allLCs = ['jerusalem', 'nablus', 'jinin', 'ppu', 'hu', 'gaza']
+        const tagList = []
+        allLCs.forEach((element) =>{
+            if (tagList.includes(element)){
+                createTag(element)
+            }else{
+                removeTag(element)
+            }
+        })
+        document.getElementsByName("participatingLCs")[0].value = ""
+        
+
+        function createTag(LC){
+            LCname = LC.value;
+            document.getElementsByName("participatingLCs")[0].value +=  `${LC.value},`
+            console.log(document.getElementsByName("participatingLCs")[0].value)
+            if (LCname != "--none--"){
+                console.log("selected " + LCname)
+            }
+            let node = document.getElementById(`${LCname}opt`)
+            if (typeof(node) != 'undefined' && node != null)
+            {
+                node.remove();
+            }
+            
+            lcTag = document.createElement("div")
+            lcTag.classList.add('tagContainer')
+            lcTag.setAttribute('id', `${LCname}tag`)
+
+            lcButton=document.createElement("button")
+            lcButton.classList.add('tagButton')
+            lcButton.setAttribute("type", "button")
+            lcButton.setAttribute("value", LCname)
+            lcButton.setAttribute("onClick","removeTag(this.value)")
+            
+            lcXimg = document.createElement("img")
+            lcXimg.setAttribute("width", "10px")
+            lcXimg.setAttribute("height", "10px")
+            lcXimg.setAttribute("src", "../../public/images/x_transparent.jpeg")
+            
+            lcButton.appendChild(lcXimg)
+
+            lclabel = document.createElement("label")
+            lclabel.innerHTML = LCname[0].toUpperCase() + LCname.slice(1)
+
+            lcTag.appendChild(lcButton)
+            lcTag.appendChild(lclabel)
+
+            document.getElementById("participatingLcs").appendChild(lcTag)
+            
+        }
+
+        function removeTag(src){
+            console.log(src)
+            let node = document.getElementById(`${src}tag`);
+            if (typeof(node) != 'undefined' && node != null)
+            {
+                node.remove();
+            }
+            let option = document.createElement("option")
+            option.id = `${src}opt`
+            option.text = src
+            option.value = src
+            option.onselect = "createTag(value)"
+            document.getElementById("lcSelect").add(option)
+            document.getElementsByName("participatingLCs")[0].value = document.getElementsByName("participatingLCs")[0].value.replace(`${src},`, '')
+        }
+
+
+        setFilter("<%=filter%>")
 
         function setFilter(localCommittee) {
-            console.log(filterLC)
+            console.log("setFilter(<%=filter%>)")
             lcs.forEach((element) => {
                 temp = document.getElementById(`${element}Btn`)
                 temp.style.borderStyle = "none"
@@ -511,12 +627,18 @@
                 temp.style.scale = 1;
                 temp.style.zIndex = 1;
             })
-            lcBtn = document.getElementById(`${localCommittee}Btn`)
-            lcBtn.style.borderColor = "rgb(0, 119, 255)"
-            lcBtn.style.borderStyle = "solid"
-            lcBtn.style.scale = 1.2;
-            lcBtn.style.zIndex = 100;
-            lcBtn.style.position = "relative"
+            console.log(`Current Filter ${filterLC}, Next Filter <%=filter%>`)
+            if ("<%=filter%>" == "all"){
+                console.log("filter == all")
+            }else{
+                lcBtn = document.getElementById(`${localCommittee}Btn`)
+                lcBtn.style.borderColor = "rgb(0, 119, 255)"
+                lcBtn.style.borderStyle = "solid"
+                lcBtn.style.scale = 1.2;
+                lcBtn.style.zIndex = 100;
+                lcBtn.style.position = "relative"
+            }
+            
         }
 
 
@@ -533,9 +655,6 @@
             document.getElementById("newActivityWindow").style.display = "flex"
 
             hiddenCommitteein.setAttribute('value', properString);
-
-            document.getElementById("newActivityForm").appendChild(hiddenCommitteein);
-            document.getElementById("newActivityForm").appendChild(hiddenlocalCommitteein);
         }
 
         function addActivityClose() {
@@ -543,10 +662,7 @@
             document.getElementById("newActivityForm").removeChild(hiddenCommitteein)
         }
 
-        document.getElementById("newActivityForm").addEventListener('submit', (event) => {
-            event.preventDefault();
-            console.log(event);
-        })
+        
     </script>
 
 </body>

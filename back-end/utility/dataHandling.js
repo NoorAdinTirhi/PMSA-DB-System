@@ -1,3 +1,5 @@
+const { query } = require("express")
+
 // query the DB to get required information for the mainpage
 function mainPageInformer(username, con, pageData, callback) {
     con.query(`SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;`, function(err, results) {
@@ -279,9 +281,6 @@ function allTrainersInformer(username, number, pageData, LC, con, callback) {
 
                 })
 
-                //TODO COMPLETE QUERY TO GET national activities 
-                //TODO COMPLETE QUERY TO GET local activities
-
             } else {
 
                 Object.keys(pageData).forEach(key => {
@@ -304,19 +303,28 @@ function allTrainersInformer(username, number, pageData, LC, con, callback) {
 }
 
 
-function allActivitiesInformer(username, pageData, LC, con, callback) {
+function allActivitiesInformer(username, pageData, LC, curFilter,con, callback) {
     data = ""
-    if (LC.toUpperCase() == "NATIONAL") {
-        secondTable = "Na"
-        chosenLC = ""
-        nat = true
-    } else {
-        secondTable = "La"
-        chosenLC = ` WHERE LC = '${LC}'`
-        nat = false
+    if (curFilter != LC){
+        if (LC.toUpperCase() == "NATIONAL") {
+            secondTable = "Na"
+            chosenLC = ""
+            nat = true
+            queryStr = `SELECT A.Aname, A.ActivityID, A.Committee FROM A${ ", " + secondTable} WHERE ${secondTable}.ActivityID = A.ActivityID ${(nat)?(""):("AND " + "La.LC = " + LC.toLowerCase())}`
+        }else {
+            secondTable = "La"
+            chosenLC = ` WHERE LC = '${LC}'`
+            nat = false
+            queryStr = `SELECT A.Aname, A.ActivityID, A.Committee FROM A${ ", " + secondTable} WHERE ${secondTable}.ActivityID = A.ActivityID ${(nat)?(""):("AND " + "La.LC = " + `'${LC.toLowerCase()}'`)}`
+        }
+        pageData.filter = LC; 
+    }else{
+        queryStr = "SELECT A.Aname, A.ActivityID, A.Committee FROM A"
+        pageData.filter = "all";
     }
-    console.log(`SELECT A.Aname, A.ActivityID, A.Committee FROM A${ ", " + secondTable} WHERE ${secondTable}.ActivityID = A.ActivityID ${(nat)?(""):("AND " + "La.LC = " + LC.toLowerCase())}`)
-    con.query(`SELECT A.Aname, A.ActivityID, A.Committee FROM A${ ", " + secondTable} WHERE ${secondTable}.ActivityID = A.ActivityID ${(nat)?(""):("AND " + "La.LC = " + LC.toLowerCase())}`, function(err, results) {
+    console.log(pageData.filter)
+    console.log(queryStr)
+    con.query(queryStr, function(err, results) {
         if (err) {
             console.log(err)
             callback(3, pageData)
@@ -327,6 +335,7 @@ function allActivitiesInformer(username, pageData, LC, con, callback) {
                 pageData.position = userData.position
                 pageData.userLC = userData.LC
                 pageData.cipher = userData.cipher
+                
                 pageData.allActivities = []
                 results.forEach(row => {
                     temp = { actID: row.ActivityID, committee: row.Committee.toLowerCase(), actName: row.Aname }
@@ -563,87 +572,88 @@ function nationalActivityInformer(username, memNum, ActivityID, pageData, con, c
                     pageData.position = userData.position
                     pageData.userLC = userData.LC
                     pageData.cipher = userData.cipher
-                    if (results[0].length > 0){
+                    console.log(results.length)
+                    if (results.length > 0){
                         pageData.activityName = results[0].Aname;
-                    pageData.activityDescription = results[0].Adescription;
-                    pageData.proposalLink = results[0].ProposalLink
-                    pageData.reportLink = results[0].ReportLink
-                    pageData.startDate = results[0].StartDate1
-                    pageData.endDate = results[0].EndDate1
-                    pageData.activityID = results[0].ActivityID
-                    ActivityID = results[0].ActivityID
-                    pageData.committeeName = results[0].Committee
-                    console.log("before getLCParticipation")
-                    getLCParticipation(con , function(flag, data){
-                        if (flag == 0){
-                            sum = 0;
-                            console.log(data)
-                            data.forEach(row =>{
-                                sum += row.LCPart
-                            })
-                            data.forEach(row => {
-                            pageData[`${row.LC}Percent`] =`${Math.round((row.LCPart/sum)*100)}%`
-                            })     
-                            pageData.involvedLC = []
-                            getInvolvedLC(ActivityID, con, function(flag, involvedLC){
-                                if (flag != 0){
-                                    return callback(flag, pageData)
-                                }else{
-                                    pageData.involvedLC = involvedLC;
-                                    pageData.nationalActivites = []
-                                    pageData.localActivites = []
-                                    getMemberActivityInfo(memNum, ActivityID, con, function(flag, memData){
-                                        console.log("before getMemberActivityInfo " + flag)
-                                        if (flag != 0){
-                                            if (flag == 2){
-                                                Object.keys(pageData).forEach(key => {
-                                                    if ((typeof pageData[key] != "object") && ((pageData[key] == null || pageData[key] == undefined || pageData[key] == ""))){
-                                                        pageData[key] = "unassigned"
-                                                    }
-                                                }) 
-                                                return callback(0, pageData)
-                                            }else{
-                                                return callback(6, pageData)
-                                            }
-                                        }else if (flag == 0 ){
-                                            pageData.participantName = memData.Name
-                                            pageData.participantLocalCommittee = memData.LC
-                                            pageData.participantYearOfStudy = memData.UniStartYear
-                                            pageData.participantPhoneNO = memData.PhoneNo
-                                            pageData.participantEmail = memData.E_mail
-                                            pageData.participantFacebook = memData.Facebook_Link
-                                            console.log("before getNationalActivites")
-                                            
-                                            getNationalActivites(memData.UniId, con, function(flag, NAdata){
-                                                if (flag != 0){
-                                                    return callback(4, pageData)
-                                                }else{
-                                                    
-                                                    NAdata.forEach(element => {
-                                                        pageData.nationalActivites.push(element.Aname)
-                                                    })
-                                                    console.log("before getLocalActivites")
-                                                    getLocalActivites(memData.UniID, con, function(flag, LAdata){
-                                                        if (flag != 0){
-                                                            return callback(3, pageData)
-                                                        }else{
-                                                            
-                                                            LAdata.forEach(element => {
-                                                                pageData.localActivites.push(element.Aname)
-                                                            })  
-                                                            return callback(0, pageData)                                                     
+                        pageData.activityDescription = results[0].Adescription;
+                        pageData.proposalLink = results[0].ProposalLink
+                        pageData.reportLink = results[0].ReportLink
+                        pageData.startDate = results[0].StartDate1
+                        pageData.endDate = results[0].EndDate1
+                        pageData.activityID = results[0].ActivityID
+                        ActivityID = results[0].ActivityID
+                        pageData.committeeName = results[0].Committee
+                        console.log("before getLCParticipation")
+                        getLCParticipation(con , function(flag, data){
+                            if (flag == 0){
+                                sum = 0;
+                                console.log(data)
+                                data.forEach(row =>{
+                                    sum += row.totalLCPart
+                                })
+                                data.forEach(row => {
+                                pageData[`${row.LC}Percent`] =`${Math.round((row.totalLCPart/sum)*100)}%`
+                                })     
+                                pageData.involvedLC = []
+                                getInvolvedLC(ActivityID, con, function(flag, involvedLC){
+                                    if (flag != 0){
+                                        return callback(flag, pageData)
+                                    }else{
+                                        pageData.involvedLC = involvedLC;
+                                        pageData.nationalActivites = []
+                                        pageData.localActivites = []
+                                        getMemberActivityInfo(memNum, ActivityID, con, function(flag, memData){
+                                            console.log("before getMemberActivityInfo " + flag)
+                                            if (flag != 0){
+                                                if (flag == 2){
+                                                    Object.keys(pageData).forEach(key => {
+                                                        if ((typeof pageData[key] != "object") && ((pageData[key] == null || pageData[key] == undefined || pageData[key] == ""))){
+                                                            pageData[key] = "unassigned"
                                                         }
-                                                    })
+                                                    }) 
+                                                    return callback(0, pageData)
+                                                }else{
+                                                    return callback(6, pageData)
                                                 }
-                                            })
-                                        }
-                                    })
-                                }
-                            })
-                        }else{
-                            return callback(5, pageData)
-                        }
-                    })
+                                            }else if (flag == 0 ){
+                                                pageData.participantName = memData.Name
+                                                pageData.participantLocalCommittee = memData.LC
+                                                pageData.participantYearOfStudy = memData.UniStartYear
+                                                pageData.participantPhoneNO = memData.PhoneNo
+                                                pageData.participantEmail = memData.E_mail
+                                                pageData.participantFacebook = memData.Facebook_Link
+                                                console.log("before getNationalActivites")
+
+                                                getNationalActivites(memData.UniId, con, function(flag, NAdata){
+                                                    if (flag != 0){
+                                                        return callback(4, pageData)
+                                                    }else{
+
+                                                        NAdata.forEach(element => {
+                                                            pageData.nationalActivites.push(element.Aname)
+                                                        })
+                                                        console.log("before getLocalActivites")
+                                                        getLocalActivites(memData.UniID, con, function(flag, LAdata){
+                                                            if (flag != 0){
+                                                                return callback(3, pageData)
+                                                            }else{
+
+                                                                LAdata.forEach(element => {
+                                                                    pageData.localActivites.push(element.Aname)
+                                                                })  
+                                                                return callback(0, pageData)                                                     
+                                                            }
+                                                        })
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    }
+                                })
+                            }else{
+                                return callback(5, pageData)
+                            }
+                        })
                     }else{
                         Object.keys(pageData).forEach(key => {
                             if ((typeof pageData[key] != "object") && ((pageData[key] == null || pageData[key] == undefined || pageData[key] == ""))){
@@ -676,12 +686,37 @@ function getLCParticipation(con, callback){
 }
 
 function getInvolvedLC(ActivityID ,con, callback){
-    con.query(`SELECT LC from NaLC`, function(err, results){
+    con.query(`SELECT LC from NaLC WHERE ActivityID = ${ActivityID}`, function(err, results){
         if (err){
             console.log(err)
             return callback(3, results)
         }else{
             return callback(0, results)
+        }
+    })
+}
+function getActivityCat(ActivityID, con, callback){
+    con.query (`SELECT (${ActivityID} in (SELECT ActivityID FROM La)) AS isLocal, (${ActivityID} in (SELECT ActivityID FROM Na)) AS isNational`, function(err, results){
+        if (err){
+            //MySQL Error
+            console.log(err);
+            return callback(3, "MySQL error")
+        }else{
+            if (results.length > 0){
+                // this is an illegal case, activies are either national or local
+                if (results[0].isLocal == results[0].isNational){
+                    return callback(4, "Illegal Case")
+                }else{
+                    if (results[0].isLocal == 1)
+                        return callback(0, "local")
+                    else{
+                        return callback(0, "national")
+                    }
+                }
+            }else{
+                // Activity Doesn't Exist
+                return callback(2, "empty")
+            }
         }
     })
 }
@@ -701,5 +736,6 @@ module.exports = {
     updateLCStartTerm,
     blackListInformer,
     nationalActivityInformer,
-    localActivityInformer
+    localActivityInformer,
+    getActivityCat
 }

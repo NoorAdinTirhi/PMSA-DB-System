@@ -88,6 +88,7 @@ module.exports = {
         userLC: "temp",
         cipher: "",
         user: "",
+        filter: "",
         allActivities: []
     },
 

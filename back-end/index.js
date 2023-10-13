@@ -27,12 +27,13 @@ const { mainPageInformer,
         allMembersInformer, 
         allActivitiesInformer, 
         allTrainersInformer, 
-        updateAction, 
+        updateAction,  
         getUserInfo, 
         updateLCStartTerm, 
         blackListInformer, 
         nationalActivityInformer,
-        localActivityInformer                         } = require('./utility/dataHandling')
+        localActivityInformer,
+        getActivityCat                         } = require('./utility/dataHandling')
 
 
 // let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
@@ -347,7 +348,7 @@ app.post("/allTrainers", function(req, res) {
                     verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
                         if (flag == 0) {
                             //succesful, attempt to get information and render the allMembers page
-                            allTrainersInformer(req.body.username, req.body.memNum, allTrainers_variables, req.body.localCommittee, con, function(flag, data) {
+                            allTrainersInformer(req.body.username, req.body.memNum, allTrainers_variables, req.body.localCommittee, req.body.currentFilter, con, function(flag, data) {
                                 if (flag == 3) {
                                     res.status(500)
                                     res.send("Internal Server Error, Database issue")
@@ -386,13 +387,14 @@ app.post("/allTrainers", function(req, res) {
 })
 
 app.post("/allActivities", function(req, res) {
+    console.log(req.body)
     if (req.body) {
         if (req.body.username) {
             if (req.body.cipher) {
                 verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
                     if (flag == 0) {
                         //succesful, attempt to get information and render the allMembers page
-                        allActivitiesInformer(req.body.username, activityPage_variables, req.body.localCommittee, con, function(flag, data) {
+                        allActivitiesInformer(req.body.username, activityPage_variables, req.body.filter, req.body.curFilter, con, function(flag, data) {
                             if (flag == 3) {
                                 res.status(500)
                                 res.send("Internal Server Error, Database issue")
@@ -466,41 +468,109 @@ app.post("/blackList", function(req, res){
     }
 })
 
-// test for the natioanl activity page
-app.get("/nationalActivity", function(req, res) {
-    nationalActivityInformer('noor', 0, 1, nationalActivity_variables, con, function(flag, data){
-        if (flag == 0){
-            console.log(data)
-            res.render("tier2/tier3/nationalActivity", data)
-        }else {
-            console.log(flag)
-            console.log(data)
-            res.status(400)
-            res.send("Failed")
+app.post("/selectAct", function(req, res){
+    
+    if (req.body) {
+        if (req.body.username) {
+            if (req.body.cipher) {
+                verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+                    if (flag == 0) {
+                        getActivityCat(req.body.activity, con, function(flag, msg){
+                            if (flag == 0){
+                                if (msg == "national"){
+                                    console.log(req.body.activity)
+                                    nationalActivityInformer(req.body.username, req.body.memNum, req.body.activity, nationalActivity_variables, con, function (flag, data){
+                                        if (flag == 0){
+                                            res.render("tier2/tier3/nationalActivity", data)
+                                        }else {
+                                            console.log(flag)
+                                            console.log(data)
+                                            res.status(400)
+                                            res.send("Failed")
+                                        }
+                                    })
+                                }else{
+                                    console.log(req.body.activity)
+                                    localActivityInformer(req.body.username, req.body.memNum, req.body.activity, nationalActivity_variables, con, function (flag, data){
+                                        if (flag == 0){
+                                            res.render("tier2/tier3/localActivity", data)
+                                        }else {
+                                            console.log(flag)
+                                            console.log(data)
+                                            res.status(400)
+                                            res.send("Failed")
+                                        }
+                                    })
+                                }
+                            }else if (flag == 3){
+                                console.log(flag);
+                                res.status(500)
+                                res.send(msg)
+                            }
+                        })
+                    } else if (flag == 1) {
+                        //failed, bad cipher
+                        res.status(401)
+                        res.send("Your request has a bad cipher")
+                    } else if (flag == 2) {
+                        res.status(401)
+                        res.send("user not registered")
+                    } else if (flag == 3) {
+                        res.status(500)
+                        res.send("Internal Server Error")
+                    }
+                })
+            } else {
+                res.status(401)
+                res.send("Your request does not include a cipher, please login and use the website as intended")
+            }
+        } else {
+            res.render("login", { login_string: "you need to login to make a request" })
         }
-    })
+    } else {
+        res.status(400)
+        res.send("Incomplete Request")
+    }
 })
 
-// test for the local activity page
-app.get("/localActivity", function(req, res) {
-    localActivityInformer('noor', 0, 1, localActivity_variables, con, function(flag, data){
-        if (flag == 0){
-            res.render("tier2/tier3/localActivity", data)
-        }else {
-            console.log(flag)
-            res.status(400)
-            res.send("Failed")
-        }
-    })
-})
+// // test for the natioanl activity page
+// app.get("/nationalActivity", function(req, res) {
+//     nationalActivityInformer('noor', 0, 1, nationalActivity_variables, con, function(flag, data){
+//         if (flag == 0){
+//             console.log(data)
+//             res.render("tier2/tier3/nationalActivity", data)
+//         }else {
+//             console.log(flag)
+//             console.log(data)
+//             res.status(400)
+//             res.send("Failed")
+//         }
+//     })
+// })
 
-app.post("/selectAct", function(req, res) {
-    console.log(req.body.activity)
+// // test for the local activity page
+// app.get("/localActivity", function(req, res) {
+//     localActivityInformer('noor', 0, 1, localActivity_variables, con, function(flag, data){
+//         if (flag == 0){
+//             res.render("tier2/tier3/localActivity", data)
+//         }else {
+//             console.log(flag)
+//             res.status(400)
+//             res.send("Failed")
+//         }
+//     })
+// })
+
+
+app.post("/addActivity", function(req, res) {
+    console.log(req.body)
+    res.send("waht the hell")
 })
 
 
 app.post("/nextMember", function(reg, res) {
     console.log(req.body.username)
+    
 })
 
 
