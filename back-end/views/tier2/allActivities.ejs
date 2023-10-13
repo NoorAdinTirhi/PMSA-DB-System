@@ -137,6 +137,7 @@
     <div class="fullbox">
         <div class="newActivity" id="newActivityWindow">
             <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/addActivity">
+                <input type="hidden" value="" name="committee" id="standingCommittee">
                 <h1 id="addActivityTitle"></h1>
                 <div style="display: flex; flex-direction:row; width:100%">
                     <div style="display: flex; flex-direction:row; width:100%">
@@ -655,6 +656,7 @@
             document.getElementById("newActivityWindow").style.display = "flex"
 
             hiddenCommitteein.setAttribute('value', properString);
+            document.getElementById("standingCommittee").value=committee;
         }
 
         function addActivityClose() {
