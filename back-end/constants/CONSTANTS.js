@@ -20,7 +20,7 @@ module.exports = {
         gazaStartDate: "temp",
         jerusalemStartDate: "temp",
         ppuStartDate: "temp",
-        jeninStartDate: "temp"
+        jininStartDate: "temp"
     },
     allMembers_variables: {
         position: "temp",
@@ -117,7 +117,7 @@ module.exports = {
         gazaPercent : "",
         ppuPercent : "",
         jerusalemPercent : "",
-        jeninPercent : "",
+        jininPercent : "",
         huPercent : "",
         participantName : "",
         participantLocalCommittee : "",

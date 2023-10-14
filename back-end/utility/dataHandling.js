@@ -34,7 +34,9 @@ function mainPageInformer(username, con, pageData, callback) {
 
                 return callback(pageData)
             } else {
-
+                Object.keys(pageData).forEach(key => {
+                    pageData[key] = "unassigned"
+                })
             }
         })
     })
@@ -596,10 +598,13 @@ function nationalActivityInformer(username, memNum, ActivityID, pageData, con, c
                                 })     
                                 pageData.involvedLC = []
                                 getInvolvedLC(ActivityID, con, function(flag, involvedLC){
+                                    console.log(involvedLC)
                                     if (flag != 0){
                                         return callback(flag, pageData)
                                     }else{
-                                        pageData.involvedLC = involvedLC;
+                                        involvedLC.forEach(row=>{
+                                            pageData.involvedLC.push(row.LC)
+                                        })
                                         pageData.nationalActivites = []
                                         pageData.localActivites = []
                                         getMemberActivityInfo(memNum, ActivityID, con, function(flag, memData){
@@ -696,7 +701,7 @@ function getInvolvedLC(ActivityID ,con, callback){
     })
 }
 function getActivityCat(ActivityID, con, callback){
-    con.query (`SELECT (${ActivityID} in (SELECT ActivityID FROM La)) AS isLocal, (${ActivityID} in (SELECT ActivityID FROM Na)) AS isNational`, function(err, results){
+    con.query (`SELECT (${ActivityID} in (SELECT ActivityID FROM La)) AS isLocal, (${ActivityID} in (SELECT ActivityID FROM Na)) AS isNational, (SELECT LC FROM La WHERE ActivityID = ${ActivityID}) AS LC`, function(err, results){
         if (err){
             //MySQL Error
             console.log(err);
@@ -708,7 +713,7 @@ function getActivityCat(ActivityID, con, callback){
                     return callback(4, "Illegal Case")
                 }else{
                     if (results[0].isLocal == 1)
-                        return callback(0, "local")
+                        return callback(0, results[0].isNational.LC)
                     else{
                         return callback(0, "national")
                     }
@@ -717,6 +722,57 @@ function getActivityCat(ActivityID, con, callback){
                 // Activity Doesn't Exist
                 return callback(2, "empty")
             }
+        }
+    })
+}
+
+function addActivity(body, localCommittee, con, callback){
+    participatingLcsArr = [];
+    if (localCommittee == "national"){
+        body.participatingLCs = body.participatingLCs.slice(0,-1)
+        participatingLcsArr = body.participatingLCs.split(",")
+        queryStr1 = `INSERT INTO A ( Aname, Committee, Adescription, ProposalLink, ReportLink, StartDate, EndDate) VALUES ('${body.activityName}', '${body.committee}', '${body.activityDescription}', '${body.proposalLink}', '${body.reportLink}', '${body.startDate}', '${body.endDate}');`       
+        queryStr2 = `INSERT INTO Na VALUES (LAST_INSERT_ID())`;
+        if (participatingLcsArr.length > 0){
+            queryStr3 = "INSERT INTO NaLC VALUES"
+        }
+        participatingLcsArr.forEach(LC => {
+            queryStr3 += `(LAST_INSERT_ID(), '${LC}'),`
+        })
+        queryStr3 = queryStr3.slice(0,-1)
+    }else{
+        queryStr1 = `INSERT INTO A ( Aname, Committee, Adescription, ProposalLink, ReportLink, StartDate, EndDate) VALUES ('${body.activityName}', '${body.committee}', '${body.activityDescription}', '${body.proposalLink}', '${body.reportLink}', '${body.startDate}', '${body.endDate}');`
+        queryStr2 = `INSERT INTO La VALUES (LAST_INSERT_ID(), '${localCommittee}');`
+    }
+    con.query(queryStr1, function(err, results){
+        if (err){
+            console.log(err)
+            return callback(3)
+        }else{
+            con.query(queryStr2, function(err){
+                if(err){
+                    console.log(err)
+                    con.query(`DELETE FROM A WHERE ActivityID = LAST_INSERT_ID()`)
+                    return callback(3)
+                }else{
+                    if(participatingLcsArr.length > 0){
+                        con.query(queryStr3, function(err){
+                            if (err){
+                                console.log(err)
+                                if (localCommittee == "national")
+                                    con.query(`DELETE FROM Na WHERE ActivityID = LAST_INSERT_ID()`)
+                                else{
+                                    con.query(`DELETE FROM La WHERE ActivityID = LAST_INSERT_ID()`)
+                                }
+                                return callback(3)
+                            }else{
+                                return callback(0)
+                            }
+                    })}else{
+                        return callback(0)
+                    }
+                }
+            })
         }
     })
 }
@@ -737,5 +793,6 @@ module.exports = {
     blackListInformer,
     nationalActivityInformer,
     localActivityInformer,
-    getActivityCat
+    getActivityCat,
+    addActivity
 }

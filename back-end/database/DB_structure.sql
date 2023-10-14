@@ -75,14 +75,14 @@ CREATE TABLE memberBlacklist(
 )ENGINE=INNODB;
 
 CREATE TABLE activities(
-	ActivityID INT PRIMARY KEY AUTO_INCREMENT,
-    Aname VARCHAR(50) NOT NULL,
-    Committee ENUM ('SCOPE', 'SCORE', 'SCORP', 'SCOPH', 'SCORA', 'SCOME', 'General', 'CB') NOT NULL,
-    Adescription VARCHAR(500) NOT NULL,
-    ProposalLink VARCHAR(300) NOT NULL,
-    ReportLink VARCHAR (300) NOT NULL,
-    StartDate DATE NOT NULL,
-    EndDate DATE NOT NULL
+	ActivityID      INT PRIMARY KEY AUTO_INCREMENT,
+    Aname           VARCHAR(50) NOT NULL,
+    Committee       ENUM ('SCOPE', 'SCORE', 'SCORP', 'SCOPH', 'SCORA', 'SCOME', 'General', 'CB') NOT NULL,
+    Adescription    VARCHAR(500) NOT NULL,
+    ProposalLink    VARCHAR(300) NOT NULL,
+    ReportLink      VARCHAR (300) NOT NULL,
+    StartDate       DATE NOT NULL,
+    EndDate         DATE NOT NULL
 )ENGINE=INNODB;
 
 CREATE TABLE members_activities(
@@ -155,6 +155,8 @@ SELECT * FROM A;
 SELECT * FROM La;
 INSERT INTO La (SELECT ActivityID, 'nablus' as LC FROM A WHERE ActivityID NOT IN (SELECT * FROM Na))
 
+SELECT (5 in (SELECT ActivityID FROM La)) AS isLocal, (5 in (SELECT ActivityID FROM Na)) AS isNational
+
  SELECT ActivityID FROM A WHERE ActivityID NOT IN (SELECT * FROM Na)
 -- SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;
 
@@ -176,3 +178,13 @@ INSERT INTO La (SELECT ActivityID, 'nablus' as LC FROM A WHERE ActivityID NOT IN
 
 -- INSERT INTO Users(Username,Hkey,Hmac,Position,Locality) VALUES ('Jouba','36,204,25,17,166,146,178,209,56,131,92,45,88,137,211,44,243,152,3,252,208,68,76,5,34,142,179,50,244,116,223,17', '60cc5ea2438e3ae9496a3231370cf62bc85e685651e7d087e933b6b815b7c0e4', 'CBD', 'nablus')
 -- SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;
+
+SELECT tbl.LC, SUM(tbl.LCPart) AS totalLCPart FROM 
+               (SELECT LC, COUNT(*)  AS LCPart FROM La GROUP BY LC
+               UNION
+               SELECT LC, COUNT(*) AS LCPart FROM NaLC GROUP BY LC) tbl
+               GROUP BY LC; 
+               
+               SELECT * from NaLC
+               
+SELECT (4 in (SELECT ActivityID FROM La)) AS isLocal, (4 in (SELECT ActivityID FROM Na)) AS isNational, (SELECT LC FROM La WHERE ActivityID = 4) AS LC

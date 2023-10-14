@@ -655,13 +655,12 @@
             document.getElementById("addActivityTitle").innerHTML = `Add ${properString} Activity`
             document.getElementById("newActivityWindow").style.display = "flex"
 
-            hiddenCommitteein.setAttribute('value', properString);
             document.getElementById("standingCommittee").value=committee;
+            console.log(document.getElementById("standingCommittee").value)
         }
 
         function addActivityClose() {
             document.getElementById("newActivityWindow").style.display = "none"
-            document.getElementById("newActivityForm").removeChild(hiddenCommitteein)
         }
 
         

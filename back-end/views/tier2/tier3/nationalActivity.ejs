@@ -275,12 +275,12 @@
                     </div>
                 </div>
                 <div class="headerbox" style="margin-left: 41.8px;">
-                    <%=committeeName%>
+                    <%=committeeName.toUpperCase()%>
                 </div>
                 <div class="headerbox" style="margin-left: 41.8px; display: flex; flex-direction: row;">
                     <%if (involvedLC.length != 0) {%>
                         <%involvedLC.forEach(element => {%>
-                            <div style="margin:2px 5px;"><%=element%></div>
+                            <div style="margin:2px 5px; padding:2px 5px; border-style:solid"><%=element.toUpperCase()%></div>
                         <%})%>
                     <%} else {%>
                         <div>No LCs have participated in the Activity</div>
@@ -340,7 +340,7 @@
                                 Jinin
                             </div>
                             <div style="padding:2px;">
-                                <%=jeninPercent%>
+                                <%=jininPercent%>
                             </div>
                         </div>
                         <div style="margin-left:1%; display:flex; flex-direction:row; border-style:solid">
@@ -400,7 +400,7 @@
                         <div style="width: 100%; max-height: 93%;display: flex; flex-direction: row;">
                             <div style="float:left ;margin-left: 2%; margin-right: 2%; max-width: 40%; max-height: 80%;">
                                 <h1>National</h1>
-                                <ol style="max-height: calc(15*20px); overflow-y: scroll;">
+                                <ol style="max-height: calc(15*20px); overflow-y: scroll; overflow-x: hidden">
                                     <% nationalActivites.forEach( element=> { %>
                                         <li>
                                             <%= element %>

@@ -33,7 +33,8 @@ const { mainPageInformer,
         blackListInformer, 
         nationalActivityInformer,
         localActivityInformer,
-        getActivityCat                         } = require('./utility/dataHandling')
+        getActivityCat,
+        addActivity                             } = require('./utility/dataHandling')
 
 
 // let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
@@ -475,39 +476,50 @@ app.post("/selectAct", function(req, res){
             if (req.body.cipher) {
                 verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
                     if (flag == 0) {
-                        getActivityCat(req.body.activity, con, function(flag, msg){
-                            if (flag == 0){
-                                if (msg == "national"){
-                                    console.log(req.body.activity)
-                                    nationalActivityInformer(req.body.username, req.body.memNum, req.body.activity, nationalActivity_variables, con, function (flag, data){
-                                        if (flag == 0){
-                                            res.render("tier2/tier3/nationalActivity", data)
-                                        }else {
-                                            console.log(flag)
-                                            console.log(data)
-                                            res.status(400)
-                                            res.send("Failed")
+                        if (req.body.position = "Secgen"){
+                            getActivityCat(req.body.activity, con, function(flag, msg){
+                                if (flag == 0){
+                                   
+                                    if (msg == "national"){
+                                        if (msg == req.body.localCommittee || req.body.localCommittee == "national"){
+                                            console.log(req.body.activity)
+                                            nationalActivityInformer(req.body.username, req.body.memNum, req.body.activity, nationalActivity_variables, con, function (flag, data){
+                                                if (flag == 0){
+                                                    res.render("tier2/tier3/nationalActivity", data)
+                                                }else {
+                                                    console.log(flag)
+                                                    console.log(data)
+                                                    res.status(400)
+                                                    res.send("Failed")
+                                                }
+                                            })
+                                        }else{
+                                            res.status(401)
+                                            res.send("Unauthorized, local Secgens cannot activities events outside their Local Committee")
                                         }
-                                    })
-                                }else{
-                                    console.log(req.body.activity)
-                                    localActivityInformer(req.body.username, req.body.memNum, req.body.activity, nationalActivity_variables, con, function (flag, data){
-                                        if (flag == 0){
-                                            res.render("tier2/tier3/localActivity", data)
-                                        }else {
-                                            console.log(flag)
-                                            console.log(data)
-                                            res.status(400)
-                                            res.send("Failed")
-                                        }
-                                    })
+                                        
+                                    }else{
+                                        localActivityInformer(req.body.username, req.body.memNum, req.body.activity, nationalActivity_variables, con, function (flag, data){
+                                            if (flag == 0){
+                                                res.render("tier2/tier3/localActivity", data)
+                                            }else {
+                                                console.log(flag)
+                                                console.log(data)
+                                                res.status(400)
+                                                res.send("Failed")
+                                            }
+                                        })
+                                    }
+                                }else if (flag == 3){
+                                    console.log(flag);
+                                    res.status(500)
+                                    res.send(msg)
                                 }
-                            }else if (flag == 3){
-                                console.log(flag);
-                                res.status(500)
-                                res.send(msg)
-                            }
-                        })
+                            })
+                        }else{
+                            res.status(401)
+                            res.send("Unauthorized, CBD cannot view activities, their only concern is trainers")
+                        }
                     } else if (flag == 1) {
                         //failed, bad cipher
                         res.status(401)
@@ -533,38 +545,66 @@ app.post("/selectAct", function(req, res){
     }
 })
 
-// // test for the natioanl activity page
-// app.get("/nationalActivity", function(req, res) {
-//     nationalActivityInformer('noor', 0, 1, nationalActivity_variables, con, function(flag, data){
-//         if (flag == 0){
-//             console.log(data)
-//             res.render("tier2/tier3/nationalActivity", data)
-//         }else {
-//             console.log(flag)
-//             console.log(data)
-//             res.status(400)
-//             res.send("Failed")
-//         }
-//     })
-// })
-
-// // test for the local activity page
-// app.get("/localActivity", function(req, res) {
-//     localActivityInformer('noor', 0, 1, localActivity_variables, con, function(flag, data){
-//         if (flag == 0){
-//             res.render("tier2/tier3/localActivity", data)
-//         }else {
-//             console.log(flag)
-//             res.status(400)
-//             res.send("Failed")
-//         }
-//     })
-// })
 
 
 app.post("/addActivity", function(req, res) {
     console.log(req.body)
-    res.send("waht the hell")
+    if (req.body) {
+        if (req.body.username) {
+            if (req.body.cipher) {
+                verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+                    if (flag == 0) {
+                        if (req.body.position = "Secgen"){
+                            addActivity(req.body, req.body.localCommittee, con, function(flag){
+                                if (flag == 0){
+                                    allActivitiesInformer(req.body.username, activityPage_variables, req.body.localCommittee, req.body.curFilter, con, function(flag, data) {
+                                    if (flag == 3) {
+                                        res.status(500)
+                                        res.send("Internal Server Error, Database issue")
+                                    } else {
+                                        updateAction(req.body.user, `Added a new Activity : ${req.body.activityName}`, con, function(flag){
+                                            if (flag == 0){
+                                                res.status(200)
+                                                res.render('tier2/allActivities', data)
+                                            }else{
+                                                res.status(500)
+                                                res.send("Internal Server Error, unable to update action, but activity was added")
+                                            }
+                                        })
+                                    }
+                                })
+                                }else{
+                                    res.status(500)
+                                    res.send("Internal Server Error")
+                                }
+                            })
+                        }else{
+                            res.status(401)
+                            res.send("Unauthorized, CBD cannot add activities, their only concern is trainers")
+                        }
+                    } else if (flag == 1) {
+                        //failed, bad cipher
+                        res.status(401)
+                        res.send("Your request has a bad cipher")
+                    } else if (flag == 2) {
+                        res.status(401)
+                        res.send("user not registered")
+                    } else if (flag == 3) {
+                        res.status(500)
+                        res.send("Internal Server Error")
+                    }
+                })
+            } else {
+                res.status(401)
+                res.send("Your request does not include a cipher, please login and use the website as intended")
+            }
+        } else {
+            res.render("login", { login_string: "you need to login to make a request" })
+        }
+    } else {
+        res.status(400)
+        res.send("Incomplete Request")
+    }
 })
 
 
@@ -587,6 +627,17 @@ app.get("*.css", function(req, res) {
 })
 
 app.get("*.png", function(req, res) {
+    //HTML Files Path
+    const options = {
+        root: path.join(__dirname)
+    }
+    const fileName = req.originalUrl
+
+
+    res.sendFile(fileName, options)
+})
+
+app.get("*.jpeg", function(req, res) {
     //HTML Files Path
     const options = {
         root: path.join(__dirname)
