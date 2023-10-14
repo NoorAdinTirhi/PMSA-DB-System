@@ -280,7 +280,7 @@
                     <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "lcgaza" value="gaza" name="localCommittee" >Gaza</label>
                     <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "lcppu" value="ppu" name="localCommittee" >PPU</label>
                     <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "lchu" value="hu" name="localCommittee" >HU</label>
-                    <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "lcjinin" value="jinin" name="localCommittee" >Jinin</label>
+                    <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "lcjenin" value="jenin" name="localCommittee" >Jenin</label>
                 </div>
                 <div style="display: flex; flex-direction:row; width:100%">
                     <label style="margin-right:5%; width:10%">
@@ -377,7 +377,7 @@
                     <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "lcgaza" value="gaza" name="localCommittee" >Gaza</label>
                     <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "lcppu" value="ppu" name="localCommittee" >PPU</label>
                     <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "lchu" value="hu" name="localCommittee" >HU</label>
-                    <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "lcjinin" value="jinin" name="localCommittee" >Jinin</label>
+                    <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "lcjenin" value="jenin" name="localCommittee" >Jenin</label>
                 </div>
 
                 <div style="display: flex; flex-direction:row; width:100%">
@@ -472,7 +472,7 @@
                     <div style="display:flex; flex-direction:row">
                         <button id="ppuBtn" class="localbutton" onclick="setFilter('ppu')"> PPU</button>
                         <button id="huBtn" class="localbutton" onclick="setFilter('hu')"> HU</button>
-                        <button id="jininBtn" class="localbutton" onclick="setFilter('jinin')"> Jinin</button>
+                        <button id="jeninBtn" class="localbutton" onclick="setFilter('jenin')"> Jenin</button>
                     </div>
 
                 </div>
@@ -674,7 +674,7 @@
             }
 
             var filterLC;
-            lcs = ['national', 'nablus', 'jerusalem', 'gaza', 'ppu', 'hu', 'jinin']
+            lcs = ['national', 'nablus', 'jerusalem', 'gaza', 'ppu', 'hu', 'jenin']
             setFilter("<%=userLC%>")
 
             firstYearField.setAttribute("max", Number(`${cur_time.getFullYear()}`))

@@ -4,15 +4,12 @@ var stat;
 
 //check if the request is made by a user
 function verifyUser(username, cipher, LC, position, con, callback) {
-    // console.log(username + " " + cipher + " " + LC)
     con.query(`SELECT * FROM Users WHERE Username = "${username}"`, function(err, result) {
         if (err) {
             return callback(3)
         }
 
         if (result.length > 0) {
-            console.log(`${result[0].Locality} == ${LC} = ${result[0].Locality == LC}`)
-            console.log(`${result[0].Position} == ${position} = ${result[0].Position == position}`)
             if (result[0].Hmac == cipher && result[0].Locality == LC && result[0].Position == position) {
                 return callback(0)
             } else {
@@ -43,8 +40,6 @@ function authUser(username, pwd, con, callback) {
             })
 
             const hash = String(crypto.createHmac('sha3-256', key).update(username + pwd).digest('hex'));
-            console.log(hash)
-            console.log(result[0].Hmac)
             if (hash == result[0].Hmac) {
                 //means success
                 return callback(0)
@@ -78,11 +73,9 @@ function registerSession(username, pwd, con, callback) {
 }
 
 function deleteUser(body, con, callback) {
-    console.log(body)
     if (body.localCommittee.toUpperCase() == "NATIONAL" && body.position.toUpperCase() == 'SECGEN') {
         con.query(`DELETE FROM Users WHERE Username = '${body.userToDelete}'`, function(err) {
             if (err) {
-                console.log(err)
                 return callback(1)
             } else {
                 return callback(0)
@@ -101,9 +94,7 @@ function registerUser(body, con, callback) {
         crypto.getRandomValues(secret);
         const secretString = String(secret)
         const hashString = String(crypto.createHmac('sha3-256', secret).update(body.nUsername + body.nPassword).digest('hex'))
-        console.log(`sha3-256(${secret}, ${body.nUsername}, ${body.nPassword})`)
         const current_time = new Date();
-        console.log(`INSERT INTO Users(Username,Hkey,Hmac,Position,Locality) VALUES ('${body.nUsername}','${secretString}', '${hashString}', '${body.nPosition}', '${body.nLC}')`)
         con.query(`INSERT INTO Users(Username,Hkey,Hmac,Position,Locality) VALUES ('${body.nUsername}','${secretString}', '${hashString}', '${body.nPosition}', '${body.nLC}')`, function(err, result, fields) {
             if (err) {
                 //something went wrong

@@ -277,6 +277,9 @@
                     <!-- all members -->
                     <form method="post" action="/allMembers">
                         <input type="hidden" name="memNum" value=0>
+                        <input type="hidden" name="direction" value="next">
+                        <input type="hidden" name="filterLC" value="<%=userLC%>">
+                        <input type="hidden" name="chosenLC" value="<%=userLC%>">
                         <button class="allButoon zoom secgen" type="submit">
                         All Members
                     </button>
@@ -406,7 +409,7 @@
                                 Jenin
                             </div>
                             <div class="minicolumn">
-                                <%=jininStartDate%>
+                                <%=jeninStartDate%>
                             </div>
                         </div>
                     </div>
@@ -462,7 +465,7 @@
                 <label style="width: 200px; ">Local Committee</label>
                 <div style="display: flex;">
                     <label><input required type="radio" name="nLC" value="nablus">Nablus</label>
-                    <label><input required type="radio" name="nLC" value="jinin">Jinin</label>
+                    <label><input required type="radio" name="nLC" value="jenin">Jenin</label>
                     <label><input required type="radio" name="nLC" value="ppu">PPU</label>
                     <label><input required type="radio" name="nLC" value="hu">HU</label>
                     <label><input required type="radio" name="nLC" value="jerusalem">Jerusalem</label>

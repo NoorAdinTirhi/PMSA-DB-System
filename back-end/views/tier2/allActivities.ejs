@@ -253,7 +253,7 @@
                         <button id="huBtn" class="localbutton" onclick="setFilter('hu')" name="filter" value="hu" type="submit"> HU</button>
                     </form>
                     <form method="post" action="/allActivities" style="width: 100%;">
-                        <button id="jininBtn" class="localbutton" onclick="setFilter('jinin')" name="filter" value="jinin" type="submit"> Jinin</button>
+                        <button id="jeninBtn" class="localbutton" onclick="setFilter('jenin')" name="filter" value="jenin" type="submit"> Jenin</button>
                     </form>
                 </div>
 
@@ -544,9 +544,9 @@
             document.getElementById("participatingCommittees").style.display = "none";
         } 
 
-        lcs = ['national', 'nablus', 'jerusalem', 'gaza', 'ppu', 'hu', 'jinin']
+        lcs = ['national', 'nablus', 'jerusalem', 'gaza', 'ppu', 'hu', 'jenin']
 
-        const allLCs = ['jerusalem', 'nablus', 'jinin', 'ppu', 'hu', 'gaza']
+        const allLCs = ['jerusalem', 'nablus', 'jenin', 'ppu', 'hu', 'gaza']
         const tagList = []
         allLCs.forEach((element) =>{
             if (tagList.includes(element)){

@@ -60,7 +60,7 @@ var con;
 //TODO implement Gaza members event
 //TODO implement PPU members event
 //TODO implement HU members event
-//TODO implement Jinin members event
+//TODO implement Jenin members event
 //TODO implement cipher confirmation
 //TODO implement user registration
 
@@ -111,7 +111,6 @@ app.post("/login", function(req, res) {
                     res.render(fileName, { login_string: "Internal Server Error" })
                 } else {
                     mainPageInformer(username, con, mainPage_varialbes, function(data) {
-                        console.log(data)
                         res.render("main", data);
                     })
                 }
@@ -299,11 +298,11 @@ app.post("/allMembers", function(req, res) {
     if (req.body) {
         if (req.body.username) {
             if (req.body.cipher) {
-                if (req.body.memNum) {
+                if (req.body.memNum && req.body.direction) {
                     verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
                         if (flag == 0) {
                             //succesful, attempt to get information and render the allMembers page
-                            allMembersInformer(req.body.username, req.body.memNum, allMembers_variables, req.body.localCommittee, con, function(flag, data) {
+                            allMembersInformer(req.body.username, req.body.memNum, req.body.direction, allMembers_variables, req.body.filterLC,  req.body.chosenLC ,con, function(flag, data) {
                                 if (flag == 3) {
                                     res.status(500)
                                     res.send("Internal Server Error, Database issue")
@@ -562,7 +561,7 @@ app.post("/addActivity", function(req, res) {
                                         res.status(500)
                                         res.send("Internal Server Error, Database issue")
                                     } else {
-                                        updateAction(req.body.user, `Added a new Activity : ${req.body.activityName}`, con, function(flag){
+                                        updateAction(req.body.username, `Added a new Activity : ${req.body.activityName}`, con, function(flag){
                                             if (flag == 0){
                                                 res.status(200)
                                                 res.render('tier2/allActivities', data)
@@ -608,9 +607,52 @@ app.post("/addActivity", function(req, res) {
 })
 
 
-app.post("/nextMember", function(reg, res) {
-    console.log(req.body.username)
-    
+app.post("/nextMember", function(req, res){
+    console.log(req.body)
+    if (req.body) {
+        if (req.body.username) {
+            if (req.body.cipher) {
+                if (req.body.memNum) {
+                    LC = (req.body.filter)
+                    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+                        if (flag == 0) {
+                            //succesful, attempt to get information and render the allMembers page
+                            allMembersInformer(req.body.username, req.body.memNum, allMembers_variables, req.body.filterLC, con, function(flag, data) {
+                                if (flag == 3) {
+                                    res.status(500)
+                                    res.send("Internal Server Error, Database issue")
+                                } else {
+                                    res.status(200)
+                                    res.render('tier2/allMembers', data)
+                                }
+                            })
+                        } else if (flag == 1) {
+                            //failed, bad cipher
+                            res.status(401)
+                            res.send("Your request has a bad cipher")
+                        } else if (flag == 2) {
+                            res.status(401)
+                            res.send("user not registered")
+                        } else if (flag == 3) {
+                            res.status(500)
+                            res.send("Internal Server Error")
+                        }
+                    })
+                } else {
+                    res.status(401)
+                    res.send("bad request")
+                }
+            } else {
+                res.status(401)
+                res.send("Your request does not include a cipher, please login and use the website as intended")
+            }
+        } else {
+            res.render("login", { login_string: "you need to login to make a request" })
+        }
+    } else {
+        res.status(400)
+        res.send("Incomplete Request")
+    }
 })
 
 

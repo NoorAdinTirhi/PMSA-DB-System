@@ -13,7 +13,7 @@ CREATE TABLE Users(
     Hkey VARCHAR(128) NOT NULL,
     Position ENUM('Secgen', 'CBD') NOT NULL,
     
-    Locality ENUM('national','nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') NOT NULL,
+    Locality ENUM('national','nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jenin') NOT NULL,
     LastAction VARCHAR(500),
     LastActionTime DATE,
     StartDate DATE,
@@ -24,7 +24,7 @@ INSERT INTO Users (Username, Hmac, Hkey,Position, Locality) VALUES ('noor', '14b
 
 CREATE TABLE LocalCommittees
 (
-	city ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') PRIMARY KEY,
+	city ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jenin') PRIMARY KEY,
     membershipStatus ENUM('Full','Canditate') NOT NULL
     -- will want to know number of members
     -- will want to know number of activities
@@ -48,7 +48,7 @@ CREATE TABLE members(
     Facebook_Link       VARCHAR(75) NOT NULL,
     UniStartYear        int NOT NULL,
     MembershipStatus    ENUM('Active', 'Inactive') NOT NULL,
-    LC                  ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') NOT NULL,
+    LC                  ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jenin') NOT NULL,
     CONSTRAINT FkeyLC FOREIGN KEY (LC) REFERENCES LocalCommittees (city) 
     ON UPDATE CASCADE,
     CONSTRAINT chk_year CHECK ( UniStartYear > 1960 )
@@ -101,7 +101,7 @@ CREATE TABLE members_activities(
 
 CREATE TABLE localActivities(
 	ActivityID INT PRIMARY KEY,
-    LC ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') NOT NULL,
+    LC ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jenin') NOT NULL,
     CONSTRAINT FkeyActivityID FOREIGN KEY (ActivityID) REFERENCES activities(ActivityID)
     ON DELETE CASCADE
     ON UPDATE CASCADE, 
@@ -118,7 +118,7 @@ CREATE TABLE nationalActivities(
 
 CREATE TABLE nationalActivities_localCommittees(
 	ActivityID INT NOT NULL,
-	LC ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jinin') NOT NULL,
+	LC ENUM('nablus', 'jerusalem', 'gaza', 'hu', 'ppu', 'jenin') NOT NULL,
     CONSTRAINT PkeyAIDLC PRIMARY KEY (ActivityID, LC),
     CONSTRAINT FkeyActivityIDRel FOREIGN KEY (ActivityID) REFERENCES nationalActivities (ActivityID)
     ON DELETE CASCADE
@@ -179,12 +179,14 @@ SELECT (5 in (SELECT ActivityID FROM La)) AS isLocal, (5 in (SELECT ActivityID F
 -- INSERT INTO Users(Username,Hkey,Hmac,Position,Locality) VALUES ('Jouba','36,204,25,17,166,146,178,209,56,131,92,45,88,137,211,44,243,152,3,252,208,68,76,5,34,142,179,50,244,116,223,17', '60cc5ea2438e3ae9496a3231370cf62bc85e685651e7d087e933b6b815b7c0e4', 'CBD', 'nablus')
 -- SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;
 
-SELECT tbl.LC, SUM(tbl.LCPart) AS totalLCPart FROM 
-               (SELECT LC, COUNT(*)  AS LCPart FROM La GROUP BY LC
-               UNION
-               SELECT LC, COUNT(*) AS LCPart FROM NaLC GROUP BY LC) tbl
-               GROUP BY LC; 
-               
-               SELECT * from NaLC
-               
-SELECT (4 in (SELECT ActivityID FROM La)) AS isLocal, (4 in (SELECT ActivityID FROM Na)) AS isNational, (SELECT LC FROM La WHERE ActivityID = 4) AS LC
+-- SELECT tbl.LC, SUM(tbl.LCPart) AS totalLCPart FROM 
+--                (SELECT LC, COUNT(*)  AS LCPart FROM La GROUP BY LC
+--                UNION
+--                SELECT LC, COUNT(*) AS LCPart FROM NaLC GROUP BY LC) tbl
+--                GROUP BY LC; 
+--                
+--                SELECT * from NaLC
+--                
+-- SELECT (4 in (SELECT ActivityID FROM La)) AS isLocal, (4 in (SELECT ActivityID FROM Na)) AS isNational, (SELECT LC FROM La WHERE ActivityID = 4) AS LC
+
+-- SELECT COUNT(*) FROM La WHERE LC = 'nablus'
