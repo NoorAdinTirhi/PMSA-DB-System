@@ -34,7 +34,10 @@ const { mainPageInformer,
         nationalActivityInformer,
         localActivityInformer,
         getActivityCat,
-        addActivity                             } = require('./utility/dataHandling')
+        addActivity,
+        searchMember,
+        addNewMem,
+        editMem                             } = require('./utility/dataHandling')
 
 
 // let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
@@ -205,7 +208,7 @@ app.post("/registerUser", function(req, res) {
                                 res.send("Username already exists or Position is already Held")
                             } else {
                                 res.status(200)
-                                res.send(`succesfully registered new User ${req.body.nUsername}`)
+                                res.send("New User Succesfully Added")
                             }
                         })
                     } else if (flag == 1) {
@@ -295,6 +298,7 @@ app.post("/deleteUser", function(req, res) {
 })
 
 app.post("/allMembers", function(req, res) {
+    console.log(req.body)
     if (req.body) {
         if (req.body.username) {
             if (req.body.cipher) {
@@ -498,7 +502,7 @@ app.post("/selectAct", function(req, res){
                                         }
                                         
                                     }else{
-                                        localActivityInformer(req.body.username, req.body.memNum, req.body.activity, nationalActivity_variables, con, function (flag, data){
+                                        localActivityInformer(req.body.username, req.body.memNum, req.body.activity, localActivity_variables, con, function (flag, data){
                                             if (flag == 0){
                                                 res.render("tier2/tier3/localActivity", data)
                                             }else {
@@ -607,8 +611,7 @@ app.post("/addActivity", function(req, res) {
 })
 
 
-app.post("/nextMember", function(req, res){
-    console.log(req.body)
+app.post("/searchMember", function(req, res){
     if (req.body) {
         if (req.body.username) {
             if (req.body.cipher) {
@@ -616,14 +619,13 @@ app.post("/nextMember", function(req, res){
                     LC = (req.body.filter)
                     verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
                         if (flag == 0) {
-                            //succesful, attempt to get information and render the allMembers page
-                            allMembersInformer(req.body.username, req.body.memNum, allMembers_variables, req.body.filterLC, con, function(flag, data) {
-                                if (flag == 3) {
-                                    res.status(500)
-                                    res.send("Internal Server Error, Database issue")
-                                } else {
+                            searchMember(req.body, con, function(flag, data){
+                                if (flag == 0){
                                     res.status(200)
-                                    res.render('tier2/allMembers', data)
+                                    res.send(JSON.stringify(data))
+                                }else{
+                                    res.status(500)
+                                    res.send("Internal Server Error")
                                 }
                             })
                         } else if (flag == 1) {
@@ -654,6 +656,111 @@ app.post("/nextMember", function(req, res){
         res.send("Incomplete Request")
     }
 })
+
+app.post("/addNewMem",function(req,res){
+    console.log(req.body)
+    con
+    if (!req.body) {
+        res.status(400)
+        res.send("Incomplete Request")
+        return
+    }
+
+    if(!req.body.username){
+        res.render("login", { login_string: "you need to login to make a request" })
+        return
+    }
+
+    if (!req.body.cipher) {
+        res.status(401)
+        res.send("Your request does not include a cipher, please login and use the website as intended")
+        return
+    }
+
+    if (!req.body.memNum) {
+        res.status(401)
+        res.send("bad request")
+        return
+    }
+
+    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+        if (flag == 0) {
+            addNewMem(req.body, con, function(flag, data){
+                if (flag == 0){
+                    res.status(200)
+                    res.send("Succesfully registered member")
+                    return
+                }
+                res.status(500)
+                res.send("Bad Request, Make sure that the user is not already registered")
+                return
+            })
+        } else if (flag == 1) {
+            //failed, bad cipher
+            res.status(401)
+            res.send("Your request has a bad cipher")
+        } else if (flag == 2) {
+            res.status(401)
+            res.send("user not registered")
+        } else if (flag == 3) {
+            res.status(500)
+            res.send("Internal Server Error")
+        }
+    })          
+})
+
+app.post("/editMem",function(req,res){
+    console.log(req.body)
+    con
+    if (!req.body) {
+        res.status(400)
+        res.send("Incomplete Request")
+        return
+    }
+
+    if(!req.body.username){
+        res.render("login", { login_string: "you need to login to make a request" })
+        return
+    }
+
+    if (!req.body.cipher) {
+        res.status(401)
+        res.send("Your request does not include a cipher, please login and use the website as intended")
+        return
+    }
+
+    if (!req.body.memNum) {
+        res.status(401)
+        res.send("bad request")
+        return
+    }
+
+    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+        if (flag == 0) {
+            editMem(req.body, con, function(flag){
+                if (flag == 0){
+                    res.status(200)
+                    res.send("Member Succesfully Edited")
+                    return
+                }
+                res.status(500)
+                res.send("Bad Request, Make sure that the user number is not already registered")
+                return
+            })
+        } else if (flag == 1) {
+            //failed, bad cipher
+            res.status(401)
+            res.send("Your request has a bad cipher")
+        } else if (flag == 2) {
+            res.status(401)
+            res.send("user not registered")
+        } else if (flag == 3) {
+            res.status(500)
+            res.send("Internal Server Error")
+        }
+    })              
+})
+
 
 
 

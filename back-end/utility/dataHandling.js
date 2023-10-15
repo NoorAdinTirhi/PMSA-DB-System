@@ -116,6 +116,7 @@ function blackListInformer(username, pageData, con, callback){
 
 function allMembersInformer(username, number, direciton, pageData, LC, excplicitLC, con, callback) {
     data = ""
+    console.log(excplicitLC)
     if (excplicitLC.toUpperCase() == "NATIONAL")
         chosenLC = ""
     else
@@ -158,6 +159,7 @@ function allMembersInformer(username, number, direciton, pageData, LC, excplicit
                     pageData.localCommittee = results[0].LC
                     pageData.memStatus = results[0].MembershipStatus
                     pageData.curMemNumber = results[0].UniID
+                    pageData.gender = results[0].Gender
                     pageData.chosenLC = excplicitLC
 
                     checkTrainerStatus(results[0].UniID, con, function(flag, trainerStatus) {
@@ -168,18 +170,20 @@ function allMembersInformer(username, number, direciton, pageData, LC, excplicit
                                     pageData.blacklistStatus = blStatus
                                     pageData.blacklistReason = blReason
                                     getNationalActivites(results[0].UniID, con, function(flag, natActivities) {
-                                        if (flag == 0) {
+                                        console.log(flag)
+                                        if (flag == 0 || flag == 1) {
                                             pageData.nationalActivities = []
                                             natActivities.forEach(row => {
                                                 pageData.nationalActivities.push(row.Aname)
                                             })
                                             getLocalActivites(results[0].UniID, con, function(flag, localActivities) {
-                                                if (flag == 0) {
+                                                console.log(flag)
+                                                if (flag == 0 || flag == 1) {
                                                     pageData.localActivities = [];
                                                     localActivities.forEach(row => {
                                                         pageData.localActivities.push(row.Aname)
                                                     })
-                                                    return callback(flag, pageData)
+                                                    return callback(0, pageData)
                                                 } else {
                                                     return callback(flag, pageData)
                                                 }
@@ -217,6 +221,7 @@ function allMembersInformer(username, number, direciton, pageData, LC, excplicit
                             pageData.localCommittee = results[0].LC
                             pageData.memStatus = results[0].MembershipStatus
                             pageData.curMemNumber = results[0].UniID
+                            pageData.gender = results[0].Gender
                             pageData.chosenLC = excplicitLC
                             checkTrainerStatus(results[0].UniID, con, function(flag, trainerStatus) {
                                 if (flag == 0) {
@@ -835,6 +840,102 @@ function addActivity(body, localCommittee, con, callback){
     })
 }
 
+function searchMember(body, con, callback){
+    if (body.filterLC.toUpperCase() == "NATIONAL")
+        chosenLC = ""
+    else
+        chosenLC = ` AND LC = '${body.filterLC}'`
+    console.log(`SELECT UniID, CONCAT(FirstName, FatherName, GFatherName, FamilyName) AS Name FROM M WHERE CONCAT(FirstName, FatherName, GFatherName, FamilyName) LIKE '%${body.memberLike}%'` + chosenLC)
+    con.query(`SELECT UniID, CONCAT(FirstName, FatherName, GFatherName, FamilyName) AS Name FROM M WHERE CONCAT(FirstName, FatherName, GFatherName, FamilyName) LIKE '%${body.memberLike}%'` + chosenLC, function(err, results){
+        data=[]
+        temp={}
+        if (err){
+            console.log(err)
+            callback(3, data)
+        }else{
+            results.forEach(row => {
+                temp["memNum"] = row.UniID;
+                temp["memName"] = row.Name;
+                data.push(temp)
+            })
+            console.log(data)
+            callback(0, data)
+        }
+    })
+}
+
+function addNewMem(body, con, callback){
+    query1Str = `INSERT INTO M VALUES(${body.uniNum}, '${body.engFname}', '${body.engFather}',`
+    + `'${body.engGfather}', '${body.engLname}', '${body.arabFname}', '${body.arabFather}',`
+    + `'${body.arabGfather}', '${body.arabLname}', '${body.gender}', '${body.areaCode+body.phoneNo}',`
+    + `'${body.email}', '${body.facebook}', ${body.firstYear}, '${body.memberStatus}',`
+    + `'${(body.localCommittee=="national")?body.newLocalCommittee:body.localCommittee}')`
+    console.log(query1Str)
+    if (body.trainerStatus == 'active'){
+        query2Str = `INSERT INTO Mt VALUES(${body.uniNum}, 'Not Yet Assigned','Not Yet Assigned','2022-09-17','active')`
+    }
+    
+    con.query(query1Str, function(err){
+        if (err){
+            console.log(err)
+            return callback(3)
+        }
+        
+        if (body.trainerStatus != 'active')
+            return callback(0)
+        con.query(query2Str, function(err){
+            if(err){
+                console.log(err)
+                con.query(`DELETE FROM M WHERE UniID = ${body.uniNum}`, function(err){
+                    if(err)
+                        console.log(err)
+                })
+                return callback(3)
+            }
+            return callback(0)
+        })
+    })
+}
+
+function editMem(body, con, callback){
+    query1Str = `UPDATE M SET UniID = ${body.uniNum}, FirstName = '${body.engFname}', FatherName = '${body.engFather}',`
+    + `GFatherName = '${body.engGfather}', FamilyName = '${body.engLname}', AFirstName = '${body.arabFname}', AFatherName = '${body.arabFather}',`
+    + `AGFatherName = '${body.arabGfather}', AFamilyName = '${body.arabLname}', Gender = '${body.gender}', PhoneNo = '${body.areaCode+body.phoneNo}',`
+    + `E_mail = '${body.email}', Facebook_Link = '${body.facebook}', UniStartYear = ${body.firstYear}, MembershipStatus = '${body.memberStatus}',`
+    + `LC = '${(body.localCommittee=="national")?body.newLocalCommittee:body.localCommittee}'`
+    + ` WHERE UniID = ${body.memNum}`
+    
+
+    con.query(`SELECT * FROM Mt WHERE UniID = ${body.uniNum}`, function(err, results){
+        query2Str = (results.length > 0)?`UPDATE Mt SET TStatus = '${body.trainerStatus}' WHERE UniID = ${body.uniNum}`:`INSERT INTO Mt VALUES(${body.uniNum}, 'Not Yet Assigned','Not Yet Assigned','2022-09-17','${body.trainerStatus}')`
+        con.query(`SELECT * FROM MBl WHERE UniId = ${body.uniNum}`, function(err, results){
+            query3Str = (results.length > 0)?`UPDATE MBl SET Status = '${body.blackListStatus}', Reason = '${body.blackListReason}' WHERE UniID = ${body.uniNum}`:`INSERT INTO MBl VALUES(${body.uniNum}, '${body.blackListStatus}','${body.blackListReason}')`
+            console.log(query1Str)
+            console.log(query2Str)
+            console.log(query3Str)
+            con.query(query1Str, function(err){
+                if (err){
+                    console.log(err)
+                    return callback(3)
+                }
+                con.query(query2Str, function(err){
+                    if(err){
+                        console.log(err)
+                        return callback(3)
+                    }
+                    con.query(query3Str, function(err){
+                        if (err){
+                            console.log(err)
+                            return callback(3)
+                        }
+                        return callback(0)
+                    })
+                })
+            })
+        })
+    })    
+}
+//TODO put the fukcing delete
 
 
 
@@ -852,5 +953,8 @@ module.exports = {
     nationalActivityInformer,
     localActivityInformer,
     getActivityCat,
-    addActivity
+    addActivity,
+    searchMember,
+    addNewMem,
+    editMem
 }

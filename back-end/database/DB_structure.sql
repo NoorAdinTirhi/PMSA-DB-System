@@ -67,7 +67,7 @@ CREATE TABLE memeber_trainers (
 
 CREATE TABLE memberBlacklist(
 	UniID INT PRIMARY KEY,
-    Status ENUM ("red, orange, yellow, blue, green, exchange") NOT NULL,
+    Status ENUM ('red', 'orange', 'yellow', 'blue', 'green', 'exchange', 'clear') NOT NULL,
     Reason VARCHAR(50)  NOT NULL,
     CONSTRAINT FkeyUniID1 FOREIGN KEY (UniID) REFERENCES members(UniID)
     ON DELETE CASCADE
@@ -147,17 +147,16 @@ ALTER TABLE standingCommittees RENAME SC;
 
 
 
-INSERT INTO LC VALUES ('nablus', 'Full');
+-- INSERT INTO LC VALUES ('nablus', 'Full');
 
-INSERT INTO M  VALUES (1190081, 'nooradin', 'fuad', 'haider', 'tirhi', 'نورالدين' , 'فؤاد', 'حيدر', 'ترهي', 'male', '972584280013', 'nooradintirhi@gmail.com', 'https://www.facebook.com/nooraldeen.tirhi/', 2019, 'Active', 'nablus');
+-- INSERT INTO M  VALUES (1190081, 'nooradin', 'fuad', 'haider', 'tirhi', 'نورالدين' , 'فؤاد', 'حيدر', 'ترهي', 'male', '972584280013', 'nooradintirhi@gmail.com', 'https://www.facebook.com/nooraldeen.tirhi/', 2019, 'Active', 'nablus');
+-- SELECT * FROM A;
+-- SELECT * FROM La;
+-- INSERT INTO La (SELECT ActivityID, 'nablus' as LC FROM A WHERE ActivityID NOT IN (SELECT * FROM Na))
 
-SELECT * FROM A;
-SELECT * FROM La;
-INSERT INTO La (SELECT ActivityID, 'nablus' as LC FROM A WHERE ActivityID NOT IN (SELECT * FROM Na))
+-- SELECT (5 in (SELECT ActivityID FROM La)) AS isLocal, (5 in (SELECT ActivityID FROM Na)) AS isNational
 
-SELECT (5 in (SELECT ActivityID FROM La)) AS isLocal, (5 in (SELECT ActivityID FROM Na)) AS isNational
-
- SELECT ActivityID FROM A WHERE ActivityID NOT IN (SELECT * FROM Na)
+ -- SELECT ActivityID FROM A WHERE ActivityID NOT IN (SELECT * FROM Na)
 -- SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;
 
 -- SELECT * FROM M;
@@ -190,3 +189,11 @@ SELECT (5 in (SELECT ActivityID FROM La)) AS isLocal, (5 in (SELECT ActivityID F
 -- SELECT (4 in (SELECT ActivityID FROM La)) AS isLocal, (4 in (SELECT ActivityID FROM Na)) AS isNational, (SELECT LC FROM La WHERE ActivityID = 4) AS LC
 
 -- SELECT COUNT(*) FROM La WHERE LC = 'nablus'
+
+-- SELECT * FROM Mbl
+
+-- INSERT INTO MBl(UniID, Status, Reason) VALUES(1190082, 'red','this nigga shat in the urinal')
+
+-- UPDATE M set UniID = 1190081 WHERE UniID = 1190087 
+-- DELETE FROM M WHERE LC ='gaza'
+-- DELETE  FROM M WHERE UniID = 1190081
