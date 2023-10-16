@@ -72,6 +72,7 @@ module.exports = {
         facebook: "",
         firstYear: "",
         uniNum: "",
+        gender: "",
         localCommittee: "",
         memStatus: "",
         trainerStatus: "",

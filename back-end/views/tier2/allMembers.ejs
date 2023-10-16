@@ -167,7 +167,7 @@
         }
         
         
-        
+
         #names>div {
             height: 40px;
             overflow-y: hidden;
@@ -727,13 +727,17 @@
                     Add
                     </button>
 
-                    <button class="cyclePartBtn" onclick="editMemPopUp()">
+                    <button id="editMemButton" class="cyclePartBtn" onclick="editMemPopUp()">
                     Edit
                     </button>
 
-                    <button class="cyclePartBtn" onclick="DeleteMemPopUp()">
-                    Delete
-                    </button>
+
+                    <form id="deleteForm" style="width:100%" method="post" action="/deleteMem">
+                        <input type="hidden" name="memLC" value="<%=localCommittee%>">
+                        <button id="deleteMemButton" type="button" class="cyclePartBtn" onclick="deleteMemReq('deleteForm')">
+                            Delete
+                        </button>
+                    </form>
                 </div>
 
             </div>
@@ -742,6 +746,19 @@
 
 
         <script>
+
+            if ("<%=uniNum%>" == "0"){
+                document.getElementById("deleteMemButton").disabled=true
+                document.getElementById("deleteMemButton").style.borderColor = "#6b6a6a"
+                document.getElementById("deleteMemButton").style.backgroundColor = "rgb(200, 200, 200)"
+                document.getElementById("editMemButton").disabled=true
+                document.getElementById("editMemButton").style.borderColor = "#6b6a6a"
+                document.getElementById("editMemButton").style.backgroundColor = "rgb(200, 200, 200)"
+            } 
+
+            if("<%=userLC%>" != "national")
+                document.getElementById("boxesSec").style.display = "none"
+            
             const hiddenUserIn = document.createElement('input');
             hiddenUserIn.setAttribute('type', 'hidden');
             hiddenUserIn.setAttribute('name', "username");
@@ -1022,6 +1039,7 @@
 
                 xhr.onload = function (){
                     alert(`Status: ${this.status}:: ${this.responseText}`)
+                    document.body.style.cursor = "default"
                 }
 
                 xhr.open("POST", `${myForm.action}`)
@@ -1042,7 +1060,37 @@
                 document.body.style.cursor = "wait"
             }
 
-            
+            function deleteMemReq(form_id){
+                if (window.confirm('are you sure you want to do this?')) {
+                    if (window.confirm('are you absolutely sure you want to do this? this is IRREVERSIBLE')) {
+                        const myForm = document.getElementById(form_id)
+                        const xhr = new XMLHttpRequest();
+                        xhr.onload = function (){
+                            document.body.style.cursor = "default"
+                            alert(`Status: ${this.status}:: ${this.responseText}`)
+                        }
+                    
+                        xhr.open("POST", `${myForm.action}`)
+                        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+                        let request = ""
+                        inputs = myForm.elements
+                        for (let i = 0; i < inputs.length; i++) {
+                            if (inputs[i].type == "radio") {
+                                if (inputs[i].checked)
+                                    request = request + inputs[i].name + "=" + inputs[i].value + "&"
+                            } else {
+                                request = request + inputs[i].name + "=" + inputs[i].value + "&"
+                            }
+                        }
+                        request = request.slice(0, -1)
+                        console.log(request)
+                
+                        xhr.send(request)
+                        document.body.style.cursor = "wait"
+                    }
+                }
+                
+            }
         </script>
 
 </body>

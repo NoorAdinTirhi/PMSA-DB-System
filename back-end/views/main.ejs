@@ -286,7 +286,10 @@
                     </form>
                     <!-- all trainers -->
                     <form method="post" action="/allTrainers">
-                        <input type="hidden" name="memNum" value=0>
+                         <input type="hidden" name="memNum" value=0>
+                        <input type="hidden" name="direction" value="next">
+                        <input type="hidden" name="filterLC" value="<%=userLC%>">
+                        <input type="hidden" name="chosenLC" value="<%=userLC%>">
                         <button class="allButoon zoom secgen" type="submit">
                         All Trainers
                     </button>

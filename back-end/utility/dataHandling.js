@@ -2,7 +2,7 @@ const { query } = require("express")
 
 // query the DB to get required information for the mainpage
 function mainPageInformer(username, con, pageData, callback) {
-    con.query(`SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;`, function(err, results) {
+    con.query(`SELECT *, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(LastActionTime,'%Y/%m/%d') AS LastActionTime1 FROM Users;`, function(err, results) {
         getUserInfo(username, con, function(userData, errorStatus) {
             if (errorStatus == 0) {
                 Object.keys(pageData).forEach(key => {
@@ -280,14 +280,16 @@ function allMembersInformer(username, number, direciton, pageData, LC, excplicit
     })
 }
 
-function allTrainersInformer(username, number, pageData, LC, con, callback) {
+
+function allTrainersInformer(username, number, direciton, pageData, LC, excplicitLC, con, callback) {
     data = ""
-    if (LC.toUpperCase() == "NATIONAL")
+    if (excplicitLC.toUpperCase() == "NATIONAL")
         chosenLC = ""
     else
-        chosenLC = ` AND LC = '${LC}'`
-    console.log(`SELECT * FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID > ${number}` + chosenLC + " ORDER BY M.UniID LIMIT 1")
-    con.query(`SELECT *, DATE_FORMAT(GradDate,'%d/%m/%Y') AS GradDate1 FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID > ${number}` + chosenLC + " ORDER BY M.UniID LIMIT 1", function(err, results) {
+        chosenLC = ` AND LC = '${excplicitLC}'`
+
+    console.log(`SELECT *, DATE_FORMAT(GradDate,'%Y/%m/%d') AS GradDate1 FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID ${(direciton == "next")?">":"<"} ${number}` + chosenLC + " ORDER BY M.UniID LIMIT 1")
+    con.query(`SELECT *, DATE_FORMAT(GradDate,'%Y/%m/%d') AS GradDate1 FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID ${(direciton == "next")?">":"<"} ${number}` + chosenLC + " ORDER BY M.UniID LIMIT 1", function(err, results) {
         if (err) {
             console.log(err)
             return callback(3, data);
@@ -299,13 +301,14 @@ function allTrainersInformer(username, number, pageData, LC, con, callback) {
                 else
                     pageData[key] = [];
             })
-            if (results.length > 0) {
-                getUserInfo(username, con, function(userData, err) {
-                    console.log(results[0])
-                    pageData.user = userData.user
-                    pageData.position = userData.position
-                    pageData.userLC = userData.LC
-                    pageData.cipher = userData.cipher
+
+            getUserInfo(username, con, function(userData,err){
+                pageData.user = userData.user
+                pageData.position = userData.position
+                pageData.userLC = userData.LC
+                pageData.cipher = userData.cipher
+                pageData.uniNum = 0;
+                if (results.length > 0) {
                     pageData.engFname = results[0].FirstName
                     pageData.engFather = results[0].FatherName
                     pageData.engGfather = results[0].GFatherName
@@ -323,49 +326,87 @@ function allTrainersInformer(username, number, pageData, LC, con, callback) {
                     pageData.localCommittee = results[0].LC
                     pageData.memStatus = results[0].MembershipStatus
                     pageData.curMemNumber = results[0].UniID
+                    pageData.gender = results[0].Gender
+                    pageData.chosenLC = excplicitLC
                     pageData.trainerCategory = results[0].Category
                     pageData.gradActivity = results[0].GradActivity
                     pageData.gradDate = results[0].GradDate1
+                    pageData.trainerStatus = results[0].TStatus
 
-                    checkTrainerStatus(results[0].UniID, con, function(flag, trainerStatus) {
-                        if (flag == 0) {
-                            pageData.trainerStatus = trainerStatus
-                            checkBlackListStatus(results[0].UniID, con, function(flag, blStatus, blReason) {
-                                if (flag == 0) {
-                                    pageData.blacklistStatus = blStatus
-                                    pageData.blacklistReason = blReason
-                                    console.log(pageData)
-                                    return callback(flag, pageData)
-                                } else
-                                    return callback(flag, pageData)
-                            })
+                    checkBlackListStatus(results[0].UniID, con, function(flag, blStatus, blReason) {
+                        console.log(flag)
+                        if (flag == 0 || flag == 1) {
+                            pageData.blacklistStatus = blStatus
+                            pageData.blacklistReason = blReason
+                            return callback(0, pageData)
                         } else
                             return callback(flag, pageData)
                     })
+                }else{
+                                
+                    console.log(`SELECT *, DATE_FORMAT(GradDate,'%Y/%m/%d') AS GradDate1 FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID ${(direciton == "next")?">":"<"} ${(direciton == "next")?"0":"2147483646"}` + chosenLC + ` ORDER BY M.UniID ${(direciton=="next")?"":"DESC"} LIMIT 1`)
+                    con.query(`SELECT *, DATE_FORMAT(GradDate,'%Y/%m/%d') AS GradDate1 FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID ${(direciton == "next")?">":"<"} ${(direciton == "next")?"0":"2147483646"}` + chosenLC + ` ORDER BY M.UniID ${(direciton=="next")?"":"DESC"} LIMIT 1`, function(err, results) {
+                        if (err){
+                            console.log(err)
+                            return callback(3, pageData)
+                        }else if (results.length > 0){
+                            pageData.engFname = results[0].FirstName
+                            pageData.engFather = results[0].FatherName
+                            pageData.engGfather = results[0].GFatherName
+                            pageData.engLname = results[0].FamilyName
+                            pageData.arabFname = results[0].AFirstName
+                            pageData.arabFather = results[0].AFatherName
+                            pageData.arabGfather = results[0].AGFatherName
+                            pageData.arabLname = results[0].AFamilyName
+                            pageData.areaCode = results[0].PhoneNo.slice(0, 3)
+                            pageData.phoneNo = results[0].PhoneNo.slice(3)
+                            pageData.email = results[0].E_mail
+                            pageData.firstYear = results[0].UniStartYear
+                            pageData.facebook = results[0].Facebook_Link
+                            pageData.uniNum = results[0].UniID
+                            pageData.localCommittee = results[0].LC
+                            pageData.memStatus = results[0].MembershipStatus
+                            pageData.curMemNumber = results[0].UniID
+                            pageData.gender = results[0].Gender
+                            pageData.chosenLC = excplicitLC
+                            pageData.trainerCategory = results[0].Category
+                            pageData.gradActivity = results[0].GradActivity
+                            pageData.gradDate = results[0].GradDate1
+                            pageData.trainerStatus = results[0].TStatus
+                                
+                            checkBlackListStatus(results[0].UniID, con, function(flag, blStatus, blReason) {
+                                console.log(flag)
+                                if (flag == 0 || flag == 1) {
+                                    pageData.blacklistStatus = blStatus
+                                    pageData.blacklistReason = blReason
+                                    return callback(0, pageData)
+                                } else
+                                    return callback(flag, pageData)
+                            })
+                        }else{
 
-
-                })
-
-            } else {
-
-                Object.keys(pageData).forEach(key => {
-                    temp = pageData[key]
-                    if (typeof temp == "string")
-                        pageData[key] = "no Members"
-                    else
-                        pageData[key] = [];
-                })
-                getUserInfo(username, con, function(userData, err) {
-                    pageData.user = userData.user
-                    pageData.position = userData.position
-                    pageData.userLC = userData.LC;
-                    pageData.cipher = userData.cipher
-                    return callback(0, pageData)
-                })
-            }
+                            Object.keys(pageData).forEach(key => {
+                            temp = pageData[key]
+                            if (typeof temp == "string")
+                                pageData[key] = "no Members"
+                            else
+                                pageData[key] = [];
+                            })
+                            pageData.user = userData.user
+                            pageData.position = userData.position
+                            pageData.userLC = userData.LC
+                            pageData.cipher = userData.cipher
+                            pageData.chosenLC = excplicitLC
+                            pageData.uniNum = 0;
+                            return callback(0, pageData)
+                        }
+                    })
+                }
+            })
         }
     })
 }
+
 
 
 function allActivitiesInformer(username, pageData, LC, curFilter,con, callback) {
@@ -387,7 +428,6 @@ function allActivitiesInformer(username, pageData, LC, curFilter,con, callback) 
         queryStr = "SELECT A.Aname, A.ActivityID, A.Committee FROM A"
         pageData.filter = "all";
     }
-    console.log(pageData.filter)
     console.log(queryStr)
     con.query(queryStr, function(err, results) {
         if (err) {
@@ -456,7 +496,7 @@ function getMemberActivityInfo(memNum, activityID, con, callback) {
 
 
 function getTrainerInfo(memNum, con, callback) {
-    con.query(`SELECT * , DATE_FORMAT(GradDate,'%d/%m/%Y') AS GradDate1 FROM MT WHERE UniID = ${memNum}`, function(err, results) {
+    con.query(`SELECT * , DATE_FORMAT(GradDate,'%Y/%m/%d') AS GradDate1 FROM MT WHERE UniID = ${memNum}`, function(err, results) {
         data = { "user": "", "LC": "", "position": "", "cipher": "" }
         if (err) {
             //error in query
@@ -536,7 +576,7 @@ function getLocalActivites(uniNum, con, callback) {
 }
 
 function localActivityInformer(username, memNum, ActivityID, pageData, con, callback) {
-    con.query(`SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(EndDate,'%d/%m/%Y') AS EndDate1 FROM A,La WHERE A.ActivityID >= '${ActivityID}' AND A.ActivityID = La.ActivityID ORDER BY A.ActivityID LIMIT 1`, function(err, results){
+    con.query(`SELECT *, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1 FROM A,La WHERE A.ActivityID >= '${ActivityID}' AND A.ActivityID = La.ActivityID ORDER BY A.ActivityID LIMIT 1`, function(err, results){
         if (err){
             console.log(err)
             return callback(3, pageData)
@@ -624,7 +664,7 @@ function localActivityInformer(username, memNum, ActivityID, pageData, con, call
 }
 
 function nationalActivityInformer(username, memNum, ActivityID, pageData, con, callback) {
-    con.query(`SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(EndDate,'%d/%m/%Y') AS EndDate1 FROM A WHERE ActivityID >= '${ActivityID}' ORDER BY ActivityID LIMIT 1`, function(err, results){
+    con.query(`SELECT *, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1 FROM A WHERE ActivityID >= '${ActivityID}' ORDER BY ActivityID LIMIT 1`, function(err, results){
         if (err){
             console.log(err)
             return callback(3, pageData)
@@ -652,7 +692,6 @@ function nationalActivityInformer(username, memNum, ActivityID, pageData, con, c
                         getLCParticipation(con , function(flag, data){
                             if (flag == 0){
                                 sum = 0;
-                                console.log(data)
                                 data.forEach(row =>{
                                     sum += row.totalLCPart
                                 })
@@ -905,7 +944,7 @@ function editMem(body, con, callback){
     + `LC = '${(body.localCommittee=="national")?body.newLocalCommittee:body.localCommittee}'`
     + ` WHERE UniID = ${body.memNum}`
     
-
+    //check to see if rows exist and write queries accordingly 
     con.query(`SELECT * FROM Mt WHERE UniID = ${body.uniNum}`, function(err, results){
         query2Str = (results.length > 0)?`UPDATE Mt SET TStatus = '${body.trainerStatus}' WHERE UniID = ${body.uniNum}`:`INSERT INTO Mt VALUES(${body.uniNum}, 'Not Yet Assigned','Not Yet Assigned','2022-09-17','${body.trainerStatus}')`
         con.query(`SELECT * FROM MBl WHERE UniId = ${body.uniNum}`, function(err, results){
@@ -935,7 +974,53 @@ function editMem(body, con, callback){
         })
     })    
 }
-//TODO put the fukcing delete
+
+
+function deleteMem(memNum, con, callback){
+    con.query(`DELETE FROM M WHERE UniID = ${memNum}`, function(err){
+        if(err){
+            console.log(err)
+            return callback(3)
+        }
+        return callback(0)
+    })
+}
+
+function searchTrainer(body, con, callback){
+    if (body.filterLC.toUpperCase() == "NATIONAL")
+        chosenLC = ""
+    else
+        chosenLC = ` AND LC = '${body.filterLC}'`
+    console.log(`SELECT UniID, CONCAT(FirstName, FatherName, GFatherName, FamilyName) AS Name FROM M WHERE CONCAT(FirstName, FatherName, GFatherName, FamilyName) LIKE '%${body.memberLike}%'` + chosenLC)
+    con.query(`SELECT UniID, CONCAT(FirstName, FatherName, GFatherName, FamilyName) AS Name FROM M WHERE CONCAT(FirstName, FatherName, GFatherName, FamilyName) LIKE '%${body.memberLike}%'` + chosenLC, function(err, results){
+        data=[]
+        temp={}
+        if (err){
+            console.log(err)
+            callback(3, data)
+        }else{
+            results.forEach(row => {
+                temp["memNum"] = row.UniID;
+                temp["memName"] = row.Name;
+                data.push(temp)
+            })
+            console.log(data)
+            callback(0, data)
+        }
+    })
+}
+
+function editTrainer(body, con, callback){
+    queryStr = `UPDATE Mt SET TStatus='${body.trainerStatus}',Category='${body.trainerCategory}', GradActivity='${body.trainerActivity}', GradDate='${body.gradDate}' WHERE UniID = ${body.memNum}`
+    console.log(queryStr)
+    con.query(queryStr, function(err){
+        if (err){
+            console.log(err)
+            return callback(3)
+        }
+        return callback(0)
+    })
+}
 
 
 
@@ -956,5 +1041,8 @@ module.exports = {
     addActivity,
     searchMember,
     addNewMem,
-    editMem
+    editMem,
+    deleteMem,
+    searchTrainer,
+    editTrainer
 }

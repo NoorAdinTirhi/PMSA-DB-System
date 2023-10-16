@@ -146,7 +146,7 @@ ALTER TABLE nationalActivities_localCommittees RENAME NaLC;
 ALTER TABLE standingCommittees RENAME SC;
 
 
-
+select * from MBl
 -- INSERT INTO LC VALUES ('nablus', 'Full');
 
 -- INSERT INTO M  VALUES (1190081, 'nooradin', 'fuad', 'haider', 'tirhi', 'نورالدين' , 'فؤاد', 'حيدر', 'ترهي', 'male', '972584280013', 'nooradintirhi@gmail.com', 'https://www.facebook.com/nooraldeen.tirhi/', 2019, 'Active', 'nablus');
@@ -197,3 +197,5 @@ ALTER TABLE standingCommittees RENAME SC;
 -- UPDATE M set UniID = 1190081 WHERE UniID = 1190087 
 -- DELETE FROM M WHERE LC ='gaza'
 -- DELETE  FROM M WHERE UniID = 1190081
+
+SELECT * FROM M
