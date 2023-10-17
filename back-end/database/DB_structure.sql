@@ -85,10 +85,12 @@ CREATE TABLE activities(
     EndDate         DATE NOT NULL
 )ENGINE=INNODB;
 
+
 CREATE TABLE members_activities(
-		UniID INT,
+	UniID INT,
     ActivityID INT,
     CertCode INT NOT NULL,
+    Position VARCHAR(50) NOT NULL,
     CONSTRAINT PkeyUIDAID PRIMARY KEY (UniID, ActivityID),
     CONSTRAINT FKeyUniIDMemAct FOREIGN KEY (UniID) REFERENCES members(UniID)
     ON DELETE CASCADE
@@ -111,6 +113,7 @@ CREATE TABLE localActivities(
 
 CREATE TABLE nationalActivities(
 	ActivityID INT PRIMARY KEY,
+    Anum			INT,
     FOREIGN KEY (ActivityID) REFERENCES activities (ActivityID)
     ON DELETE CASCADE
     ON UPDATE CASCADE
@@ -145,57 +148,20 @@ ALTER TABLE nationalActivities RENAME Na;
 ALTER TABLE nationalActivities_localCommittees RENAME NaLC;
 ALTER TABLE standingCommittees RENAME SC;
 
+CREATE TRIGGER before_employee_update 
+    BEFORE INSERT ON Na
+    FOR EACH ROW 
+ 	SET NEW.Anum = (SELECT (Max(Anum)+1) FROM A,Na WHERE A.ActivityID = Na.ActivityID AND A.Committee = (SELECT Committee FROM A WHERE ActivityID = NEW.ActivityID));
 
-select * from MBl
--- INSERT INTO LC VALUES ('nablus', 'Full');
 
--- INSERT INTO M  VALUES (1190081, 'nooradin', 'fuad', 'haider', 'tirhi', 'نورالدين' , 'فؤاد', 'حيدر', 'ترهي', 'male', '972584280013', 'nooradintirhi@gmail.com', 'https://www.facebook.com/nooraldeen.tirhi/', 2019, 'Active', 'nablus');
--- SELECT * FROM A;
--- SELECT * FROM La;
--- INSERT INTO La (SELECT ActivityID, 'nablus' as LC FROM A WHERE ActivityID NOT IN (SELECT * FROM Na))
 
--- SELECT (5 in (SELECT ActivityID FROM La)) AS isLocal, (5 in (SELECT ActivityID FROM Na)) AS isNational
 
- -- SELECT ActivityID FROM A WHERE ActivityID NOT IN (SELECT * FROM Na)
--- SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;
+SELECT * FROM A,Na WHERE A.ActivityID = Na.ActivityID;
 
--- SELECT * FROM M;
+SELECT * FROM A
+INSERT INTO A (Aname, Committee, Adescription, ProposalLink, ReportLink, StartDate, EndDate) VALUES ('Act2', 'SCOPH', 'Activity', 'Proposal Link', 'Report Link', '2023-09-11', '2023-09-11');
 
--- SELECT * FROM M_A;
+INSERT INTO Na VALUES(10,0);
 
--- national activities
--- SELECT A.Aname FROM M_A, A WHERE M_A.ActivityID = A.ActivityID AND UniID = 1190081 AND A.ActivityID IN (SELECT Na.ActivityID FROM Na);
--- SELECT A.Aname, A.ActivityID, A.Committee FROM M_A, A WHERE M_A.ActivityID = A.ActivityID AND UniID = 1190081 AND A.ActivityID IN (SELECT Na.ActivityID FROM Na)
+SELECT * FROM Na;
 
--- SELECT * FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID > 0 ORDER BY M.UniID LIMIT 1;
-
--- INSERT INTO Mt VALUE(1190081, "noor's Category","noorification", '1999-03-20',  'Active')
-
--- SELECT * FROM M, Mt WHERE M.UniID = Mt.UniID and M.UniID > 0 ORDER BY M.UniID LIMIT 1
-
--- select * FROM Users;
-
--- INSERT INTO Users(Username,Hkey,Hmac,Position,Locality) VALUES ('Jouba','36,204,25,17,166,146,178,209,56,131,92,45,88,137,211,44,243,152,3,252,208,68,76,5,34,142,179,50,244,116,223,17', '60cc5ea2438e3ae9496a3231370cf62bc85e685651e7d087e933b6b815b7c0e4', 'CBD', 'nablus')
--- SELECT *, DATE_FORMAT(StartDate,'%d/%m/%Y') AS StartDate1, DATE_FORMAT(LastActionTime,'%d/%m/%Y') AS LastActionTime1 FROM Users;
-
--- SELECT tbl.LC, SUM(tbl.LCPart) AS totalLCPart FROM 
---                (SELECT LC, COUNT(*)  AS LCPart FROM La GROUP BY LC
---                UNION
---                SELECT LC, COUNT(*) AS LCPart FROM NaLC GROUP BY LC) tbl
---                GROUP BY LC; 
---                
---                SELECT * from NaLC
---                
--- SELECT (4 in (SELECT ActivityID FROM La)) AS isLocal, (4 in (SELECT ActivityID FROM Na)) AS isNational, (SELECT LC FROM La WHERE ActivityID = 4) AS LC
-
--- SELECT COUNT(*) FROM La WHERE LC = 'nablus'
-
--- SELECT * FROM Mbl
-
--- INSERT INTO MBl(UniID, Status, Reason) VALUES(1190082, 'red','this nigga shat in the urinal')
-
--- UPDATE M set UniID = 1190081 WHERE UniID = 1190087 
--- DELETE FROM M WHERE LC ='gaza'
--- DELETE  FROM M WHERE UniID = 1190081
-
-SELECT * FROM M

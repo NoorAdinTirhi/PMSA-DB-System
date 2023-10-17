@@ -314,7 +314,7 @@
                         </label>
                     <input required type="text" pattern="^[0-9]*$" style="margin: 0% 12.5%; width: 20%" placeholder="University ID" name="uniNum">
                 </div>
-                <div style="display: flex; flex-direction: row; width:100%">
+                <div id="addSelectLC" style="display: flex; flex-direction: row; width:100%">
                     <label style="margin-right:5%; width:10%">
                                 Local Committee
                             </label>
@@ -425,7 +425,8 @@
                         </label>
                     <input required type="text" pattern="^[0-9]*$" style="margin: 0% 12.5%; width: 20%" placeholder="University ID" name="uniNum" value="<%=uniNum%>">
                 </div>
-                <div style="display: flex; flex-direction: row; width:100%">
+
+                <div id="editSelectLC" style="display: flex; flex-direction: row; width:100%">
                     <label style="margin-right:5%; width:10%">
                                 Local Committee
                             </label>
@@ -436,6 +437,7 @@
                     <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "editlchu"        value="hu"          name="newLocalCommittee" >HU</label>
                     <label style="width: 10%; margin:0% 1%"><input required type="radio" id = "editlcjenin"     value="jenin"       name="newLocalCommittee" >Jenin</label>
                 </div>
+
                 <div style="display: flex; flex-direction:row; width:100%">
                     <label style="margin-right:5%; width:10%">
                             Gender
@@ -1090,6 +1092,12 @@
                     }
                 }
                 
+            }
+
+            
+            if("<%=userLC%>" != "national"){
+                document.getElementById("addSelectLC").remove()
+                document.getElementById("editSelectLC").remove()
             }
         </script>
 

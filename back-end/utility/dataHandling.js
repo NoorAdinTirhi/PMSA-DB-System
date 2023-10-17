@@ -69,7 +69,7 @@ function updateAction(username, action, con, callback) {
 }
 function updateLCStartTerm(username, con, callback){
     const current_time = new Date();
-    con.query(`UPDATE Users SET StartDate = '${current_time.getFullYear()}-${current_time.getMonth()+1}-${current_time.getDay()+1}' WHERE Username = '${username}'`, function(err){
+    con.query(`UPDATE Users SET StartDate = '${String(current_time.getFullYear())}-${String(current_time.getMonth()+1)}-${String(current_time.getDate())}' WHERE Username = '${username}'`, function(err){
         if (err){
             console.log(err)
             return callback(1)
@@ -766,7 +766,7 @@ function nationalActivityInformer(username, memNum, ActivityID, pageData, con, c
                             if ((typeof pageData[key] != "object") && ((pageData[key] == null || pageData[key] == undefined || pageData[key] == ""))){
                                 pageData[key] = "unassigned"
                             }
-                        }) 
+                        })
                         return callback(0, pageData)
                     }                    
                 }
@@ -830,11 +830,14 @@ function getActivityCat(ActivityID, con, callback){
 
 function addActivity(body, localCommittee, con, callback){
     participatingLcsArr = [];
+    Object.keys(body).forEach(key => {
+        body[key] = body[key].replace("'", "\\'")
+    })
     if (localCommittee == "national"){
         body.participatingLCs = body.participatingLCs.slice(0,-1)
         participatingLcsArr = body.participatingLCs.split(",")
         queryStr1 = `INSERT INTO A ( Aname, Committee, Adescription, ProposalLink, ReportLink, StartDate, EndDate) VALUES ('${body.activityName}', '${body.committee}', '${body.activityDescription}', '${body.proposalLink}', '${body.reportLink}', '${body.startDate}', '${body.endDate}');`       
-        queryStr2 = `INSERT INTO Na VALUES (LAST_INSERT_ID())`;
+        queryStr2 = `INSERT INTO Na VALUES (LAST_INSERT_ID(),0)`;
         if (participatingLcsArr.length > 0){
             queryStr3 = "INSERT INTO NaLC VALUES"
         }

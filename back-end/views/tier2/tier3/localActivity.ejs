@@ -40,7 +40,7 @@
         
         #leftbox>* {
             margin: 4% 0%;
-            width: 700px;
+            width: 650px;
             float: left;
             overflow: hidden;
         }
@@ -235,13 +235,13 @@
                 </form>
         </div>
 
-        <div style="display: block; height: max-content; width: fit-content; text-align: center; margin: 0% 2%; overflow: hidden; justify-self: left;">
+        <div style="display: block; height: max-content; width: fit-content; text-align: center; margin: 0% 2%; overflow :visible; justify-self: left;">
             <div class="line" style="position: relative; width:100%">
                 <div style="display: inline-block; padding-right : 5% auto">
                     <!-- title -->
                     <h1 style="margin-right:25px">
                         Welcome
-                        <%= user%><br>
+                        <%=user%><br>
                     </h1>
                 </div>
                 <!-- time and date -->
@@ -367,7 +367,7 @@
                 
             </div>
         </div>
-        <!--  -->
+
         <div id="addMemPopUp">
             <form>
                 <div style="display: flex; flex-direction:column; padding:5%">
@@ -404,8 +404,8 @@
                                 </li> -->
                             </ul>
                             <div style="display: flex; flex-direction:column; width: 10%; margin-left: 5%">
-                                <button   onclick="confirmAddPopUp()" style="margin-bottom: 3%;"> Add Selected Mambers</button>
-                                <button onclick="addMemPopClose()" > Cancel</button>
+                                <button   type="button" onclick="confirmAddPopUp()" style="margin-bottom: 3%;"> Add Selected Mambers</button>
+                                <button   type="button" onclick="addMemPopClose()" > Cancel</button>
                             </div>
 
                         </form>
@@ -450,7 +450,7 @@
                             </ul>
                             <div style="display: flex; flex-direction:column; width: 10%; margin-left: 5%">
                                 <button type="submit" onclick="confirmDelPopUp()" style="margin-bottom: 3%;"> Delete Selected Mambers</button>
-                                <button onclick="deleteMemPopClose()" > Cancel</button>
+                                <button type="button" onclick="deleteMemPopClose()" > Cancel</button>
                             </div>
                         </form>
                     </div>

@@ -71,7 +71,7 @@
                     Reason for Blacklisting
                 </div>
             </div>
-            <% blackLisitngs.forEach((item) => {%>
+            <% blackLisitngs.filter((element) => element.BlackListStatus != "clear").forEach((item) => {%>
                 <div class="listRow">
                     <div style="width:25%; text-align:center; border-right:solid 2px">
                         <%=item.Name%>
