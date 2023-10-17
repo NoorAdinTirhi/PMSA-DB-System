@@ -30,6 +30,10 @@
 //         }
 //     })
 
-const { mainPageInformer, resetLC, allMembersInformer, allActivitiesInformer, allTrainersInformer, updateAction, getUserInfo, updateLCStartTerm, blackListInformer, localActivity_variables } = require('./utility/dataHandling')
 
-console.log(localActivity_variables)
+const crypto = require("crypto")
+
+console.log(crypto)
+const secret = new Uint8Array(32);
+crypto.getRandomValues(secret);
+console.log(secret)

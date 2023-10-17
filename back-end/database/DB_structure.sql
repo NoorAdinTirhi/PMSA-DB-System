@@ -154,14 +154,3 @@ CREATE TRIGGER before_employee_update
  	SET NEW.Anum = (SELECT (Max(Anum)+1) FROM A,Na WHERE A.ActivityID = Na.ActivityID AND A.Committee = (SELECT Committee FROM A WHERE ActivityID = NEW.ActivityID));
 
 
-
-
-SELECT * FROM A,Na WHERE A.ActivityID = Na.ActivityID;
-
-SELECT * FROM A
-INSERT INTO A (Aname, Committee, Adescription, ProposalLink, ReportLink, StartDate, EndDate) VALUES ('Act2', 'SCOPH', 'Activity', 'Proposal Link', 'Report Link', '2023-09-11', '2023-09-11');
-
-INSERT INTO Na VALUES(10,0);
-
-SELECT * FROM Na;
-
