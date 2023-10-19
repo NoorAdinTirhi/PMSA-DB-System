@@ -24,11 +24,12 @@
 //                     res.send(err)
 //                     console.log(err)
 //                 }else{
-//                     // console.log(data)
+//                     console.log(data)
 //                 }
 //             })
 //         }
 //     })
+// })
 
 const { mainPageInformer, resetLC, allMembersInformer, allActivitiesInformer, allTrainersInformer, updateAction, getUserInfo, updateLCStartTerm, blackListInformer, localActivity_variables } = require('./utility/dataHandling')
 

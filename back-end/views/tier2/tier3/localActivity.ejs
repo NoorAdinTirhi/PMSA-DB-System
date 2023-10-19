@@ -4,6 +4,7 @@
 <head>
     <link rel="stylesheet" href=../../../public/styles/common.css>
     <style>
+        
         #parentbox {
             position: relative;
             float: left;
@@ -384,8 +385,8 @@
                     </div>
                     <div style="margin:1% 0%; padding: 1% 0%; border-style:solid; display:flex; flex-direction:column;">
                         <h1  style="border-bottom: solid black;"> Search results: </h1>
-                        <form method="post" action="/addMembers">
-                            <ul style="list-style: none; overflow:scroll;">
+                        <form id = "searchMemeberForm" method="post" action="/searchMember">
+                            <ul id="searchlist" style="list-style: none; overflow:scroll;">
                                 <input type="checkbox" onclick="toggle(this)"> select all
                                 <li>
                                     <div style="display: flex; flex-direction:row">
@@ -395,13 +396,6 @@
                                     </div>
                                 </li>
                                 
-                                <!-- <li>
-                                    <div style="display: flex; flex-direction:row">
-                                        <input type="checkbox" value="element.memNum" style="width:15.2px; height:15.2px;margin:0% 5%" name="addMemCb">
-                                        <label style="width:42%"></label>
-                                        <label style="width:42%"></label>
-                                    </div>
-                                </li> -->
                             </ul>
                             <div style="display: flex; flex-direction:column; width: 10%; margin-left: 5%">
                                 <button   type="button" onclick="confirmAddPopUp()" style="margin-bottom: 3%;"> Add Selected Mambers</button>
@@ -642,6 +636,110 @@
 
         function addActivityClose(){
             document.getElementById("newActivityWindow").style.display = "none"
+        }
+
+        function submitSearch(form_id) {
+            myForm = document.getElementById(form_id)
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                document.body.style.cursor = "default"
+                console.log(`Status: ${this.status}:: ${this.responseText}`)
+                if (this.status != 200){
+                    alert(`Status: ${this.status}:: ${this.responseText}`)
+                }else{
+                    console.log(this.responseText)
+                    results = JSON.parse(this.responseText)
+
+                    for(const child of document.getElementById("searchlist").children){
+                        if (child.id != "exception"){
+                            child.remove()
+                        }
+                    }
+
+                    if (results.length > 0 ){
+                        results.forEach(obj => {
+                            listItem = document.createElement("li")
+                            listItem.classList.add("searchRow")
+                                formItem = document.createElement("form")
+                                formItem.method="post"
+                                formItem.action="/allMembers"
+                                formItem.style.width = "100%"
+                                formItem.style.display = "flex" 
+                                formItem.style.flexDirection = "row"
+                                    inputItem1 = document.createElement("input")
+                                    inputItem1.type="hidden"
+                                    inputItem1.name="direction"
+                                    inputItem1.value="next"
+                                    formItem.appendChild(inputItem1)
+                                    inputItem2 = document.createElement("input")
+                                    inputItem2.type="hidden"
+                                    inputItem2.name="memNum"
+                                    inputItem2.value = Number(obj.memNum) - 1
+                                    inputItem3 = document.createElement("input")
+                                    inputItem3.type="hidden"
+                                    inputItem3.name="chosenLC"
+                                    inputItem3.value = "national"
+                                    formItem.appendChild(inputItem3)
+                                    formItem.appendChild(inputItem2)
+                                    buttonItem = document.createElement("button")
+                                    buttonItem.style.width = "10%"
+                                    buttonItem.style.marginRight = "15.2px"
+                                    buttonItem.innerText = "Select"
+                                    formItem.appendChild(buttonItem)
+                                    labelItem1 = document.createElement("label")
+                                    labelItem1.style.width="42%"
+                                    labelItem1.innerText = obj.memNum
+                                    formItem.appendChild(labelItem1)
+                                    labelItem2 = document.createElement("label")
+                                    labelItem2.style.width="42%"
+                                    labelItem2.innerText = obj.memName
+                                    formItem.appendChild(labelItem2)
+                                    
+                            listItem.appendChild(formItem)
+                            console.log(listItem)                                
+                            formItem.appendChild(document.importNode(hiddenUserIn, true))
+                            formItem.appendChild(document.importNode(hiddenLCIn, true))
+                            formItem.appendChild(document.importNode(hiddenCipherIn, true))
+                            formItem.appendChild(document.importNode(hiddenPositionIn, true))
+                            formItem.appendChild(document.importNode(hiddenFilterLCIn, true))
+                            console.log(formItem)
+                            document.getElementById("searchlist").append(listItem)
+           
+            
+                        })
+                    }else{
+                        element = document.createElement("div")
+                        element.classList.add("searchRow")
+                        element.innerText = "No member with a similar name was found in the currently chosen LC"
+                        document.getElementById("searchlist").append(element)
+                    }
+
+                    //<li class="searchRow">
+                    //     <div style="width: 100%; display:flex; flex-direction:row">
+                    //         <button style="width:10%; margin-right:15.2px">Select</button>
+                    //         <label style="width:42%">Member Number</label>
+                    //         <label style="width:42%">Member Name</label>
+                    //     </div>
+                    //</li>
+                    
+                }
+            }
+            xhr.open("POST", `${myForm.action}`)
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+            let request = ""
+            inputs = myForm.elements
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].type == "radio") {
+                    if (inputs[i].checked)
+                        request = request + inputs[i].name + "=" + inputs[i].value + "&"
+                } else {
+                    request = request + inputs[i].name + "=" + inputs[i].value + "&"
+                }
+            }
+            request = request.slice(0, -1)
+            console.log(request)
+            xhr.send(request)
+            document.body.style.cursor = "wait"
         }
 
 
