@@ -581,6 +581,11 @@
         hiddenPositionIn.setAttribute('name', "position");
         hiddenPositionIn.setAttribute('value',"<%=position%>");
 
+        const hiddenActivityiNum = document.createElement('input');
+        hiddenActivityiNum.setAttribute('type', 'hidden');
+        hiddenActivityiNum.setAttribute('name', "actNum");
+        hiddenActivityiNum.setAttribute('value',"<%=activityID%>");
+
         const forms = document.forms;
         console.log(forms)
         for (let i = 0; i <forms.length; i++){
@@ -588,6 +593,7 @@
             forms[i].appendChild(document.importNode(hiddenLCIn, true))
             forms[i].appendChild(document.importNode(hiddenCipherIn, true))
             forms[i].appendChild(document.importNode(hiddenPositionIn, true))
+            forms[i].appendChild(document.importNode(hiddenActivityiNum, true))
         }
 
         const tagList = []

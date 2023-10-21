@@ -40,7 +40,8 @@ const { mainPageInformer,
         editMem,
         deleteMem,
         searchTrainer,
-        editTrainer       } = require('./utility/dataHandling')
+        editTrainer,
+        searchMemberActivity       } = require('./utility/dataHandling')
 
 
 // let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
@@ -575,7 +576,7 @@ app.post("/selectAct", function(req, res){
                 
             }else{
                 localActivityInformer(req.body.username, req.body.memNum, req.body.activity, localActivity_variables, con, function (flag, data){
-                    if (flag == 0){
+                    if (flag != 0){
                         console.log(flag)
                         console.log(data)
                         res.status(400)
@@ -996,6 +997,96 @@ app.post("/searchTrainer", function(req, res){
             }
         })
     })          
+})
+
+app.post("/searchAddToAct", function(req, res){
+    if (!req.body) {
+        res.status(400)
+        res.send("Incomplete Request")
+        return
+    }
+
+    if (!req.body.username) {
+        res.render("login", { login_string: "you need to login to make a request" })
+        return
+    }
+
+    if (!req.body.cipher) {
+        res.status(401)
+        res.send("Your request does not include a cipher, please login and use the website as intended")
+        return
+    }
+
+    LC = (req.body.filter)
+    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+        if (flag == 0) {
+            searchMemberActivity(req.body, con, function(flag, data){
+                if (flag == 0){
+                    res.status(200)
+                    res.send(JSON.stringify(data))
+                    return
+                }
+                res.status(500)
+                res.send("Internal Server Error")
+                
+            })
+        } else if (flag == 1) {
+            //failed, bad cipher
+            res.status(401)
+            res.send("Your request has a bad cipher")
+        } else if (flag == 2) {
+            res.status(401)
+            res.send("user not registered")
+        } else if (flag == 3) {
+            res.status(500)
+            res.send("Internal Server Error")
+        }
+    })
+})
+
+app.post("/searchDeleteToAct", function(req, res){
+    if (!req.body) {
+        res.status(400)
+        res.send("Incomplete Request")
+        return
+    }
+
+    if (!req.body.username) {
+        res.render("login", { login_string: "you need to login to make a request" })
+        return
+    }
+
+    if (!req.body.cipher) {
+        res.status(401)
+        res.send("Your request does not include a cipher, please login and use the website as intended")
+        return
+    }
+
+    LC = (req.body.filter)
+    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+        if (flag == 0) {
+            searchMemberDelete(req.body, con, function(flag, data){
+                if (flag == 0){
+                    res.status(200)
+                    res.send(JSON.stringify(data))
+                    return
+                }
+                res.status(500)
+                res.send("Internal Server Error")
+                
+            })
+        } else if (flag == 1) {
+            //failed, bad cipher
+            res.status(401)
+            res.send("Your request has a bad cipher")
+        } else if (flag == 2) {
+            res.status(401)
+            res.send("user not registered")
+        } else if (flag == 3) {
+            res.status(500)
+            res.send("Internal Server Error")
+        }
+    })
 })
 
 

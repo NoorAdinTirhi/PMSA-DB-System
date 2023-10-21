@@ -80,7 +80,7 @@ function updateLCStartTerm(username, con, callback){
 }
 
 function blackListInformer(username, pageData, con, callback){
-    con.query(`SELECT CONCAT(M.FirstName, M.FatherName, M.GFatherName, M.FamilyName) AS Name, MBl.Status, MBl.Reason  FROM MBl, M WHERE M.UniID = MBl.UniID`, function(err, results){
+    con.query(`SELECT CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name, MBl.Status, MBl.Reason  FROM MBl, M WHERE M.UniID = MBl.UniID`, function(err, results){
         if (err){
             console.log(err)
             return callback(3, pageData);
@@ -475,7 +475,7 @@ function getUserInfo(username, con, callback) {
 }
 
 function getMemberActivityInfo(memNum, activityID, con, callback) {
-    con.query(`SELECT *, CONCAT(M.FirstName, M.FatherName, M.GFatherName, M.FamilyName) AS Name FROM M_A, M WHERE M_A.ActivityID = ${activityID} AND M.UniID > ${memNum} ORDER BY M.UniID LIMIT 1`, function(err, results) {
+    con.query(`SELECT *, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name FROM M_A, M WHERE M_A.ActivityID = ${activityID} AND M.UniID > ${memNum} ORDER BY M.UniID LIMIT 1`, function(err, results) {
         data = results[0]
         if (err) {
             //error in query
@@ -887,8 +887,33 @@ function searchMember(body, con, callback){
         chosenLC = ""
     else
         chosenLC = ` AND LC = '${body.filterLC}'`
-    console.log(`SELECT UniID, CONCAT(FirstName, FatherName, GFatherName, FamilyName) AS Name FROM M WHERE CONCAT(FirstName, FatherName, GFatherName, FamilyName) LIKE '%${body.memberLike}%'` + chosenLC)
-    con.query(`SELECT UniID, CONCAT(FirstName, FatherName, GFatherName, FamilyName) AS Name FROM M WHERE CONCAT(FirstName, FatherName, GFatherName, FamilyName) LIKE '%${body.memberLike}%'` + chosenLC, function(err, results){
+    console.log(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%'` + chosenLC)
+    con.query(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%'` + chosenLC, function(err, results){
+        temp={}
+        if (err){
+            console.log(err)
+            callback(3, data)
+        }else{
+            data=[]
+            results.forEach(row => {
+                data.push({"memNum": row.UniID, "memName": row.Name})
+            })
+        
+            console.log(data)
+            callback(0, data)
+        }
+    })
+}
+
+function searchMemberActivity(body, con, callback){
+    console.log(body)
+
+    if (body.localCommittee.toUpperCase() == "NATIONAL")
+        chosenLC = ""
+    else
+        chosenLC = ` AND LC = '${body.localCommittee}'`
+    console.log(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%' AND UniID NOT IN (SELECT UniID FROM M_A WHERE ActivityID = ${body.actNum})` + chosenLC)
+    con.query(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%' AND UniID NOT IN (SELECT UniID FROM M_A WHERE ActivityID = ${body.actNum})` + chosenLC, function(err, results){
         data=[]
         temp={}
         if (err){
@@ -896,9 +921,31 @@ function searchMember(body, con, callback){
             callback(3, data)
         }else{
             results.forEach(row => {
-                temp["memNum"] = row.UniID;
-                temp["memName"] = row.Name;
-                data.push(temp)
+                data.push({"memNum": row.UniID, "memName": row.Name})
+            })
+            console.log(data)
+            callback(0, data)
+        }
+    })
+}
+
+function searchMemberDelete(body, con, callback){
+    console.log(body)
+
+    if (body.localCommittee.toUpperCase() == "NATIONAL")
+        chosenLC = ""
+    else
+        chosenLC = ` AND LC = '${body.localCommittee}'`
+    console.log(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%' AND UniID IN (SELECT UniID FROM M_A WHERE ActivityID = ${body.actNum})` + chosenLC)
+    con.query(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%' AND UniID IN (SELECT UniID FROM M_A WHERE ActivityID = ${body.actNum})` + chosenLC, function(err, results){
+        data=[]
+        temp={}
+        if (err){
+            console.log(err)
+            callback(3, data)
+        }else{
+            results.forEach(row => {
+                data.push({"memNum": row.UniID, "memName": row.Name})
             })
             console.log(data)
             callback(0, data)
@@ -994,8 +1041,8 @@ function searchTrainer(body, con, callback){
         chosenLC = ""
     else
         chosenLC = ` AND LC = '${body.filterLC}'`
-    console.log(`SELECT UniID, CONCAT(FirstName, FatherName, GFatherName, FamilyName) AS Name FROM M WHERE CONCAT(FirstName, FatherName, GFatherName, FamilyName) LIKE '%${body.memberLike}%'` + chosenLC)
-    con.query(`SELECT UniID, CONCAT(FirstName, FatherName, GFatherName, FamilyName) AS Name FROM M WHERE CONCAT(FirstName, FatherName, GFatherName, FamilyName) LIKE '%${body.memberLike}%'` + chosenLC, function(err, results){
+    console.log(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%'` + chosenLC)
+    con.query(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%'` + chosenLC, function(err, results){
         data=[]
         temp={}
         if (err){
@@ -1003,9 +1050,7 @@ function searchTrainer(body, con, callback){
             callback(3, data)
         }else{
             results.forEach(row => {
-                temp["memNum"] = row.UniID;
-                temp["memName"] = row.Name;
-                data.push(temp)
+                data.push({"memNum": row.UniID, "memName": row.Name})
             })
             console.log(data)
             callback(0, data)
@@ -1047,5 +1092,7 @@ module.exports = {
     editMem,
     deleteMem,
     searchTrainer,
-    editTrainer
+    editTrainer,
+    searchMemberActivity,
+    searchMemberDelete
 }

@@ -703,11 +703,10 @@
                         console.log(this.responseText)
                         results = JSON.parse(this.responseText)
 
-                        for(const child of document.getElementById("searchlist").children){
-                            if (child.id != "exception"){
-                                child.remove()
-                            }
-                        }
+                        const temp = document.importNode(document.getElementById("exception"), true)
+                        document.getElementById("searchlist").innerHTML = ""
+                        document.getElementById("searchlist").append(temp)
+
 
                         if (results.length > 0 ){
                             results.forEach(obj => {

@@ -943,20 +943,21 @@
                         console.log(this.responseText)
                         results = JSON.parse(this.responseText)
 
-                        for(const child of document.getElementById("searchlist").children){
-                            if (child.id != "exception"){
-                                child.remove()
-                            }
-                        }
+                        const temp = document.importNode(document.getElementById("exception"), true)
+                        document.getElementById("searchlist").innerHTML = ""
+                        document.getElementById("searchlist").append(temp)
+
+                        
 
                         if (results.length > 0 ){
+                            console.log(results)
                             results.forEach(obj => {
                                 listItem = document.createElement("li")
                                 listItem.classList.add("searchRow")
                                     formItem = document.createElement("form")
                                     formItem.method="post"
                                     formItem.action="/allMembers"
-                                    formItem.style.width = "100%"
+                                       formItem.style.width = "100%"
                                     formItem.style.display = "flex" 
                                     formItem.style.flexDirection = "row"
                                         inputItem1 = document.createElement("input")
@@ -988,14 +989,12 @@
                                         labelItem2.innerText = obj.memName
                                         formItem.appendChild(labelItem2)
                                         
-                                listItem.appendChild(formItem)
-                                console.log(listItem)                                
+                                listItem.appendChild(formItem)                                
                                 formItem.appendChild(document.importNode(hiddenUserIn, true))
                                 formItem.appendChild(document.importNode(hiddenLCIn, true))
                                 formItem.appendChild(document.importNode(hiddenCipherIn, true))
                                 formItem.appendChild(document.importNode(hiddenPositionIn, true))
                                 formItem.appendChild(document.importNode(hiddenFilterLCIn, true))
-                                console.log(formItem)
                                 document.getElementById("searchlist").append(listItem)
            
               
