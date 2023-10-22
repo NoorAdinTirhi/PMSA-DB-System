@@ -186,7 +186,7 @@
 <body>
     <div class="fullbox" style="justify-content: start;">
         <div class ="newActivity" id="newActivityWindow">
-                <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/">
+                <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/editActivity">
                     <h1 id="addActivityTitle"></h1>
                     <div style="display: flex; flex-direction:row; width:100%">
                         <div style="display: flex; flex-direction:row; width:100%">
@@ -225,7 +225,7 @@
                             <label style="margin-right:5%; width:10%">
                                 Start Date
                             </label>
-                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="StartDate" name="startDate" value="<%=startDate%>">
+                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="StartDate" id="startDateInput" name="startDate" value="<%=startDate%>">
                         </div>
                     </div>
                     <div style="display: flex; flex-direction:row; width:100%">
@@ -233,28 +233,12 @@
                             <label style="margin-right:5%; width:10%">
                                 End Date
                             </label>
-                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="EndDate" name="endDate" value="<%=endDate%>">
+                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="EndDate" id="endDateInput" name="endDate" value="<%=endDate%>">
                         </div>
                     </div>
-                    <!-- <div id = "participatingCommittees" style="display: flex; flex-direction:row; width:100%">
-                        <div style="display: flex; flex-direction:row; width:100%">
-                            
-                            <label style="margin-right:5%; width:10%">
-                                Participating Local Committees
-                            </label>
-                            <select id="lcSelect" style="width:7%; margin-right:10%"onchange="createTag(this)">
-                                <option selected> --none-- </option>
-                            </select>
-                            <div id="participatingLcs" class="tagsContainer">
-                                
-                            </div>
-                            
-                        </div>
-                    </div> -->
-
-                
+                                    
                     <div style="margin-top: 0.5%;">
-                        <button type="submit">Submit</button>
+                        <button type="button" onclick="formConfirm('newActivityForm')">Submit</button>
                         <button type="button" onclick="addActivityClose()"> Cancel</button>
                     </div>
                    
@@ -291,7 +275,7 @@
                     </div>
 
                 <div class="headerbox" style="margin-left: 41.8px;">
-                    <div style="border-bottom : solid 1px black; width:100%">
+                    <div style="border-bottom : solid 1px black; width:100%; font-size:medium; overflow: scroll">
                         <%=activityDescription%>
                     </div>
                     <div style="font-size: large; margin-top:2%">
@@ -342,7 +326,7 @@
                             <%=participantPhoneNO%>
                         </div>
                         <div class="headerbox" style="margin:3% 0%; overflow-x: hidden;max-width: 100%;font-size: x-large;">
-                            <a href="<%=participantEmail%>">Email</a>
+                            <%=participantEmail%>
                         </div>
                         <div class="headerbox" style="margin:3% 0%; overflow-x: hidden;max-width: 100%;font-size: x-large;">
                             <a href="<%=participantFacebook%>">Facebook Account</a>
@@ -384,9 +368,12 @@
                     </div>
                 </div>
                 <div style="width:94%;display: inline-block; padding:1% ">
-                    <form method="post" action="/prevPart">
-                    <button class="participantBtn " style="float:left ">Previous Participant</button></form>
-                    <form method="post" action="/nextPart">
+                    <form method="post" action="/selectAct">
+                        <input type="hidden" name="direction" value="prev">
+                        <button class="participantBtn " style="float:left ">Previous Participant</button>
+                    </form>
+                    <form method="post" action="/selectAct">
+                        <input type="hidden" name="direction" value="next">
                         <button class="participantBtn " style="float:right ">Next Participant</button>
                     </form>
                 </div>
@@ -443,15 +430,15 @@
                             </label>
 
                             <input style="margin:1% 1%" placeholder="Member Name" name="memberLike" value="">
-                            <button type="button" onclick="submitSearch('deleteSearchForm')" style="margin:1% 1%; font-size:larger"> Submit</button>
+                            <button type="button" onclick="submitSearchDelete('deleteSearchForm')" style="margin:1% 1%; font-size:larger"> Submit</button>
                         </form>
                     </div>
                     <div style="margin:1% 0%; padding: 1% 0%; border-style:solid; display:flex; flex-direction:column;">
                         <h1  style="border-bottom: solid black;"> Search results: </h1>
 
-                        <form id = "searchMemeberForm" method="post" action="/searchMember">
-                            <ul id="searchlist" style="list-style: none; overflow:scroll;">
-                                <li id = exception style="border-bottom:solid 2px #4e4e4e; margin-bottom:20px">
+                        <form id = "searchDeleteForm" method="post" action="/deleteParticipants">
+                            <ul id="searchlistDelete" style="list-style: none; overflow:scroll;">
+                                <li id = exceptionDelete style="border-bottom:solid 2px #4e4e4e; margin-bottom:20px">
                                     <div style="display: flex; flex-direction:row">
                                             <input style="margin-left:5%;" type="checkbox" onclick="toggle(this)">
                                             <div style="width:5%">select all</div> 
@@ -462,7 +449,7 @@
                             </ul>
 
                             <div style="display: flex; flex-direction:column; width: 10%; margin-left: 5%">
-                                <button   type="button" onclick="deleteMemPopUp()" style="margin-bottom: 3%;"> Deleted Selected Mambers</button>
+                                <button   type="button" onclick="formConfirm('searchDeleteForm')" style="margin-bottom: 3%;"> Deleted Selected Mambers</button>
                                 <button   type="button" onclick="deleteMemPopClose()" > Cancel</button>
                             </div>
 
@@ -507,6 +494,7 @@
         <div style="width: 5%;"></div>
         <label style="width:42%; margin-left:5%">Member Number</label>
         <label style="width:42%">Member Name</label>
+        <input type="hidden" name="memNum">
     </li>
 
     <li id="templateRoleItem" style="display:none;">
@@ -517,6 +505,21 @@
     
 
     <script>
+        document.getElementById('startDateInput').value = formatDate(new Date('<%=startDate%>'))
+        document.getElementById('endDateInput').value = formatDate(new Date('<%=endDate%>'))
+
+        function padTo2Digits(num) {
+          return num.toString().padStart(2, '0');
+        }
+
+        function formatDate(date = new Date()) {
+          return [
+            date.getFullYear(),
+            padTo2Digits(date.getMonth() + 1),
+            padTo2Digits(date.getDate()),
+          ].join('-');
+        }
+
 
         console.log(document.getElementById("templatelistItem").children[2].innerText)
         var cur_time = new Date();
@@ -553,6 +556,11 @@
         hiddenActivityiNum.setAttribute('name', "actNum");
         hiddenActivityiNum.setAttribute('value',"<%=activityID%>");
 
+        const hiddenMemNum = document.createElement('input');
+        hiddenMemNum.setAttribute('type', 'hidden');
+        hiddenMemNum.setAttribute('name', "currentMemNum");
+        hiddenMemNum.setAttribute('value', "<%=particiapntNumber%>");
+
         const forms = document.forms;
         console.log(forms)
         for (let i = 0; i <forms.length; i++){
@@ -561,6 +569,7 @@
             forms[i].appendChild(document.importNode(hiddenCipherIn, true))
             forms[i].appendChild(document.importNode(hiddenPositionIn, true))
             forms[i].appendChild(document.importNode(hiddenActivityiNum, true))
+            forms[i].appendChild(document.importNode(hiddenMemNum, true))
         }
 
         const tagList = []
@@ -647,9 +656,6 @@
                     document.getElementById("chooseRoleList").append(temp)
                 }
             } 
-            
-
-
         }
         function confirmAddPopclose(){
             const element = document.getElementById("chooseRole")
@@ -657,11 +663,49 @@
             element.style.display = "none"
         }
         
-        //enable and disable delete meembers pop-up
+        function formConfirm(form_id) {
+            myForm = document.getElementById(form_id)
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                console.log(`Status: ${this.status}:: ${this.responseText}`)
+                alert(`Status: ${this.status}:: ${this.responseText}`)
+                if (form_id == "addParticipants")
+                    submitSearch('addSearchForm')
+                else if (form_id == 'searchDeleteForm' )
+                    submitSearchDelete('deleteSearchForm')
+            }   
+            xhr.open("POST", `${myForm.action}`)
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+            let request = ""
+            inputs = myForm.elements
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].type == "checkbox") {
+                    if (inputs[i].checked)
+                        request = request + inputs[i].name + "=" + "on" + "&"
+                    else
+                        request = request + inputs[i].name + "=" + "off" + "&"
+                } else {
+                    request = request + inputs[i].name + "=" + inputs[i].value + "&"
+                }
+            }
+            request = request.slice(0, -1)
+            if (form_id == "deleteUserForm") {
+                request.split('&').forEach(row => {
+                    array = row.split('=')
+                    if (array[0] == "userToDelete") {
+                        document.getElementById(array[array.length - 1]).remove()
+                    }
+                })
+            }
+            console.log(request)
+            xhr.send(request)
+        }
+
         function deleteMemPopUp(){
             const element = document.getElementById("deleteMemPopUp")
             element.style.display = "block"
         }
+
         function deleteMemPopClose(){
             const element = document.getElementById("deleteMemPopUp")
             element.style.display = "none"
@@ -685,12 +729,12 @@
 
         function addActivityWindow(){
             let properString;
-            // committee=""
-            // if( committee == "General"){
-            //     properString = committee.charAt(0).toUpperCase() + committee.slice(1);
-            // }else{
-            //     properString = committee.toUpperCase();
-            // }
+            committee = "<%=committeeName%>"
+            if( committee == "General"){
+                properString = committee.charAt(0).toUpperCase() + committee.slice(1);
+            }else{
+                properString = committee.toUpperCase();
+            }
             document.getElementById("addActivityTitle").innerHTML = `Add ${properString} Activity`
 
             document.getElementById("newActivityWindow").style.display = "flex"
@@ -724,6 +768,7 @@
                         listItem.style.display = "flex"
                         listItem.children[2].innerText = obj.memNum
                         listItem.children[3].innerText = obj.memName
+                        listItem.children[4].value = obj.memNum
                         document.getElementById("searchlist").append(listItem)
                     })
                 }else{
@@ -731,6 +776,59 @@
                     element.classList.add("searchRow")
                     element.innerText = "No member with a similar name was found in the currently chosen LC"
                     document.getElementById("searchlist").append(element)
+                }
+                
+            }
+            xhr.open("POST", `${myForm.action}`)
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+            let request = ""
+            inputs = myForm.elements
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].type == "radio") {
+                    if (inputs[i].checked)
+                        request = request + inputs[i].name + "=" + inputs[i].value + "&"
+                } else {
+                    request = request + inputs[i].name + "=" + inputs[i].value + "&"
+                }
+            }
+            request = request.slice(0, -1)
+            console.log(request)
+            xhr.send(request)
+            document.body.style.cursor = "wait"
+        }
+
+        function submitSearchDelete(form_id) {
+            myForm = document.getElementById(form_id)
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                document.body.style.cursor = "default"
+                console.log(`Status: ${this.status}:: ${this.responseText}`)
+                if (this.status != 200){
+                    alert(`Status: ${this.status}:: ${this.responseText}`)
+                    return
+                }
+                 console.log(this.responseText)
+                 results = JSON.parse(this.responseText)
+
+                const temp = document.importNode(document.getElementById("exceptionDelete"), true)
+                document.getElementById("searchlistDelete").innerHTML = ""
+                document.getElementById("searchlistDelete").append(temp)
+                
+                if (results.length > 0 ){
+                    results.forEach(obj => {
+                        listItem = document.createElement("li")
+                        listItem = document.importNode(document.getElementById("templatelistItem"), true)
+                        listItem.style.display = "flex"
+                        listItem.children[2].innerText = obj.memNum
+                        listItem.children[3].innerText = obj.memName
+                        listItem.children[4].value = obj.memNum
+                        document.getElementById("searchlistDelete").append(listItem)
+                    })
+                }else{
+                    element = document.createElement("div")
+                    element.classList.add("searchRow")
+                    element.innerText = "No member with a similar name was found in the currently chosen LC"
+                    document.getElementById("searchlistDelete").append(element)
                 }
                 
             }

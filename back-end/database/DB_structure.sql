@@ -148,11 +148,17 @@ ALTER TABLE nationalActivities RENAME Na;
 ALTER TABLE nationalActivities_localCommittees RENAME NaLC;
 ALTER TABLE standingCommittees RENAME SC;
 
-CREATE TRIGGER before_employee_update 
+CREATE TRIGGER NationalActivityNumber
     BEFORE INSERT ON Na
     FOR EACH ROW 
- 	SET NEW.Anum = (SELECT (Max(Anum)+1) FROM A,Na WHERE A.ActivityID = Na.ActivityID AND A.Committee = (SELECT Committee FROM A WHERE ActivityID = NEW.ActivityID));
+ 	SET NEW.Anum = IFNULL((SELECT (Max(Anum)+1) FROM A,Na WHERE A.ActivityID = Na.ActivityID AND A.Committee = (SELECT Committee FROM A WHERE ActivityID = NEW.ActivityID)), 0);
+
     
+CREATE TRIGGER update_member_number 
+    BEFORE INSERT ON M_A
+    FOR EACH ROW 
+ 	SET NEW.CertCode = IFNULL((SELECT (Max(CertCode)+1) FROM M_A WHERE  ActivityID = NEW.ActivityID), 0);
+
 INSERT INTO LC VALUES
 	('nablus', 'Full'),
     ('gaza','Full'),
@@ -160,6 +166,9 @@ INSERT INTO LC VALUES
     ('ppu','Full'),
     ('jenin','Full'),
     ('jerusalem', 'Full');
+    
+INSERT INTO M_A VALUES (1190083, 11, 2, 'niggerizer')
 
+INSERT INTO Na(ActivityID) VALUES (2);
 
-
+SELECT * FROM Na

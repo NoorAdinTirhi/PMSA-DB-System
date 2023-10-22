@@ -41,7 +41,11 @@ const { mainPageInformer,
         deleteMem,
         searchTrainer,
         editTrainer,
-        searchMemberActivity       } = require('./utility/dataHandling')
+        searchMemberActivity,
+        searchMemberDelete,
+        deleteParticipants,
+        addParticipants,
+        editActivity       } = require('./utility/dataHandling')
 
 
 // let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
@@ -508,6 +512,7 @@ app.post("/blackList", function(req, res){
 
 app.post("/selectAct", function(req, res){
 
+    console.log(req.body)
     if (!req.body) {
         res.status(400)
         res.send("Incomplete Request")
@@ -547,7 +552,12 @@ app.post("/selectAct", function(req, res){
             return
         }
 
-        getActivityCat(req.body.activity, con, function(flag, msg){
+        if (req.body.activity){
+            actID = req.body.activity
+        }else{
+            actID = req.body.actNum
+        }
+        getActivityCat(actID, con, function(flag, msg){
             if (flag == 3){
                 console.log(flag);
                 res.status(500)
@@ -562,7 +572,7 @@ app.post("/selectAct", function(req, res){
                     return
                 }
 
-                nationalActivityInformer(req.body.username, req.body.memNum, req.body.activity, nationalActivity_variables, con, function (flag, data){
+                nationalActivityInformer(req.body.username,  req.body.direction, req.body.currentMemNum, actID, nationalActivity_variables, con, function (flag, data){
                     if (flag != 0){
                         console.log(flag)
                         console.log(data)
@@ -575,7 +585,7 @@ app.post("/selectAct", function(req, res){
                 
                 
             }else{
-                localActivityInformer(req.body.username, req.body.memNum, req.body.activity, localActivity_variables, con, function (flag, data){
+                localActivityInformer(req.body.username, req.body.direction, req.body.currentMemNum, actID, localActivity_variables, con, function (flag, data){
                     if (flag != 0){
                         console.log(flag)
                         console.log(data)
@@ -583,6 +593,7 @@ app.post("/selectAct", function(req, res){
                         res.send("Failed")
                         return
                     }
+                    console.log(data)
                     res.render("tier2/tier3/localActivity", data)
                 })
             }
@@ -649,7 +660,7 @@ app.post("/addActivity", function(req, res) {
                 }
 
                 updateAction(req.body.username, `Added a new Activity : ${req.body.activityName}`, con, function(flag){
-                    if (flag == 0){
+                    if (flag != 0){
                         res.status(500)
                         res.send("Internal Server Error, unable to update action, but activity was added")
                         return
@@ -1074,6 +1085,158 @@ app.post("/searchDeleteToAct", function(req, res){
                 res.status(500)
                 res.send("Internal Server Error")
                 
+            })
+        } else if (flag == 1) {
+            //failed, bad cipher
+            res.status(401)
+            res.send("Your request has a bad cipher")
+        } else if (flag == 2) {
+            res.status(401)
+            res.send("user not registered")
+        } else if (flag == 3) {
+            res.status(500)
+            res.send("Internal Server Error")
+        }
+    })
+})
+
+app.post("/deleteParticipants", function(req, res){
+    if (!req.body) {
+        res.status(400)
+        res.send("Incomplete Request")
+        return
+    }
+
+    if (!req.body.username) {
+        res.render("login", { login_string: "you need to login to make a request" })
+        return
+    }
+
+    if (!req.body.cipher) {
+        res.status(401)
+        res.send("Your request does not include a cipher, please login and use the website as intended")
+        return
+    }
+    
+    LC = (req.body.filter)
+    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+        if (flag == 0) {
+            deleteParticipants(req.body, con, function(flag, data){
+                if (flag != 0){
+                    res.status(500)
+                    res.send("Internal Server Error")
+                    return
+                }
+                updateAction(req.body.username, `removed participants from activity number :${req.body.actNum}`, con, function(flag){
+                    if (flag != 0){
+                        res.status(201)
+                        res.send(`Succesfully Removed Selected Members From Activity Number :${req.body.actNum}, but failed to update action`)
+                    }
+                    res.status(200)
+                    res.send(`Succesfully Removed Selected Members From Activity Number :${req.body.actNum}`)
+                })
+            })
+        } else if (flag == 1) {
+            //failed, bad cipher
+            res.status(401)
+            res.send("Your request has a bad cipher")
+        } else if (flag == 2) {
+            res.status(401)
+            res.send("user not registered")
+        } else if (flag == 3) {
+            res.status(500)
+            res.send("Internal Server Error")
+        }
+    })
+})
+
+app.post("/addParticipants", function(req, res){
+    console.log(req.body)
+    if (!req.body) {
+        res.status(400)
+        res.send("Incomplete Request")
+        return
+    }
+
+    if (!req.body.username) {
+        res.render("login", { login_string: "you need to login to make a request" })
+        return
+    }
+
+    if (!req.body.cipher) {
+        res.status(401)
+        res.send("Your request does not include a cipher, please login and use the website as intended")
+        return
+    }
+    
+    LC = (req.body.filter)
+    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+        if (flag == 0) {
+            addParticipants(req.body, con, function(flag, data){
+                if (flag != 0){
+                    res.status(500)
+                    res.send("Internal Server Error")
+                    return
+                }
+                updateAction(req.body.username, `added participants from activity number :${req.body.actNum}`, con, function(flag){
+                    if (flag != 0){
+                        res.status(201)
+                        res.send(`Succesfully Added Selected Members From Activity Number :${req.body.actNum}, but failed to update action`)
+                    }
+                    res.status(200)
+                    res.send(`Succesfully Added Selected Members From Activity Number :${req.body.actNum}`)
+                })
+            })
+        } else if (flag == 1) {
+            //failed, bad cipher
+            res.status(401)
+            res.send("Your request has a bad cipher")
+        } else if (flag == 2) {
+            res.status(401)
+            res.send("user not registered")
+        } else if (flag == 3) {
+            res.status(500)
+            res.send("Internal Server Error")
+        }
+    })
+})
+
+app.post("/editActivity", function(req, res){
+    console.log(req.body)
+    if (!req.body) {
+        res.status(400)
+        res.send("Incomplete Request")
+        return
+    }
+
+    if (!req.body.username) {
+        res.render("login", { login_string: "you need to login to make a request" })
+        return
+    }
+
+    if (!req.body.cipher) {
+        res.status(401)
+        res.send("Your request does not include a cipher, please login and use the website as intended")
+        return
+    }
+    
+    LC = (req.body.filter)
+    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+        if (flag == 0) {
+            editActivity(req.body, con, function(flag, data){
+                if (flag != 0){
+                    res.status(500)
+                    res.send("Internal Server Error")
+                    return
+                }
+                updateAction(req.body.username, `edited activity number :${req.body.actNum}`, con, function(flag){
+                    if (flag != 0){
+                        res.status(201)
+                        res.send(`edited activity :${req.body.actNum}, but failed to update action`)
+                    }
+                    res.status(200)
+                    res.send(`Succesfully Added Selected Members From Activity Number :${req.body.actNum}`)
+                })
             })
         } else if (flag == 1) {
             //failed, bad cipher

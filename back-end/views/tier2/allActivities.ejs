@@ -513,8 +513,13 @@
 
         const hiddenMemNum = document.createElement('input');
         hiddenMemNum.setAttribute('type', 'hidden');
-        hiddenMemNum.setAttribute('name', "memNum");
+        hiddenMemNum.setAttribute('name', "currentMemNum");
         hiddenMemNum.setAttribute('value', "0");
+
+        const hiddenDirection = document.createElement('input');
+        hiddenDirection.setAttribute('type', 'hidden');
+        hiddenDirection.setAttribute('name', "direction");
+        hiddenDirection.setAttribute('value', "next");
 
         const forms = document.forms;
         console.log(forms)
@@ -525,6 +530,7 @@
             forms[i].appendChild(document.importNode(hiddenPositionIn, true))
             forms[i].appendChild(document.importNode(hiddenCurrentFilter, true))
             forms[i].appendChild(document.importNode(hiddenMemNum, true))
+            forms[i].appendChild(document.importNode(hiddenDirection, true))
         }
 
         var cur_time = new Date();

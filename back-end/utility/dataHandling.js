@@ -474,21 +474,32 @@ function getUserInfo(username, con, callback) {
     })
 }
 
-function getMemberActivityInfo(memNum, activityID, con, callback) {
-    con.query(`SELECT *, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name FROM M_A, M WHERE M_A.ActivityID = ${activityID} AND M.UniID > ${memNum} ORDER BY M.UniID LIMIT 1`, function(err, results) {
-        data = results[0]
+function getMemberActivityInfo(memNum, direction, activityID, con, callback) {
+    data=""
+    con.query(`SELECT *, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name FROM M_A, M WHERE M.UniID = M_A.UniID AND M_A.ActivityID = ${activityID} AND M.UniID ${(direction=="next")?">":"<"} ${memNum} ORDER BY M.UniID LIMIT 1`, function(err, results) {
         if (err) {
             //error in query
             console.log(err)
             return callback(1, data)
         } else {
             if (results.length > 0) {
+                data = results[0]
                 data.trainerCategory = results[0].Category
                 data.gradActivity = results[0].GradActivity;
                 data.gradDate = results[0].GradDate1
                 return callback(0, data)
             }else{
-                return callback(2, data)
+                con.query(`SELECT *, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name FROM M_A, M WHERE M.UniID = M_A.UniID AND M_A.ActivityID >= ${activityID} AND M.UniID ${(direction=="next")?">":"<"} ${(direction=="next")?"0":"2147483646"} ORDER BY M.UniID LIMIT 1`, function(err, results){
+                    if(results.length > 0){
+                        data = results[0]
+                        data.trainerCategory = results[0].Category
+                        data.gradActivity = results[0].GradActivity;
+                        data.gradDate = results[0].GradDate1
+                        return callback(0, data)
+                    }else{
+                        return callback(2, data)
+                    }
+                })
             }
         }
     })
@@ -546,6 +557,7 @@ function checkBlackListStatus(uniNum, con, callback) {
 }
 
 function getNationalActivites(uniNum, con, callback) {
+    console.log(`SELECT A.Aname, A.ActivityID, A.Committee FROM M_A, A WHERE M_A.ActivityID = A.ActivityID AND UniID = ${uniNum} AND A.ActivityID IN (SELECT Na.ActivityID FROM Na)`)
     con.query(`SELECT A.Aname, A.ActivityID, A.Committee FROM M_A, A WHERE M_A.ActivityID = A.ActivityID AND UniID = ${uniNum} AND A.ActivityID IN (SELECT Na.ActivityID FROM Na)`, function(err, results) {
         if (err) {
             console.log(err)
@@ -575,7 +587,7 @@ function getLocalActivites(uniNum, con, callback) {
     })
 }
 
-function localActivityInformer(username, memNum, ActivityID, pageData, con, callback) {
+function localActivityInformer(username, direction, memNum, ActivityID, pageData, con, callback) {
     con.query(`SELECT *, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1 FROM A,La WHERE A.ActivityID >= '${ActivityID}' AND A.ActivityID = La.ActivityID ORDER BY A.ActivityID LIMIT 1`, function(err, results){
         if (err){
             console.log(err)
@@ -583,13 +595,13 @@ function localActivityInformer(username, memNum, ActivityID, pageData, con, call
         }else{
             console.log(results)
             getUserInfo(username, con, function(userData, flag){
+                pageData.user = userData.user
+                pageData.position = userData.position
+                pageData.userLC = userData.LC
+                pageData.cipher = userData.cipher
                 if (flag != 0){
                     return callback(1, pageData)
                 }else{
-                    pageData.user = userData.user
-                    pageData.position = userData.position
-                    pageData.userLC = userData.LC
-                    pageData.cipher = userData.cipher
                     if (results.length > 0){
                         pageData.activityName = results[0].Aname;
                         pageData.activityDescription = results[0].Adescription;
@@ -603,7 +615,7 @@ function localActivityInformer(username, memNum, ActivityID, pageData, con, call
                         console.log("before getLCParticipation")
                         pageData.nationalActivites = []
                         pageData.localActivites = []
-                        getMemberActivityInfo(memNum, ActivityID, con, function(flag, memData){
+                        getMemberActivityInfo(memNum, direction, ActivityID, con, function(flag, memData){
                             console.log("before getMemberActivityInfo " + flag)
                             if (flag != 0){
                                 if (flag == 2){
@@ -611,7 +623,8 @@ function localActivityInformer(username, memNum, ActivityID, pageData, con, call
                                         if ((typeof pageData[key] != "object") && ((pageData[key] == null || pageData[key] == undefined || pageData[key] == ""))){
                                             pageData[key] = "unassigned"
                                         }
-                                    }) 
+                                    })
+                                    pageData.particiapntNumber = 0 
                                     return callback(0, pageData)
                                 }else{
                                     return callback(6, pageData)
@@ -623,10 +636,11 @@ function localActivityInformer(username, memNum, ActivityID, pageData, con, call
                                 pageData.participantPhoneNO = memData.PhoneNo
                                 pageData.participantEmail = memData.E_mail
                                 pageData.participantFacebook = memData.Facebook_Link
+                                pageData.particiapntNumber = memData.UniID
                                 console.log("before getNationalActivites")
                                 
-                                getNationalActivites(memData.UniId, con, function(flag, NAdata){
-                                    if (flag != 0){
+                                getNationalActivites(memData.UniID, con, function(flag, NAdata){
+                                    if (flag != 0 && flag != 1){
                                         return callback(4, pageData)
                                     }else{
                                         
@@ -635,13 +649,14 @@ function localActivityInformer(username, memNum, ActivityID, pageData, con, call
                                         })
                                         console.log("before getLocalActivites")
                                         getLocalActivites(memData.UniID, con, function(flag, LAdata){
-                                            if (flag != 0){
+                                            if (flag != 0 && flag != 1){
                                                 return callback(3, pageData)
                                             }else{
                                                 
                                                 LAdata.forEach(element => {
                                                     pageData.localActivites.push(element.Aname)
-                                                })  
+                                                })
+                                                  
                                                 return callback(0, pageData)                                                     
                                             }
                                         })
@@ -663,21 +678,20 @@ function localActivityInformer(username, memNum, ActivityID, pageData, con, call
     })
 }
 
-function nationalActivityInformer(username, memNum, ActivityID, pageData, con, callback) {
+function nationalActivityInformer(username, direction, memNum, ActivityID, pageData, con, callback) {
     con.query(`SELECT *, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1 FROM A WHERE ActivityID >= '${ActivityID}' ORDER BY ActivityID LIMIT 1`, function(err, results){
         if (err){
             console.log(err)
             return callback(3, pageData)
         }else{
             getUserInfo(username, con, function(userData, flag){
+                pageData.user = userData.user
+                pageData.position = userData.position
+                pageData.userLC = userData.LC
+                pageData.cipher = userData.cipher
                 if (flag != 0){
                     return callback(1, pageData)
                 }else{
-                    pageData.user = userData.user
-                    pageData.position = userData.position
-                    pageData.userLC = userData.LC
-                    pageData.cipher = userData.cipher
-                    console.log(results.length)
                     if (results.length > 0){
                         pageData.activityName = results[0].Aname;
                         pageData.activityDescription = results[0].Adescription;
@@ -709,7 +723,7 @@ function nationalActivityInformer(username, memNum, ActivityID, pageData, con, c
                                         })
                                         pageData.nationalActivites = []
                                         pageData.localActivites = []
-                                        getMemberActivityInfo(memNum, ActivityID, con, function(flag, memData){
+                                        getMemberActivityInfo(memNum, direction,ActivityID, con, function(flag, memData){
                                             console.log("before getMemberActivityInfo " + flag)
                                             if (flag != 0){
                                                 if (flag == 2){
@@ -718,6 +732,7 @@ function nationalActivityInformer(username, memNum, ActivityID, pageData, con, c
                                                             pageData[key] = "unassigned"
                                                         }
                                                     }) 
+                                                    pageData.particiapntNumber = 0
                                                     return callback(0, pageData)
                                                 }else{
                                                     return callback(6, pageData)
@@ -729,6 +744,7 @@ function nationalActivityInformer(username, memNum, ActivityID, pageData, con, c
                                                 pageData.participantPhoneNO = memData.PhoneNo
                                                 pageData.participantEmail = memData.E_mail
                                                 pageData.participantFacebook = memData.Facebook_Link
+                                                pageData.particiapntNumber = memData.UniID
                                                 console.log("before getNationalActivites")
 
                                                 getNationalActivites(memData.UniId, con, function(flag, NAdata){
@@ -831,7 +847,7 @@ function getActivityCat(ActivityID, con, callback){
 function addActivity(body, localCommittee, con, callback){
     participatingLcsArr = [];
     Object.keys(body).forEach(key => {
-        body[key] = body[key].replace("'", "\\'")
+        body[key] = body[key].replaceAll("'", "\\'")
     })
     if (localCommittee == "national"){
         body.participatingLCs = body.participatingLCs.slice(0,-1)
@@ -953,6 +969,62 @@ function searchMemberDelete(body, con, callback){
     })
 }
 
+function deleteParticipants(body, con, callback){
+    console.log(body)
+    searchExpression = ""
+
+    if (!(body.addMemCb) || !(body.addMemCb.includes("on")))
+        return callback(0)
+
+    console.log(typeof body.addMemCb)
+
+    if (typeof body.addMemCb != "string"){
+        for (let i = 0; i < body.addMemCb.length; i++){
+            if (body.addMemCb[i] == "on")
+                searchExpression += `UniID = ${body.memNum[i]} OR `
+        }
+        searchExpression = searchExpression.slice(0, -4);
+    }else{
+        if (body.addMemCb == "on")
+            searchExpression = `UniID = ${body.memNum}`
+    }
+
+    queryStr = `DELETE FROM M_A WHERE ActivityID = ${body.actNum} AND (${searchExpression})`
+    con.query(queryStr, function(err, results){
+        if (err){
+            console.log(err)
+            return callback(3)
+        }
+        return callback(0)
+    })
+}
+
+function addParticipants(body, con, callback){
+    console.log(body)
+    values = ""
+
+    console.log(typeof body.addMemCb)
+
+    if (typeof body.name != "string"){
+        for (let i = 0; i < body.uniNum.length; i++){
+            values += `(${body.uniNum[i]}, ${body.actNum}, ${"0"}, '${body.roles[i]}'),`
+        }
+        values = values.slice(0, -1);
+    }else{
+            values = `(${body.uniNum}, ${body.actNum}, ${"0"}, '${body.roles}')`
+    }
+
+    const queryStr = `INSERT INTO M_A VALUES ${values}`
+    console.log(queryStr)
+    con.query(queryStr, function(err){
+        if (err){
+            console.log(err)
+            return callback(3)
+        }
+        return callback(0)
+    })
+}
+
 function addNewMem(body, con, callback){
     query1Str = `INSERT INTO M VALUES(${body.uniNum}, '${body.engFname}', '${body.engFather}',`
     + `'${body.engGfather}', '${body.engLname}', '${body.arabFname}', '${body.arabFather}',`
@@ -1070,6 +1142,54 @@ function editTrainer(body, con, callback){
     })
 }
 
+function editActivity(body, con, callback){
+
+    Object.keys(body).forEach(key => {
+        body[key] = body[key].replaceAll("'", "\\'")
+    })
+    
+    con.query(`UPDATE A SET Aname='${body.activityName}', Adescription='${body.activityDescription}', ProposalLink='${body.proposalLink}', ReportLink='${body.reportLink}', StartDate='${body.startDate}', EndDate='${body.endDate}' WHERE ActivityID = '${body.actNum}'`, function(err){
+        if (err){
+            console.log(err)
+            return callback(3)
+        }
+        getActivityCat(body.actNum, con, function(flag,cat){
+            if (flag != 0){
+                console.log(err)
+                return callback(3)
+            }
+            if (cat == "national"){
+                con.query(`DELETE FROM NaLC WHERE ActivityID = ${body.actNum}`, function(err){
+                    if (err){
+                        console.log(err)
+                        return callback(4)
+                    }
+                    if (localCommittee == "national"){
+                        body.participatingLCs = body.participatingLCs.slice(0,-1)
+                        participatingLcsArr = body.participatingLCs.split(",")
+                       
+                        if (participatingLcsArr.length > 0){
+                            queryStr3 = "INSERT INTO NaLC VALUES"
+                            participatingLcsArr.forEach(LC => {
+                                queryStr3 += `(${body.actNum}, '${LC}'),`
+                            })
+                        }
+                        queryStr3 = queryStr3.slice(0,-1)
+                        con.query(queryStr3, function(err){
+                            if(err){
+                                console.log(err)
+                                return callback(5)
+                            }
+                            return callback(0)
+                        })
+                    }
+                })
+            }
+        })
+        return callback(0)
+    })
+}
+
 
 
 
@@ -1094,5 +1214,8 @@ module.exports = {
     searchTrainer,
     editTrainer,
     searchMemberActivity,
-    searchMemberDelete
+    searchMemberDelete,
+    deleteParticipants,
+    addParticipants,
+    editActivity
 }

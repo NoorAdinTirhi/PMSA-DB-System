@@ -552,6 +552,21 @@
     
 
     <script>
+        document.getElementById('startDateInput').value = formatDate(new Date('<%=startDate%>'))
+        document.getElementById('endDateInput').value = formatDate(new Date('<%=endDate%>'))
+
+        function padTo2Digits(num) {
+          return num.toString().padStart(2, '0');
+        }
+
+        function formatDate(date = new Date()) {
+          return [
+            date.getFullYear(),
+            padTo2Digits(date.getMonth() + 1),
+            padTo2Digits(date.getDate()),
+          ].join('-');
+        }
+
         var cur_time = new Date();
         document.getElementById("current_time").innerText = `${cur_time.getHours()}:${(cur_time.getMinutes() < 10)? ("0 "+cur_time.getMinutes()) : cur_time.getMinutes()}`
         document.getElementById("current_date").innerText = `${cur_time.getFullYear()}/${(cur_time.getMonth()+1<10)?("0 "+cur_time.getMonth()+1):cur_time.getMonth()+1}/${(cur_time.getDate()<10)?("0 "+cur_time.getDate()):(cur_time.getDate())}`

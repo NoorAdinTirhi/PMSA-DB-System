@@ -123,6 +123,7 @@ module.exports = {
         jerusalemPercent : "",
         jeninPercent : "",
         huPercent : "",
+        particiapntNumber : "",
         participantName : "",
         participantLocalCommittee : "",
         participantYearOfStudy : "",
