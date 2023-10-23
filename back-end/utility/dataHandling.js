@@ -679,6 +679,7 @@ function localActivityInformer(username, direction, memNum, ActivityID, pageData
 }
 
 function nationalActivityInformer(username, direction, memNum, ActivityID, pageData, con, callback) {
+    console.log(memNum)
     con.query(`SELECT *, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1 FROM A WHERE ActivityID >= '${ActivityID}' ORDER BY ActivityID LIMIT 1`, function(err, results){
         if (err){
             console.log(err)
@@ -723,7 +724,7 @@ function nationalActivityInformer(username, direction, memNum, ActivityID, pageD
                                         })
                                         pageData.nationalActivites = []
                                         pageData.localActivites = []
-                                        getMemberActivityInfo(memNum, direction,ActivityID, con, function(flag, memData){
+                                         getMemberActivityInfo(memNum, direction, ActivityID, con, function(flag, memData){
                                             console.log("before getMemberActivityInfo " + flag)
                                             if (flag != 0){
                                                 if (flag == 2){
@@ -747,8 +748,8 @@ function nationalActivityInformer(username, direction, memNum, ActivityID, pageD
                                                 pageData.particiapntNumber = memData.UniID
                                                 console.log("before getNationalActivites")
 
-                                                getNationalActivites(memData.UniId, con, function(flag, NAdata){
-                                                    if (flag != 0){
+                                                getNationalActivites(memData.UniID, con, function(flag, NAdata){
+                                                    if (flag != 0 && flag != 1){
                                                         return callback(4, pageData)
                                                     }else{
 
@@ -757,7 +758,7 @@ function nationalActivityInformer(username, direction, memNum, ActivityID, pageD
                                                         })
                                                         console.log("before getLocalActivites")
                                                         getLocalActivites(memData.UniID, con, function(flag, LAdata){
-                                                            if (flag != 0){
+                                                            if (flag != 0 && flag != 1){
                                                                 return callback(3, pageData)
                                                             }else{
 
@@ -1164,7 +1165,8 @@ function editActivity(body, con, callback){
                         console.log(err)
                         return callback(4)
                     }
-                    if (localCommittee == "national"){
+                    if (body.localCommittee == "national"){
+                        console.log( body.participatingLCs)
                         body.participatingLCs = body.participatingLCs.slice(0,-1)
                         participatingLcsArr = body.participatingLCs.split(",")
                        
@@ -1184,9 +1186,11 @@ function editActivity(body, con, callback){
                         })
                     }
                 })
-            }
+            }else{
+                return callback(0)
+            }   
         })
-        return callback(0)
+        
     })
 }
 

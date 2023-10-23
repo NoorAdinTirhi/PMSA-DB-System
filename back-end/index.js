@@ -513,6 +513,7 @@ app.post("/blackList", function(req, res){
 app.post("/selectAct", function(req, res){
 
     console.log(req.body)
+    
     if (!req.body) {
         res.status(400)
         res.send("Incomplete Request")
@@ -575,7 +576,6 @@ app.post("/selectAct", function(req, res){
                 nationalActivityInformer(req.body.username,  req.body.direction, req.body.currentMemNum, actID, nationalActivity_variables, con, function (flag, data){
                     if (flag != 0){
                         console.log(flag)
-                        console.log(data)
                         res.status(400)
                         res.send("Failed")
                         return
@@ -588,7 +588,6 @@ app.post("/selectAct", function(req, res){
                 localActivityInformer(req.body.username, req.body.direction, req.body.currentMemNum, actID, localActivity_variables, con, function (flag, data){
                     if (flag != 0){
                         console.log(flag)
-                        console.log(data)
                         res.status(400)
                         res.send("Failed")
                         return
@@ -730,7 +729,7 @@ app.post("/searchMember", function(req, res){
 })
 
 app.post("/addNewMem",function(req,res){
-    console.log(req.body)
+    
     con
     if (!req.body) {
         res.status(400)
@@ -782,7 +781,7 @@ app.post("/addNewMem",function(req,res){
 })
 
 app.post("/editMem",function(req,res){
-    console.log(req.body)
+    
     con
     if (!req.body) {
         res.status(400)
@@ -840,7 +839,7 @@ app.post("/editMem",function(req,res){
 })
 
 app.post("/deleteMem", function (req,res){
-    console.log(req.body)
+    
     con
     if (!req.body) {
         res.status(400)
@@ -900,7 +899,7 @@ app.post("/deleteMem", function (req,res){
 
 
 app.post("/editTrainer",function(req,res){
-    console.log(req.body)
+    
     if (!req.body) {
         res.status(400)
         res.send("Incomplete Request")
@@ -1011,6 +1010,7 @@ app.post("/searchTrainer", function(req, res){
 })
 
 app.post("/searchAddToAct", function(req, res){
+    
     if (!req.body) {
         res.status(400)
         res.send("Incomplete Request")
@@ -1034,6 +1034,7 @@ app.post("/searchAddToAct", function(req, res){
             searchMemberActivity(req.body, con, function(flag, data){
                 if (flag == 0){
                     res.status(200)
+                    console.log(data)
                     res.send(JSON.stringify(data))
                     return
                 }
@@ -1151,7 +1152,7 @@ app.post("/deleteParticipants", function(req, res){
 })
 
 app.post("/addParticipants", function(req, res){
-    console.log(req.body)
+    
     if (!req.body) {
         res.status(400)
         res.send("Incomplete Request")
@@ -1223,19 +1224,23 @@ app.post("/editActivity", function(req, res){
     LC = (req.body.filter)
     verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
         if (flag == 0) {
+            console.log(`flag == ${flag}`)
             editActivity(req.body, con, function(flag, data){
                 if (flag != 0){
                     res.status(500)
                     res.send("Internal Server Error")
                     return
                 }
+                console.log(`flag == ${flag}`)
                 updateAction(req.body.username, `edited activity number :${req.body.actNum}`, con, function(flag){
                     if (flag != 0){
                         res.status(201)
                         res.send(`edited activity :${req.body.actNum}, but failed to update action`)
+                        return
                     }
                     res.status(200)
-                    res.send(`Succesfully Added Selected Members From Activity Number :${req.body.actNum}`)
+                    res.send(`Succesfully Edited Activity Number :${req.body.actNum}`)
+                    console.log(`flag == ${flag}`)
                 })
             })
         } else if (flag == 1) {
