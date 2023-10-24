@@ -1318,4 +1318,12 @@ app.get("/scripts/*", function(req, res) {
     res.sendFile(fileName, options)
 })
 
+app.get("/cert", function(req, res){
+    const options = {
+        root: path.join(__dirname, "/public")
+    }
+
+    res.sendFile("index.html", options)
+})
+
 

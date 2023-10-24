@@ -1,36 +1,52 @@
+const puppeteer = require('puppeteer');
+const fs = require('fs');
 
-// const pdf = require('html-pdf')
-// const path = require('path')
-// const ejs = require('ejs')
-// const url = require('url')
+// let htmlFile = fs.readFileSync("public/index.html").toString()
+// regex2 = /public\/images\/.*\.png/g
+// console.log(fs.readFileSync('public/images/Medal_thing.png').toString('base64'))
+
+// `src=data:image/jpeg;base64,${readFileSync('1.jpg').toString('base64')}` 
 
 
-
-//  const options = { format: 'A4', path: 'output.pdf', base: 'file://' + __dirname + './public' }
-
-// ejs.renderFile("views/certificates/SCORE.ejs", {participantName:"noor", activityName:"noorification", actStartDate:"17-09-2023", actEndDate:"17-10-2023", participentPosition: "organizer", certCode: "A4F412F"}, function(err,data){
-//         if (err){
-//             res.send(err)
-//             console.log(err)
-//         }else{
-//             let options = {
-//                 height : "1735px",
-//                 width  : "1180px",
-//                 base   : 'file://' + __dirname + "\\public"
-//             }
-//             console.log(options.base)
-//             pdf.create(data, options).toFile("report.pdf", function(err,data){
-//                 if (err){
-//                     res.send(err)
-//                     console.log(err)
-//                 }else{
-//                     console.log(data)
-//                 }
-//             })
-//         }
-//     })
+// htmlFile.match(regex).forEach(match => {
+    
 // })
 
-const { mainPageInformer, resetLC, allMembersInformer, allActivitiesInformer, allTrainersInformer, updateAction, getUserInfo, updateLCStartTerm, blackListInformer, localActivity_variables } = require('./utility/dataHandling')
 
-console.log(localActivity_variables)
+
+(async () => {
+
+  // Create a browser instance
+  const browser = await puppeteer.launch();
+
+  // Create a new page
+  const page = await browser.newPage();
+
+  //Get HTML content from HTML file
+  let htmlFile = fs.readFileSync('views/certificates/index.html').toString();
+
+  regex = /public\/images\/.*\.png/g
+
+  htmlFile.match(regex).forEach(match => {
+    htmlFile = htmlFile.replace('"\.\.\/\.\.\/' + match + '"', `"data:image/png;base64,${fs.readFileSync(match).toString('base64')}"`)
+})
+   htmlFile = htmlFile.replace("src: url('../../public/fonts/malibu-ring.ttf')", `src : (data:font/truetype;charset=utf-8;base64,"${fs.readFileSync('public/fonts/malibu-ring.ttf').toString('base64')})"`)
+
+  await page.setContent(htmlFile, { waitUntil: 'domcontentloaded' });
+
+  // To reflect CSS used for screens instead of print
+  await page.emulateMediaType('screen');
+
+  // Downlaod the PDF
+  const pdf = await page.pdf({
+    path: 'result.pdf',
+    printBackground: true,
+    format: 'A2',
+  });
+
+  // Close the browser instance
+  await browser.close();
+})();
+
+// let ttf = fs.readFileSync('public/fonts/malibu-ring.ttf').toString('base64');
+// console.log(ttf)
