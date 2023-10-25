@@ -1,10 +1,7 @@
 const scissors = require('scissors')
 const fs = require('fs')
+const subProcess = require('child_process')
 
-doc = scissors('result.pdf')
+subProcess.exec("pdfcrop --margins '0 -65 0 0' result.pdf output.pdf")
 
-doc.crop(0,65,0,0)
-
-doc.pdfStream('result.pdf')
-console.log(doc)
 // doc.pipe(fs.createWriteStream('result.pdf'))

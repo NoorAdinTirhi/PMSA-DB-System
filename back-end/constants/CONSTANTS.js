@@ -159,6 +159,15 @@ module.exports = {
         nationalActivites : [],
         localActivites : []
 
+    },
+    
+    certificate_variables: {
+        participantName : "",
+        activityName : "",
+        actStartDate : "",
+        actEndDate : "",
+        participentPosition : "",
+        certCode : ""
     }
 
 }

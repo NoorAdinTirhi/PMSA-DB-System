@@ -1,4 +1,9 @@
 const { query } = require("express")
+const subProcess = require('child_process')
+const puppeteer = require('puppeteer');
+const ejs = require('ejs')
+const fs = require('fs')
+var nodemailer = require('nodemailer');
 
 // query the DB to get required information for the mainpage
 function mainPageInformer(username, con, pageData, callback) {
@@ -1192,6 +1197,226 @@ function editActivity(body, con, callback){
     })
 }
 
+function sendToAllParticipants (actNum, pageData, con, callback){
+    transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user : 'pmsadb@gmail.com',
+            pass : 'lpfa leqi ymoz bmvm '
+        } 
+    })
+
+    var mailOptions = {
+        from : 'pmsadb@gmail.com',
+        to : '',
+        subject : 'certificate',
+        attachments : [
+            {
+                filename : 'certificate.pdf',
+                path : `${__dirname}/../output.pdf`
+            }
+        ]
+
+    }
+
+    CommitteeCodes = {"GENERAL" : "TO",
+                      "CB" : "CB",
+                      "SCOPH" : "PH",
+                      "SCOME" : "ME",
+                      "SCOPE" : "PE",
+                      "SCORE" : "RE",
+                      "SCORP" : "RP",
+                      "SCORA" : "RA"
+                     }
+    queryStr = `SELECT  A.Committee AS Committee, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name, ` +
+               `A.Aname, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1, ` +
+               `M_A.position AS Position, M_A.CertCode AS memNumPerA, Na.Anum AS Anum, M.E_mail AS Email ` +
+               `FROM M, M_A, Na, A WHERE M_A.ActivityID = A.ActivityID AND `+
+               `A.ActivityID = Na.ActivityID AND `+
+               `M_A.UniID = M.UniID AND `+
+               `A.ActivityID = ${actNum}`
+                
+    con.query(queryStr, function(err, results){
+        if(err){
+            console.log(err)
+            return callback(4)
+        }
+        console.log(results)
+        results.forEach(row => {
+            
+            certPath =  __dirname + `/../views/certificates/${row.Committee.toUpperCase()}.ejs`
+            ejs.renderFile(certPath, pageData, function(err, htmlFile){
+                if(err){
+                    console.log(err)
+                    return callback(3)
+                }
+                (async () => {
+
+                    
+                    pageData.participantName = await row.Name;
+                    pageData.activityName = await row.Aname;
+                    pageData.actStartDate = await row.StartDate1;
+                    pageData.actEndDate = await row.EndDate1;
+                    pageData.participentPosition = await row.Position;
+
+                    date = await row.StartDate1.split("/")
+                    termDate = `await ${Number(date[0].slice(2,4))-1} ||  ${date[0].slice(2,4)}`
+
+                    if (Number(date[1]) > 2)
+                        termDate = await `${date[0].slice(2,4)}${Number(date[0].slice(2,4)) + 1}`
+
+                    pageData.certCode = await `PS${CommitteeCodes[row.Committee.toUpperCase()]}${termDate}${String(row.Anum).padStart(2,'0')}${String(row.memNumPerA).padStart(4,'0')}`
+                    pageData.participentPosition = await row.Position
+
+                    mailOptions.to = await row.Email;
+                    mailOptions.text = await row.Name
+
+                    // Create a browser instance
+                    const browser = await puppeteer.launch({
+                      headless : "new"
+                    });
+                
+                    // Create a new page
+                    const page = await browser.newPage();
+                
+                    regex = /public\/images\/.*\.png/g
+                
+                    htmlFile.match(regex).forEach(match => {
+                      htmlFile = htmlFile.replace('"\.\.\/\.\.\/' + match + '"', `"data:image/png;base64,${fs.readFileSync(match).toString('base64')}"`)
+                    })
+
+                    htmlFile = htmlFile.replace("src: url('../../public/fonts/malibu-ring.ttf')", `src: url("data:font/ttf;base64,${fs.readFileSync("public/fonts/malibu-ring.ttf").toString("base64")}");`)
+
+                    await page.setContent(htmlFile, { waitUntil: 'networkidle0' });
+                
+                    // To reflect CSS used for screens instead of print
+                    await page.emulateMediaType('screen');
+                
+                    // Downlaod the PDF
+                    const pdfOption = await page.pdf({
+                      path: `${pageData.certCode}.pdf`,
+                      printBackground: true,
+                      height: "2315px",
+                      width : "1591px"
+                    });
+                    // Close the browser instance
+                    await browser.close();
+
+                    child = await subProcess.execSync(`pdfcrop --margins '0 0 0 -10' ${pageData.certCode}.pdf ${pageData.certCode}_Enhanced.pdf`)
+
+                transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                      console.log(error);
+                    } else {
+                      console.log('Email sent: ' + info.response);
+                    }
+                }); 
+
+                })()
+                
+                
+            })
+        })
+        
+    })
+}
+
+function html2PDF (actNum, memNum, pageData, con, callback){
+    CommitteeCodes = {"GENERAL" : "TO",
+                      "CB" : "CB",
+                      "SCOPH" : "PH",
+                      "SCOME" : "ME",
+                      "SCOPE" : "PE",
+                      "SCORE" : "RE",
+                      "SCORP" : "RP",
+                      "SCORA" : "RA"
+                     }
+    queryStr = `SELECT  A.Committee AS Committee, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name, ` +
+               `A.Aname, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1, ` +
+               `M_A.position AS Position, M_A.CertCode AS memNumPerA, Na.Anum AS Anum ` +
+               `FROM M, M_A, Na, A WHERE M_A.ActivityID = A.ActivityID AND `+
+               `A.ActivityID = Na.ActivityID AND `+
+               `M_A.UniID = M.UniID AND `+
+               `M.UniID = ${memNum} AND `+
+               `A.ActivityID = ${actNum}`
+                
+    con.query(queryStr, function(err, results){
+        if(err){
+            console.log(err)
+            return callback(4)
+        }
+
+        certPath = __dirname + `/../views/certificates/${results[0].Committee.toUpperCase()}.ejs`
+        pageData.participantName = results[0].Name;
+        pageData.activityName = results[0].Aname;
+        pageData.actStartDate = results[0].StartDate1;
+        pageData.actEndDate = results[0].EndDate1;
+        pageData.participentPosition = results[0].Position;
+
+        date = results[0].StartDate1.split("/")
+        console.log(date)
+        termDate = `${Number(date[0].slice(2,4))-1} ||  ${date[0].slice(2,4)}`
+
+        if (Number(date[1]) > 2)
+            termDate = `${date[0].slice(2,4)}${Number(date[0].slice(2,4)) + 1}`
+        console.log(termDate)
+
+        pageData.certCode = `PS${CommitteeCodes[results[0].Committee.toUpperCase()]}${termDate}${String(results[0].Anum).padStart(2,'0')}${String(results[0].memNumPerA).padStart(4,'0')}`
+        pageData.participentPosition = results[0].Position
+
+        
+        ejs.renderFile(certPath, pageData, function(err, htmlFile){
+            if(err){
+                console.log(err)
+                return callback(3)
+            }
+            (async () => {
+
+                // Create a browser instance
+                const browser = await puppeteer.launch({
+                  headless : "new"
+                });
+              
+                // Create a new page
+                const page = await browser.newPage();
+              
+                regex = /public\/images\/.*\.png/g
+              
+                htmlFile.match(regex).forEach(match => {
+                  htmlFile = htmlFile.replace('"\.\.\/\.\.\/' + match + '"', `"data:image/png;base64,${fs.readFileSync(match).toString('base64')}"`)
+                })
+                
+                htmlFile = htmlFile.replace("src: url('../../public/fonts/malibu-ring.ttf')", `src: url("data:font/ttf;base64,${fs.readFileSync("public/fonts/malibu-ring.ttf").toString("base64")}");`)
+                
+                await page.setContent(htmlFile, { waitUntil: 'networkidle0' });
+              
+                // To reflect CSS used for screens instead of print
+                await page.emulateMediaType('screen');
+              
+                fs.writeFileSync("test.html", htmlFile)
+                // Downlaod the PDF
+                const pdfOption = await page.pdf({
+                  path: 'result.pdf',
+                  printBackground: true,
+                  height: "2315px",
+                  width : "1591px"
+                });
+                // Close the browser instance
+                await browser.close();
+
+                child = await subProcess.execSync("pdfcrop --margins '0 0 0 -10' result.pdf output.pdf")
+
+                callback(0)
+
+            })();
+
+
+            return
+        })
+    })
+}
+
+
 
 
 
@@ -1219,5 +1444,7 @@ module.exports = {
     searchMemberDelete,
     deleteParticipants,
     addParticipants,
-    editActivity
+    editActivity,
+    html2PDF,
+    sendToAllParticipants
 }

@@ -5,6 +5,7 @@ const bodyparaer = require('body-parser')
 const fs = require('fs')
 const pdf = require('html-pdf')
 const ejs = require('ejs')
+const subProcess = require('child_process')
     // const audit = require('express-requests-logger')
 
 const { stat,
@@ -20,7 +21,8 @@ const { mainPage_varialbes,
         allTrainers_variables, 
         blackList_variables, 
         localActivity_variables, 
-        nationalActivity_variables } = require('./constants/CONSTANTS')
+        nationalActivity_variables,
+        certificate_variables } = require('./constants/CONSTANTS')
 
 const { mainPageInformer, 
         resetLC, 
@@ -45,7 +47,9 @@ const { mainPageInformer,
         searchMemberDelete,
         deleteParticipants,
         addParticipants,
-        editActivity       } = require('./utility/dataHandling')
+        editActivity,
+        html2PDF,
+        sendToAllParticipants       } = require('./utility/dataHandling')
 
 
 // let privelegeList = JSON.parse(fs.readFileSync('./constants/CONSTANTS.json'))
@@ -1255,6 +1259,95 @@ app.post("/editActivity", function(req, res){
             res.send("Internal Server Error")
         }
     })
+})
+
+app.post("/printCert", function(req, res){
+
+    console.log(req.body)
+
+    if (!req.body) {
+        res.status(400)
+        res.send("Incomplete Request")
+        return
+    }
+
+    if (!req.body.username) {
+        res.render("login", { login_string: "you need to login to make a request" })
+        return
+    }
+
+    if (!req.body.cipher) {
+        res.status(401)
+        res.send("Your request does not include a cipher, please login and use the website as intended")
+        return
+    }
+    
+    LC = (req.body.filter)
+    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+        if (flag == 0) {
+            html2PDF(req.body.actNum, req.body.currentMemNum, certificate_variables, con, function(flag){
+                if (flag == 0){
+                    console.log("DONE")
+                    res.sendFile(__dirname + "/output.pdf")
+                }
+            })
+        } else if (flag == 1) {
+            //failed, bad cipher
+            res.status(401)
+            res.send("Your request has a bad cipher")
+        } else if (flag == 2) {
+            res.status(401)
+            res.send("user not registered")
+        } else if (flag == 3) {
+            res.status(500)
+            res.send("Internal Server Error")
+        }
+    }) 
+})
+
+app.post("/printAllCert", function(req, res){
+
+    console.log(req.body)
+
+    if (!req.body) {
+        res.status(400)
+        res.send("Incomplete Request")
+        return
+    }
+
+    if (!req.body.username) {
+        res.render("login", { login_string: "you need to login to make a request" })
+        return
+    }
+
+    if (!req.body.cipher) {
+        res.status(401)
+        res.send("Your request does not include a cipher, please login and use the website as intended")
+        return
+    }
+    
+    LC = (req.body.filter)
+    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+        if (flag == 0) {
+            sendToAllParticipants(req.body.actNum, certificate_variables, con, function(flag){
+                if (flag == 0){
+                    console.log("DONE")
+                    res.status(200)
+                    res.send("done")
+                }
+            })
+        } else if (flag == 1) {
+            //failed, bad cipher
+            res.status(401)
+            res.send("Your request has a bad cipher")
+        } else if (flag == 2) {
+            res.status(401)
+            res.send("user not registered")
+        } else if (flag == 3) {
+            res.status(500)
+            res.send("Internal Server Error")
+        }
+    }) 
 })
 
 
