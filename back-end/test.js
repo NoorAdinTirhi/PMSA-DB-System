@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 
+
 // let htmlFile = fs.readFileSync("public/index.html").toString()
 // regex2 = /public\/images\/.*\.png/g
 // console.log(fs.readFileSync('public/images/Medal_thing.png').toString('base64'))
@@ -17,7 +18,9 @@ const fs = require('fs');
 (async () => {
 
   // Create a browser instance
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    headless : "new"
+  });
 
   // Create a new page
   const page = await browser.newPage();
@@ -40,15 +43,13 @@ const fs = require('fs');
 
   fs.writeFileSync("test.html", htmlFile)
   // Downlaod the PDF
-  const pdf = await page.pdf({
+  const pdfOption = await page.pdf({
     path: 'result.pdf',
     printBackground: true,
-    format: 'A2',
+    height: "2315px",
+    width : "1591px"
   });
-
+   
   // Close the browser instance
   await browser.close();
 })();
-
-// let ttf = fs.readFileSync('public/fonts/malibu-ring.ttf').toString('base64');
-// console.log(ttf)
