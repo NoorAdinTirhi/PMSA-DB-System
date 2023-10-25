@@ -29,14 +29,16 @@ const fs = require('fs');
 
   htmlFile.match(regex).forEach(match => {
     htmlFile = htmlFile.replace('"\.\.\/\.\.\/' + match + '"', `"data:image/png;base64,${fs.readFileSync(match).toString('base64')}"`)
-})
-   htmlFile = htmlFile.replace("src: url('../../public/fonts/malibu-ring.ttf')", `src : (data:font/truetype;charset=utf-8;base64,"${fs.readFileSync('public/fonts/malibu-ring.ttf').toString('base64')})"`)
-
-  await page.setContent(htmlFile, { waitUntil: 'domcontentloaded' });
+  })
+  
+  htmlFile = htmlFile.replace("src: url('../../public/fonts/malibu-ring.ttf')", `src: url("data:font/ttf;base64,${fs.readFileSync("public/fonts/malibu-ring.ttf").toString("base64")}");`)
+  
+  await page.setContent(htmlFile, { waitUntil: 'networkidle0' });
 
   // To reflect CSS used for screens instead of print
   await page.emulateMediaType('screen');
 
+  fs.writeFileSync("test.html", htmlFile)
   // Downlaod the PDF
   const pdf = await page.pdf({
     path: 'result.pdf',
