@@ -792,12 +792,10 @@ function nationalActivityInformer(username, direction, memNum, ActivityID, pageD
     })
 }
 
-
+//TODO: make it only account for national shit
 function getLCParticipation(con, callback){
     con.query(`SELECT tbl.LC, SUM(tbl.LCPart) AS totalLCPart FROM 
-               (SELECT LC, COUNT(*)  AS LCPart FROM La GROUP BY LC
-               UNION
-               SELECT LC, COUNT(*) AS LCPart FROM NaLC GROUP BY LC) tbl
+               (SELECT LC, COUNT(*) AS LCPart FROM NaLC GROUP BY LC) tbl
                GROUP BY LC; `, function(err, results){
                 data = [];
                 if (err){

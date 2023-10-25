@@ -169,4 +169,5 @@ INSERT INTO LC VALUES
 
 INSERT INTO Na(ActivityID) VALUES (2);
 
+
 -- SELECT *, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name FROM M_A, M WHERE M_A.ActivityID = 11 AND M.UniID ${(direction=="next")?">":"<"} ${memNum} ORDER BY M.UniID
