@@ -1333,7 +1333,10 @@ app.post("/printAllCert", function(req, res){
                 if (flag == 0){
                     res.status(200)
                     res.send("Succesfully Started Creating Certificates, Should Send to All Participants")
+                    return
                 }
+                res.status(501)
+                res.send("Internal Server Error, Cannot Send Emails")
             })
         } else if (flag == 1) {
             //failed, bad cipher
