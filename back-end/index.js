@@ -1307,6 +1307,7 @@ app.post("/printCert", function(req, res){
 
 app.post("/printAllCert", function(req, res){
 
+    console.log("recieved")
 
     if (!req.body) {
         res.status(400)
@@ -1330,9 +1331,8 @@ app.post("/printAllCert", function(req, res){
         if (flag == 0) {
             sendToAllParticipants(req.body.actNum, certificate_variables, con, function(flag){
                 if (flag == 0){
-                    console.log("DONE")
                     res.status(200)
-                    res.send("done")
+                    res.send("Succesfully Started Creating Certificates, Should Send to All Participants")
                 }
             })
         } else if (flag == 1) {

@@ -1271,9 +1271,9 @@ function sendToAllParticipants (actNum, pageData, con, callback){
                         console.log('Email sent: ' + info.response);
                     }
                 })
-                console.log("done")
             })
         }
+        return callback(0)
     })
 }
 
