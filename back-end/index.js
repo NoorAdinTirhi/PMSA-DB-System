@@ -1285,10 +1285,10 @@ app.post("/printCert", function(req, res){
     LC = (req.body.filter)
     verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
         if (flag == 0) {
-            html2PDF(req.body.actNum, req.body.currentMemNum, certificate_variables, con, function(flag){
+            html2PDF(req.body.actNum, req.body.currentMemNum, certificate_variables, con, function(flag, data){
                 if (flag == 0){
                     console.log("DONE")
-                    res.sendFile(__dirname + "/output.pdf")
+                    res.sendFile(__dirname + `/certificates/${data.certCode}_cropped.pdf`)
                 }
             })
         } else if (flag == 1) {
@@ -1307,7 +1307,6 @@ app.post("/printCert", function(req, res){
 
 app.post("/printAllCert", function(req, res){
 
-    console.log(req.body)
 
     if (!req.body) {
         res.status(400)

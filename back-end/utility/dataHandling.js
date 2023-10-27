@@ -494,7 +494,7 @@ function getMemberActivityInfo(memNum, direction, activityID, con, callback) {
                 data.gradDate = results[0].GradDate1
                 return callback(0, data)
             }else{
-                con.query(`SELECT *, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name FROM M_A, M WHERE M.UniID = M_A.UniID AND M_A.ActivityID >= ${activityID} AND M.UniID ${(direction=="next")?">":"<"} ${(direction=="next")?"0":"2147483646"} ORDER BY M.UniID LIMIT 1`, function(err, results){
+                con.query(`SELECT *, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name FROM M_A, M WHERE M.UniID = M_A.UniID AND M_A.ActivityID = ${activityID} AND M.UniID ${(direction=="next")?">":"<"} ${(direction=="next")?"0":"2147483646"} ORDER BY M.UniID LIMIT 1`, function(err, results){
                     if(results.length > 0){
                         data = results[0]
                         data.trainerCategory = results[0].Category
@@ -683,13 +683,14 @@ function localActivityInformer(username, direction, memNum, ActivityID, pageData
     })
 }
 
-function nationalActivityInformer(username, direction, memNum, ActivityID, pageData, con, callback) {
+function nationalActivityInformer(username, direction, memNum, ActivityID, pageData_original, con, callback) {
     console.log(memNum)
     con.query(`SELECT *, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1 FROM A WHERE ActivityID >= '${ActivityID}' ORDER BY ActivityID LIMIT 1`, function(err, results){
         if (err){
             console.log(err)
             return callback(3, pageData)
         }else{
+            pageData = {...pageData_original}
             getUserInfo(username, con, function(userData, flag){
                 pageData.user = userData.user
                 pageData.position = userData.position
@@ -712,12 +713,20 @@ function nationalActivityInformer(username, direction, memNum, ActivityID, pageD
                         getLCParticipation(con , function(flag, data){
                             if (flag == 0){
                                 sum = 0;
-                                data.forEach(row =>{
-                                    sum += row.totalLCPart
+                                // data.forEach(row =>{
+                                //     sum += row.totalLCPart
+                                // })
+                                getNumberofNationalActivities(con, function(flag, count){
+                                    if (flag == 0){
+                                        sum = count.count;
+                                        data.forEach(row => {
+                                        pageData[`${row.LC}Percent`] =`${Math.round((row.totalLCPart/sum)*100)}%`
+                                        }) 
+                                    }else{
+                                        sum = 1;
+                                    }
                                 })
-                                data.forEach(row => {
-                                pageData[`${row.LC}Percent`] =`${Math.round((row.totalLCPart/sum)*100)}%`
-                                })     
+                                    
                                 pageData.involvedLC = []
                                 getInvolvedLC(ActivityID, con, function(flag, involvedLC){
                                     console.log(involvedLC)
@@ -799,9 +808,7 @@ function nationalActivityInformer(username, direction, memNum, ActivityID, pageD
 
 //TODO: make it only account for national shit
 function getLCParticipation(con, callback){
-    con.query(`SELECT tbl.LC, SUM(tbl.LCPart) AS totalLCPart FROM 
-               (SELECT LC, COUNT(*) AS LCPart FROM NaLC GROUP BY LC) tbl
-               GROUP BY LC; `, function(err, results){
+    con.query(`SELECT tbl.LC, SUM(tbl.LCPart) AS totalLCPart FROM (SELECT LC, COUNT(*) AS LCPart FROM NaLC GROUP BY LC) tbl GROUP BY LC;`, function(err, results){
                 data = [];
                 if (err){
                     console.log(err)
@@ -810,6 +817,17 @@ function getLCParticipation(con, callback){
                     return callback(0, results)
                 }
                })
+}
+
+function getNumberofNationalActivities(con, callback){
+    con.query(`SELECT COUNT(*) AS count FROM Na`, function(err, results){
+        if (err){
+            console.log(err)
+            return callback(1,0)
+        }else{
+            return callback(0, results[0])
+        }
+    })
 }
 
 function getInvolvedLC(ActivityID ,con, callback){
@@ -1228,100 +1246,38 @@ function sendToAllParticipants (actNum, pageData, con, callback){
                       "SCORP" : "RP",
                       "SCORA" : "RA"
                      }
-    queryStr = `SELECT  A.Committee AS Committee, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name, ` +
-               `A.Aname, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1, ` +
-               `M_A.position AS Position, M_A.CertCode AS memNumPerA, Na.Anum AS Anum, M.E_mail AS Email ` +
-               `FROM M, M_A, Na, A WHERE M_A.ActivityID = A.ActivityID AND `+
-               `A.ActivityID = Na.ActivityID AND `+
-               `M_A.UniID = M.UniID AND `+
-               `A.ActivityID = ${actNum}`
+    queryStr = `SELECT  M_A.ActivityID, M_A.UniID, M.E_mail ` +
+               `FROM M_A,M WHERE ` +
+               `M.UniID = M_A.UniID AND ` +
+               `M_A.ActivityID = ${actNum}`
                 
     con.query(queryStr, function(err, results){
         if(err){
             console.log(err)
             return callback(4)
         }
-        console.log(results)
-        results.forEach(row => {
-            
-            certPath =  __dirname + `/../views/certificates/${row.Committee.toUpperCase()}.ejs`
-            ejs.renderFile(certPath, pageData, function(err, htmlFile){
-                if(err){
-                    console.log(err)
-                    return callback(3)
-                }
-                (async () => {
-
-                    
-                    pageData.participantName = await row.Name;
-                    pageData.activityName = await row.Aname;
-                    pageData.actStartDate = await row.StartDate1;
-                    pageData.actEndDate = await row.EndDate1;
-                    pageData.participentPosition = await row.Position;
-
-                    date = await row.StartDate1.split("/")
-                    termDate = `await ${Number(date[0].slice(2,4))-1} ||  ${date[0].slice(2,4)}`
-
-                    if (Number(date[1]) > 2)
-                        termDate = await `${date[0].slice(2,4)}${Number(date[0].slice(2,4)) + 1}`
-
-                    pageData.certCode = await `PS${CommitteeCodes[row.Committee.toUpperCase()]}${termDate}${String(row.Anum).padStart(2,'0')}${String(row.memNumPerA).padStart(4,'0')}`
-                    pageData.participentPosition = await row.Position
-
-                    mailOptions.to = await row.Email;
-                    mailOptions.text = await row.Name
-
-                    // Create a browser instance
-                    const browser = await puppeteer.launch({
-                      headless : "new"
-                    });
-                
-                    // Create a new page
-                    const page = await browser.newPage();
-                
-                    regex = /public\/images\/.*\.png/g
-                
-                    htmlFile.match(regex).forEach(match => {
-                      htmlFile = htmlFile.replace('"\.\.\/\.\.\/' + match + '"', `"data:image/png;base64,${fs.readFileSync(match).toString('base64')}"`)
-                    })
-
-                    htmlFile = htmlFile.replace("src: url('../../public/fonts/malibu-ring.ttf')", `src: url("data:font/ttf;base64,${fs.readFileSync("public/fonts/malibu-ring.ttf").toString("base64")}");`)
-
-                    await page.setContent(htmlFile, { waitUntil: 'networkidle0' });
-                
-                    // To reflect CSS used for screens instead of print
-                    await page.emulateMediaType('screen');
-                
-                    // Downlaod the PDF
-                    const pdfOption = await page.pdf({
-                      path: `${pageData.certCode}.pdf`,
-                      printBackground: true,
-                      height: "2315px",
-                      width : "1591px"
-                    });
-                    // Close the browser instance
-                    await browser.close();
-
-                    child = await subProcess.execSync(`pdfcrop --margins '0 0 0 -10' ${pageData.certCode}.pdf ${pageData.certCode}_Enhanced.pdf`)
-
-                transporter.sendMail(mailOptions, function(error, info){
-                    if (error) {
-                      console.log(error);
-                    } else {
-                      console.log('Email sent: ' + info.response);
+        for (const row of results){
+            console.log(row)
+            html2PDF(row.ActivityID, row.UniID, pageData, con, function(flag, data){
+                mailOptions.attachments = [{
+                    filename : 'certificate.pdf',
+                    path : `${__dirname}/../certificates/${data.certCode}_cropped.pdf`
+                }]
+                mailOptions.to = row.E_mail
+                transporter.sendMail(mailOptions, function(err){
+                    if (err){
+                        console.log(err)
+                    }else{
+                        console.log('Email sent: ' + info.response);
                     }
-                }); 
-
-                })()
-                
-                
+                })
+                console.log("done")
             })
-        })
-        
+        }
     })
 }
 
-function html2PDF (actNum, memNum, pageData, con, callback){
+function html2PDF (actNum, memNum, pageData_original, con, callback){
     CommitteeCodes = {"GENERAL" : "TO",
                       "CB" : "CB",
                       "SCOPH" : "PH",
@@ -1343,10 +1299,11 @@ function html2PDF (actNum, memNum, pageData, con, callback){
     con.query(queryStr, function(err, results){
         if(err){
             console.log(err)
-            return callback(4)
+            return callback(4, pageData)
         }
+        const pageData = {...pageData_original};
 
-        certPath = __dirname + `/../views/certificates/${results[0].Committee.toUpperCase()}.ejs`
+        certPath = __dirname + `/../views/certificates/${(results[0].Committee.toUpperCase() != 'CB')?results[0].Committee.toUpperCase():"GENERAL.ejs"}.ejs`
         pageData.participantName = results[0].Name;
         pageData.activityName = results[0].Aname;
         pageData.actStartDate = results[0].StartDate1;
@@ -1354,12 +1311,10 @@ function html2PDF (actNum, memNum, pageData, con, callback){
         pageData.participentPosition = results[0].Position;
 
         date = results[0].StartDate1.split("/")
-        console.log(date)
         termDate = `${Number(date[0].slice(2,4))-1} ||  ${date[0].slice(2,4)}`
 
         if (Number(date[1]) > 2)
             termDate = `${date[0].slice(2,4)}${Number(date[0].slice(2,4)) + 1}`
-        console.log(termDate)
 
         pageData.certCode = `PS${CommitteeCodes[results[0].Committee.toUpperCase()]}${termDate}${String(results[0].Anum).padStart(2,'0')}${String(results[0].memNumPerA).padStart(4,'0')}`
         pageData.participentPosition = results[0].Position
@@ -1368,10 +1323,11 @@ function html2PDF (actNum, memNum, pageData, con, callback){
         ejs.renderFile(certPath, pageData, function(err, htmlFile){
             if(err){
                 console.log(err)
-                return callback(3)
+                return callback(3, pageData)
             }
+            i = 0;
             (async () => {
-
+                i++;
                 // Create a browser instance
                 const browser = await puppeteer.launch({
                   headless : "new"
@@ -1379,6 +1335,8 @@ function html2PDF (actNum, memNum, pageData, con, callback){
               
                 // Create a new page
                 const page = await browser.newPage();
+
+                await page.setDefaultNavigationTimeout(0); 
               
                 regex = /public\/images\/.*\.png/g
               
@@ -1387,26 +1345,26 @@ function html2PDF (actNum, memNum, pageData, con, callback){
                 })
                 
                 htmlFile = htmlFile.replace("src: url('../../public/fonts/malibu-ring.ttf')", `src: url("data:font/ttf;base64,${fs.readFileSync("public/fonts/malibu-ring.ttf").toString("base64")}");`)
-                
+
                 await page.setContent(htmlFile, { waitUntil: 'networkidle0' });
               
                 // To reflect CSS used for screens instead of print
                 await page.emulateMediaType('screen');
-              
-                fs.writeFileSync("test.html", htmlFile)
+
                 // Downlaod the PDF
                 const pdfOption = await page.pdf({
-                  path: 'result.pdf',
+                  path: `certificates/${pageData.certCode}.pdf`,
                   printBackground: true,
                   height: "2315px",
                   width : "1591px"
                 });
+
                 // Close the browser instance
                 await browser.close();
 
-                child = await subProcess.execSync("pdfcrop --margins '0 0 0 -10' result.pdf output.pdf")
+                child = await subProcess.execSync(`pdfcrop --margins '0 0 0 -10' certificates/${pageData.certCode}.pdf certificates/${pageData.certCode}_cropped.pdf`)
 
-                callback(0)
+                callback(0, pageData)
 
             })();
 
