@@ -14,7 +14,7 @@
     padding-bottom: 3%;
     margin-left: 1%;
     margin-right: 3%;
-    margin-top: 4%;
+    margin-top: 1%;
     box-shadow: 5px 5px 5px #0887f0;
     position: absolute;
     float: left;
@@ -43,4 +43,38 @@ body {
             padding: 14px 0;
             transition-property: box-shadow border-radius transform;
             transition-duration: .5s;
+        }
+
+        #navigationBar{
+            display: flex;
+            flex-direction: row;
+            background-color: #0b60af;
+            height: 100px;
+        }
+        #navigationBar form{
+            width: 7.5%;
+            height: 100%
+        }
+        #navigationBar form button{
+            height: 100%;
+            width: 100%;
+            background-color: #0b60af;
+            color:white;
+            border-style: none;
+            border-top: none;
+            border-bottom: none;
+            cursor: pointer;
+            transition-property: border color ;
+            transition-duration: .5s;
+        }
+        #navigationBar form button:hover{
+            color: orange;
+            border-color: orange;
+            background-color: #0a477f;
+            transform: scaleY(1.2);
+        }
+        .borderLine {
+            border-style: solid;
+            border-color: white;
+            border-width: 1px;
         }

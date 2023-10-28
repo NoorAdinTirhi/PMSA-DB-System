@@ -184,6 +184,136 @@
 </head>
 
 <body>
+    <div id = "navigationBar">
+        <div style="width: 10%;">
+            <img src="../../../public/images/PMSA_Web_Logo.png">
+        </div>
+        <div style="width: 3%;"></div>
+        <div class="borderLine"></div>
+        <form method="post" action="/allMembers">
+            <input type="hidden" name="memNum" value=0>
+            <input type="hidden" name="direction" value="next">
+            <input type="hidden" name="filterLC" value="<%=userLC%>">
+            <input type="hidden" name="chosenLC" value="<%=userLC%>">
+            <button class="width:100%" type="submit">
+            All Members
+            </button>
+        </form>
+        <div class="borderLine"></div>
+
+        <!-- all trainers -->
+        <form method="post" action="/allTrainers">
+             <input type="hidden" name="memNum" value=0>
+            <input type="hidden" name="direction" value="next">
+            <input type="hidden" name="filterLC" value="<%=userLC%>">
+            <input type="hidden" name="chosenLC" value="<%=userLC%>">
+            <button class="" type="submit">
+            All Trainers
+        </button>
+        </form>
+        <div class="borderLine"></div>
+        <!-- all activities -->
+        <form method="post" action="/allActivities">
+            <input type="hidden" name="filter" value="<%=userLC%>">
+            <button class="" type="submit">
+            All Activities
+        </button>
+        </form>
+        <div class="borderLine"></div>
+
+        <form method="post" action="/blackList">
+            <button class="" type="submit">
+            Black List
+        </button>
+        </form>
+        <div class="borderLine"></div>
+        <div style="margin-left: auto; " class="borderLine"></div>
+        <form method="get" action="/login">
+            <button type="submit">
+            Logout
+        </button>
+        </form>
+        <div  style="margin-right: 2%;" class="borderLine"></div>
+    </div>
+
+    <div class="fullbox" style="justify-content: start;">
+        <div class ="newActivity" id="newActivityWindow">
+                <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/editActivity">
+                    <h1 id="addActivityTitle"></h1>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%"> 
+                            <label style="margin-right:5%; width:10%">
+                                Activity Name
+                            </label>
+                            <input required type="text" maxlength="50" style="margin: 0% 12.5%; width: 20%" placeholder="Activity Name" name="activityName" value="<%=activityName%>">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Activity Description
+                            </label>
+                             <textarea style="margin:0% 5%; width:50%; height:100px; resize:none"type="textarea" rows="4" cols="125" maxlength="500" id="aDescription"  name="activityDescription" placeholder="write a max of 500 character to describe the activity"><%=activityDescription%></textarea>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Proposal Link
+                            </label>
+                            <input required type="url"  style="margin: 0% 12.5%; width: 20%" placeholder="Proposal Link" name="proposalLink" value="<%=proposalLink%>">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Report Link
+                            </label>
+                            <input required type="url"  style="margin: 0% 12.5%; width: 20%" placeholder="Report Link" name="reportLink" value="<%=reportLink%>">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                Start Date
+                            </label>
+                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="StartDate" id="startDateInput" name="startDate" value="<%=startDate%>">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            <label style="margin-right:5%; width:10%">
+                                End Date
+                            </label>
+                            <input required type="date"  style="margin: 0% 12.5%; width: 20%" placeholder="EndDate" id="endDateInput" name="endDate" value="<%=endDate%>">
+                        </div>
+                    </div>
+                    <div id = "participatingCommittees" style="display: flex; flex-direction:row; width:100%">
+                        <div style="display: flex; flex-direction:row; width:100%">
+                            
+                            <label style="margin-right:5%; width:10%">
+                                Participating Local Committees
+                            </label>
+                            <select id="lcSelect" style="width:7%; margin-right:10%" onchange="createTag(this)">
+                                <option selected> --none-- </option>
+                            </select>
+                            <div id="participatingLcs" style="display: flex; flex-direction:row" class="tagsContainer">
+                                <input type="hidden" name="participatingLCs" value="">
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                
+                    <div style="margin-top: 0.5%;">
+                        <button type="button" onclick="formConfirm('newActivityForm')">Submit</button>
+                        <button type="button" onclick="addActivityClose()"> Cancel</button>
+                    </div>
+                   
+                </form>
+        </div>
+
+
     <div class="fullbox" style="justify-content: start;">
         <div class ="newActivity" id="newActivityWindow">
                 <form id="newActivityForm" style="display: flex; flex-direction:column; width:90%; margin: 0% 5%" method="post" action="/editActivity">
