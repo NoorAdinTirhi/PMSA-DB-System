@@ -50,6 +50,7 @@ body {
             flex-direction: row;
             background-color: #0b60af;
             height: 100px;
+            overflow: hidden;
         }
         #navigationBar form{
             width: 7.5%;

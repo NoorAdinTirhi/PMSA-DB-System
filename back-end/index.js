@@ -117,30 +117,38 @@ app.post("/login", function(req, res) {
     const fileName = 'login'
     var username = req.body.username
     var password = req.body.password
-
-    authUser(username, password, con, function(stat) {
-        if (stat == 0) {
-            registerSession(username, password, con, function(regStat) {
-                if (regStat == 1) {
-                    res.status(500);
-                    res.render(fileName, { login_string: "Internal Server Error" })
+    try{
+        authUser(username, password, con, function(stat) {
+            if (stat == 0) {
+                registerSession(username, password, con, function(regStat) {
+                    if (regStat == 1) {
+                        res.status(500);
+                        res.render(fileName, { login_string: "Internal Server Error" })
+                        return
+                    }
+                    mainPageInformer(username, con, mainPage_varialbes, function(data) {
+                        res.render("main", data);
+                    })
                     return
-                }
-                mainPageInformer(username, con, mainPage_varialbes, function(data) {
-                    res.render("main", data);
                 })
-                return
-            })
-        } else if (stat == 1) {
-            res.render(fileName, { login_string: "You have entered the wrong password" })
-        } else if (stat == 2) {
-            res.render(fileName, { login_string: "User not registered" })
-        } else {
-            res.render(fileName, { login_string: "Internal Server Error" })
-        }
-    })
-
-
+            } else if (stat == 1) {
+                res.render(fileName, { login_string: "You have entered the wrong password" })
+            } else if (stat == 2) {
+                res.render(fileName, { login_string: "User not registered" })
+            } else {
+                res.render(fileName, { login_string: "Internal Server Error" })
+            }
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
+    
 })
 
 // /////////////////////////
@@ -163,51 +171,68 @@ app.post("/resetMember", function(req, res) {
         res.send("Your request does not include a cipher, please login and use the website as intended")
         return
     }
-    
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
 
-        //succesful, setting all local users to inactive
-        resetLC(req.body.localCommittee, con, function(flag) {
-            if (flag == 3) {
-                res.status(500)
-                res.send("Internal Server Error, Database issue")
-                return
-            } else if (flag == 5) {
+    if (req.body.position != "Secgen"){
+        res.status(401)
+        res.send("Unauthorized: You do not have authorization to reset members")
+        return
+    }
+    
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 1) {
+                //failed, bad cipher
                 res.status(401)
-                res.send("Unauthorized, national secgen is not allowed to reset members")
+                res.send("Your request has a bad cipher")
                 return
-            }
-            updateLCStartTerm(req.body.username, con, function(flag){
-                if (flag == 0){
-                    res.status(200)
-                    res.send(`succesfully reset all ${req.body.localCommittee.toUpperCase()} members`)
-                    updateAction(req.body.username, "Reset Local Members", con, function(flag) {
-                    if (flag == 0)
-                        console.log("success")
-                    else
-                        console.log("failure")
-                    })
-                    return
-                }
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
                 res.status(500)
                 res.send("Internal Server Error")
+                return
+            }
+        
+            //succesful, setting all local users to inactive
+            resetLC(req.body.localCommittee, con, function(flag) {
+                if (flag == 3) {
+                    res.status(500)
+                    res.send("Internal Server Error, Database issue")
+                    return
+                } else if (flag == 5) {
+                    res.status(401)
+                    res.send("Unauthorized, national secgen is not allowed to reset members")
+                    return
+                }
+                updateLCStartTerm(req.body.username, con, function(flag){
+                    if (flag == 0){
+                        res.status(200)
+                        res.send(`succesfully reset all ${req.body.localCommittee.toUpperCase()} members`)
+                        updateAction(req.body.username, "Reset Local Members", con, function(flag) {
+                        if (flag == 0)
+                            console.log("success")
+                        else
+                            console.log("failure")
+                        })
+                        return
+                    }
+                    res.status(500)
+                    res.send("Internal Server Error")
+                })
             })
         })
-    })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
+    
 })
 
 app.post("/registerUser", function(req, res) {
@@ -228,34 +253,45 @@ app.post("/registerUser", function(req, res) {
         return
     }
     
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-        registerUser(req.body, con, function(flag) {
-            if (flag == 5) {
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 1) {
+                //failed, bad cipher
                 res.status(401)
-                res.send("Unauthorized, only National Secgen can add new Users")
-            } else if (flag == 1) {
-                res.status(501)
-                res.send("Username already exists or Position is already Held")
-            } else {
-                res.status(200)
-                res.send("New User Succesfully Added")
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
+                return
             }
+            registerUser(req.body, con, function(flag) {
+                if (flag == 5) {
+                    res.status(401)
+                    res.send("Unauthorized, only National Secgen can add new Users")
+                } else if (flag == 1) {
+                    res.status(501)
+                    res.send("Username already exists or Position is already Held")
+                } else {
+                    res.status(200)
+                    res.send("New User Succesfully Added")
+                }
+            })
         })
-    })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
+    
 })
 
 app.post("/deleteUser", function(req, res) {
@@ -276,57 +312,63 @@ app.post("/deleteUser", function(req, res) {
         return
     }
     
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-        getUserInfo(req.body.userToDelete, con, function(info, flag) {
-            if (flag == 2) {
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 1) {
+                //failed, bad cipher
                 res.status(401)
-                res.send("user doesn't exist")
+                res.send("Your request has a bad cipher")
                 return
-            } else if (flag != 0) {
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
                 res.status(500)
                 res.send("Internal Server Error")
                 return
             }
-            if (info.LC == "national" && info.position == "Secgen") {
-                res.status(401)
-                res.send("Unauthorized, must not delete National Secgen")
-                return
-            } 
-            //succesful, deleting user
-            deleteUser(req.body, con, function(flag) {
-                if (flag == 5) {
+            getUserInfo(req.body.userToDelete, con, function(info, flag) {
+                if (flag == 2) {
                     res.status(401)
-                    res.send("Unauthorized, only National Secgen can add delete Users")
+                    res.send("user doesn't exist")
                     return
-                } else if (flag == 1) {
-                    res.status(501)
-                    res.send("Username already exists or Position is already Held")
+                } else if (flag != 0) {
+                    res.status(500)
+                    res.send("Internal Server Error")
                     return
                 }
-                res.status(200)
-                res.send(`succesfully Deleted User ${req.body.userToDelete}`)
-                
-            }) 
+                if (info.LC == "national" && info.position == "Secgen") {
+                    res.status(401)
+                    res.send("Unauthorized, must not delete National Secgen")
+                    return
+                } 
+                //succesful, deleting user
+                deleteUser(req.body, con, function(flag) {
+                    if (flag == 5) {
+                        res.status(401)
+                        res.send("Unauthorized, only National Secgen can add delete Users")
+                        return
+                    } else if (flag == 1) {
+                        res.status(501)
+                        res.send("Username already exists or Position is already Held")
+                        return
+                    }
+                    res.status(200)
+                    res.send(`succesfully Deleted User ${req.body.userToDelete}`)
+
+                }) 
+            })
         })
-    })
-
-
-
-    
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
 })
 
 app.post("/allMembers", function(req, res) {
@@ -346,33 +388,45 @@ app.post("/allMembers", function(req, res) {
         res.send("Your request does not include a cipher, please login and use the website as intended")
         return
     }
-    
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-        //succesful, attempt to get information and render the allMembers page
-        allMembersInformer(req.body.username, req.body.memNum, req.body.direction, allMembers_variables, req.body.filterLC,  req.body.chosenLC ,con, function(flag, data) {
-            if (flag == 3) {
+
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
                 res.status(500)
-                res.send("Internal Server Error, Database issue")
+                res.send("Internal Server Error")
                 return
             }
-            res.status(200)
-            res.render('tier2/allMembers', data)
+            //succesful, attempt to get information and render the allMembers page
+            allMembersInformer(req.body.username, req.body.memNum, req.body.direction, allMembers_variables, req.body.filterLC,  req.body.chosenLC ,con, function(flag, data) {
+                if (flag == 3) {
+                    res.status(500)
+                    res.send("Internal Server Error, Database issue")
+                    return
+                }
+                res.status(200)
+                res.render('tier2/allMembers', data)
+            })
         })
-    })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
+    
+    
 })
 
 app.post("/allTrainers", function(req, res) {
@@ -392,33 +446,43 @@ app.post("/allTrainers", function(req, res) {
         res.send("Your request does not include a cipher, please login and use the website as intended")
         return
     }
-    
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-        allTrainersInformer(req.body.username, req.body.memNum, req.body.direction, allTrainers_variables, req.body.filterLC, req.body.chosenLC, con, function(flag, data){
-            if (flag == 3) {
+
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
                 res.status(500)
-                res.send("Internal Server Error, Database issue")
+                res.send("Internal Server Error")
                 return
             }
-            res.status(200)
-            res.render('tier2/allTrainers', data)
+            allTrainersInformer(req.body.username, req.body.memNum, req.body.direction, allTrainers_variables, req.body.filterLC, req.body.chosenLC, con, function(flag, data){
+                if (flag == 3) {
+                    res.status(500)
+                    res.send("Internal Server Error, Database issue")
+                    return
+                }
+                res.status(200)
+                res.render('tier2/allTrainers', data)
+            })
         })
-    })
-   
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
+       
 })
 
 app.post("/allActivities", function(req, res) {
@@ -438,33 +502,44 @@ app.post("/allActivities", function(req, res) {
         res.send("Your request does not include a cipher, please login and use the website as intended")
         return
     }
-    
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-        allActivitiesInformer(req.body.username, activityPage_variables, req.body.filter, req.body.curFilter, con, function(flag, data) {
-            if (flag == 3) {
+
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
                 res.status(500)
-                res.send("Internal Server Error, Database issue")
+                res.send("Internal Server Error")
                 return
             }
-            res.status(200)
-            res.render('tier2/allActivities', data)
+            allActivitiesInformer(req.body.username, activityPage_variables, req.body.filter, req.body.curFilter, con, function(flag, data) {
+                if (flag == 3) {
+                    res.status(500)
+                    res.send("Internal Server Error, Database issue")
+                    return
+                }
+                res.status(200)
+                res.render('tier2/allActivities', data)
+            })
         })
-    }) 
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
 })
+
 
 app.post("/blackList", function(req, res){
     if (!req.body) {
@@ -483,41 +558,49 @@ app.post("/blackList", function(req, res){
         res.send("Your request does not include a cipher, please login and use the website as intended")
         return
     }
-    
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-        blackListInformer(req.body.username, blackList_variables, con, function(flag, data){
-            if (flag == 0){
-                   res.status(200);
-                   res.render("tier2/blackList", data)
-                   return
+
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
+                return
             }
-            res.status(500)
-            res.send("Internal Server Error")
-             
+            blackListInformer(req.body.username, blackList_variables, con, function(flag, data){
+                if (flag == 0){
+                       res.status(200);
+                       res.render("tier2/blackList", data)
+                       return
+                }
+                res.status(500)
+                res.send("Internal Server Error")
+
+            })
+
         })
-        
-    })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }  
 })
 
 
 app.post("/selectAct", function(req, res){
-
-    console.log(req.body)
-    
+   
     if (!req.body) {
         res.status(400)
         res.send("Incomplete Request")
@@ -534,75 +617,87 @@ app.post("/selectAct", function(req, res){
         res.send("Your request does not include a cipher, please login and use the website as intended")
         return
     }
-    
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
 
-        if (req.body.position != "Secgen"){
-            res.status(401)
-            res.send("Unauthorized, CBD cannot add activities, their only concern is trainers")
-            return
-        }
-
-        if (req.body.activity){
-            actID = req.body.activity
-        }else{
-            actID = req.body.actNum
-        }
-        getActivityCat(actID, con, function(flag, msg){
-            if (flag == 3){
-                console.log(flag);
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
                 res.status(500)
-                res.send(msg)
+                res.send("Internal Server Error")
                 return
             }
-                   
-            if (msg == "national"){
-                if (!(msg == req.body.localCommittee || req.body.localCommittee == "national")){
-                    res.status(401)
-                    res.send("Unauthorized, local Secgens cannot activities events outside their Local Committee")
+
+            if (req.body.position != "Secgen"){
+                res.status(401)
+                res.send("Unauthorized, CBD cannot add activities, their only concern is trainers")
+                return
+            }
+
+            if (req.body.activity){
+                actID = req.body.activity
+            }else{
+                actID = req.body.actNum
+            }
+            getActivityCat(actID, con, function(flag, msg){
+                if (flag == 3){
+                    console.log(flag);
+                    res.status(500)
+                    res.send(msg)
                     return
                 }
 
-                nationalActivityInformer(req.body.username,  req.body.direction, req.body.currentMemNum, actID, nationalActivity_variables, con, function (flag, data){
-                    if (flag != 0){
-                        console.log(flag)
-                        res.status(400)
-                        res.send("Failed")
+                if (msg == "national"){
+                    if (!(msg == req.body.localCommittee || req.body.localCommittee == "national")){
+                        res.status(401)
+                        res.send("Unauthorized, local Secgens cannot activities events outside their Local Committee")
                         return
                     }
-                    res.render("tier2/tier3/nationalActivity", data)
-                })
-                
-                
-            }else{
-                localActivityInformer(req.body.username, req.body.direction, req.body.currentMemNum, actID, localActivity_variables, con, function (flag, data){
-                    if (flag != 0){
-                        console.log(flag)
-                        res.status(400)
-                        res.send("Failed")
-                        return
-                    }
-                    console.log(data)
-                    res.render("tier2/tier3/localActivity", data)
-                })
-            }
-                    
+
+                    nationalActivityInformer(req.body.username,  req.body.direction, req.body.currentMemNum, actID, nationalActivity_variables, con, function (flag, data){
+                        if (flag != 0){
+                            console.log(flag)
+                            res.status(400)
+                            res.send("Failed")
+                            return
+                        }
+                        res.render("tier2/tier3/nationalActivity", data)
+                    })
+
+
+                }else{
+                    localActivityInformer(req.body.username, req.body.direction, req.body.currentMemNum, actID, localActivity_variables, con, function (flag, data){
+                        if (flag != 0){
+                            console.log(flag)
+                            res.status(400)
+                            res.send("Failed")
+                            return
+                        }
+                        console.log(data)
+                        res.render("tier2/tier3/localActivity", data)
+                    })
+                }
+
+            })
         })
-    })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
+    
+    
 })
 
 
@@ -625,60 +720,69 @@ app.post("/addActivity", function(req, res) {
         return
     }
 
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
        
-        if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-
-        if (req.body.position != "Secgen"){
-            res.status(401)
-            res.send("Unauthorized, CBD cannot add activities, their only concern is trainers")
-            return
-        }
-
-        addActivity(req.body, req.body.localCommittee, con, function(flag){
-            if (flag !== 0){
+            if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
                 res.status(500)
                 res.send("Internal Server Error")
                 return
             }
 
-            allActivitiesInformer(req.body.username, activityPage_variables, req.body.localCommittee, req.body.curFilter, con, function(flag, data) {
-                if (flag == 3) {
+            if (req.body.position != "Secgen"){
+                res.status(401)
+                res.send("Unauthorized, CBD cannot add activities, their only concern is trainers")
+                return
+            }
+
+            addActivity(req.body, req.body.localCommittee, con, function(flag){
+                if (flag !== 0){
                     res.status(500)
-                    res.send("Internal Server Error, Database issue")
+                    res.send("Internal Server Error")
                     return
                 }
 
-                updateAction(req.body.username, `Added a new Activity : ${req.body.activityName}`, con, function(flag){
-                    if (flag != 0){
+                allActivitiesInformer(req.body.username, activityPage_variables, req.body.localCommittee, req.body.curFilter, con, function(flag, data) {
+                    if (flag == 3) {
                         res.status(500)
-                        res.send("Internal Server Error, unable to update action, but activity was added")
+                        res.send("Internal Server Error, Database issue")
                         return
                     }
 
-                    res.status(200)
-                    res.render('tier2/allActivities', data)
-                })
-                
-            })
-            
-        })
-        
-    })
+                    updateAction(req.body.username, `Added a new Activity : ${req.body.activityName}`, con, function(flag){
+                        if (flag != 0){
+                            res.status(500)
+                            res.send("Internal Server Error, unable to update action, but activity was added")
+                            return
+                        }
 
+                        res.status(200)
+                        res.render('tier2/allActivities', data)
+                    })
+
+                })
+
+            })
+
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
 })
 
 
@@ -707,29 +811,40 @@ app.post("/searchMember", function(req, res){
     }
 
     LC = (req.body.filter)
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 0) {
-            searchMember(req.body, con, function(flag, data){
-                if (flag == 0){
-                    res.status(200)
-                    res.send(JSON.stringify(data))
-                }else{
-                    res.status(500)
-                    res.send("Internal Server Error")
-                }
-            })
-        } else if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-        }
-    })
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 0) {
+                searchMember(req.body, con, function(flag, data){
+                    if (flag == 0){
+                        res.status(200)
+                        res.send(JSON.stringify(data))
+                    }else{
+                        res.status(500)
+                        res.send("Internal Server Error")
+                    }
+                })
+            } else if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
+            }
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
+    
 })
 
 app.post("/addNewMem",function(req,res){
@@ -758,30 +873,41 @@ app.post("/addNewMem",function(req,res){
         return
     }
 
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 0) {
-            addNewMem(req.body, con, function(flag, data){
-                if (flag == 0){
-                    res.status(200)
-                    res.send("Succesfully registered member")
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 0) {
+                addNewMem(req.body, con, function(flag, data){
+                    if (flag == 0){
+                        res.status(200)
+                        res.send("Succesfully registered member")
+                        return
+                    }
+                    res.status(500)
+                    res.send("Bad Request, Make sure that the user is not already registered")
                     return
-                }
+                })
+            } else if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+            } else if (flag == 3) {
                 res.status(500)
-                res.send("Bad Request, Make sure that the user is not already registered")
-                return
-            })
-        } else if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-        }
-    })          
+                res.send("Internal Server Error")
+            }
+        })  
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
+            
 })
 
 app.post("/editMem",function(req,res){
@@ -814,37 +940,47 @@ app.post("/editMem",function(req,res){
         res.send("Unauthorized: You do not have access to that member")
         return
     }
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-       if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-        editMem(req.body, con, function(flag){
-            if (flag == 0){
-                res.status(200)
-                res.send("Member Succesfully Edited")
+
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+           if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
                 return
             }
-            res.status(500)
-            res.send("Bad Request, Make sure that the user number is not already registered")
-            return
-        })   
-    })               
+            editMem(req.body, con, function(flag){
+                if (flag == 0){
+                    res.status(200)
+                    res.send("Member Succesfully Edited")
+                    return
+                }
+                res.status(500)
+                res.send("Bad Request, Make sure that the user number is not already registered")
+                return
+            })   
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
+                   
 })
 
 app.post("/deleteMem", function (req,res){
-    
-    con
     if (!req.body) {
         res.status(400)
         res.send("Incomplete Request")
@@ -873,32 +1009,42 @@ app.post("/deleteMem", function (req,res){
         return
     }
 
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-       if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-        deleteMem(req.body.memNum, con, function(flag){
-            if (flag == 0){
-                res.status(200)
-                res.send(`${req.body.memNum} Succesfully Deleted`)
+    try{
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+           if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
                 return
             }
-            res.status(500)
-            res.send("Bad Request, Make sure that the user number is not already registered")
-            return
-        })   
-    })
+            deleteMem(req.body.memNum, con, function(flag){
+                if (flag == 0){
+                    res.status(200)
+                    res.send(`${req.body.memNum} Succesfully Deleted`)
+                    return
+                }
+                res.status(500)
+                res.send("Bad Request, Make sure that the user number is not already registered")
+                return
+            })   
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
 })
 
 
@@ -927,41 +1073,52 @@ app.post("/editTrainer",function(req,res){
         return
     }
 
-    if (req.body.position != "Secgen" || (req.body.localCommittee != "national" && req.body.localCommittee != req.body.memLC)){
+    if (req.body.position != "CBD" || (req.body.localCommittee != "national" && req.body.localCommittee != req.body.memLC)){
         res.status(401)
-        res.send("Unauthorized: You do not have access to that member")
+        res.send("Unauthorized: You do not have access to that trainer")
         return
     }
 
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-       if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-        editTrainer(req.body, con, function(flag){
-            if (flag == 0){
-                res.status(200)
-                res.send("Member Succesfully Edited")
+    try{
+       verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+           if (flag == 1) { 
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
                 return
             }
-            res.status(500)
-            res.send("Bad Request, Make sure that the user number is not already registered")
-            return
-        })   
-    })               
+            editTrainer(req.body, con, function(flag){
+                if (flag == 0){
+                    res.status(200)
+                    res.send("Member Succesfully Edited")
+                    return
+                }
+                res.status(500)
+                res.send("Bad Request, Make sure that the user number is not already registered")
+                return
+            })   
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }               
 })
 
 app.post("/searchTrainer", function(req, res){
+
     if (!req.body) {
         res.status(400)
         res.send("Incomplete Request")
@@ -985,32 +1142,49 @@ app.post("/searchTrainer", function(req, res){
         return
     }
 
-    LC = (req.body.filter)
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-            return
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-            return
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-            return
-        }
-        searchTrainer(req.body, con, function(flag, data){
-            if (flag == 0){
-                res.status(200)
-                res.send(JSON.stringify(data))
-            }else{
+    if (req.body.position != "CBD" && !(req.body.localCommittee == "national" && req.body.position == "Secgen")){
+        res.status(401)
+        res.send("Unauthorized: You do not have access to trainers")
+        return
+    }
+
+    try{
+        LC = (req.body.filter)
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+                return
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+                return
+            } else if (flag == 3) {
                 res.status(500)
                 res.send("Internal Server Error")
+                return
             }
-        })
-    })          
+            searchTrainer(req.body, con, function(flag, data){
+                if (flag == 0){
+                    res.status(200)
+                    res.send(JSON.stringify(data))
+                }else{
+                    res.status(500)
+                    res.send("Internal Server Error")
+                }
+            })
+        })  
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request')
+    }
+            
 })
 
 app.post("/searchAddToAct", function(req, res){
@@ -1032,32 +1206,50 @@ app.post("/searchAddToAct", function(req, res){
         return
     }
 
-    LC = (req.body.filter)
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 0) {
-            searchMemberActivity(req.body, con, function(flag, data){
-                if (flag == 0){
-                    res.status(200)
-                    console.log(data)
-                    res.send(JSON.stringify(data))
-                    return
-                }
+    if (req.body.position != "Secgen"){
+        res.status(401)
+        res.send("Unauthorized: You do not have access to activities or members")
+        return
+    }
+
+
+    try{
+        LC = (req.body.filter)
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 0) {
+                searchMemberActivity(req.body, con, function(flag, data){
+                    if (flag == 0){
+                        res.status(200)
+                        console.log(data)
+                        res.send(JSON.stringify(data))
+                        return
+                    }
+                    res.status(500)
+                    res.send("Internal Server Error")
+
+                })
+            } else if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+            } else if (flag == 3) {
                 res.status(500)
                 res.send("Internal Server Error")
-                
-            })
-        } else if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-        }
-    })
+            }
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request')
+    }
+    
 })
 
 app.post("/searchDeleteToAct", function(req, res){
@@ -1078,31 +1270,47 @@ app.post("/searchDeleteToAct", function(req, res){
         return
     }
 
-    LC = (req.body.filter)
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 0) {
-            searchMemberDelete(req.body, con, function(flag, data){
-                if (flag == 0){
-                    res.status(200)
-                    res.send(JSON.stringify(data))
-                    return
-                }
+    if (req.body.position != "Secgen"){
+        res.status(401)
+        res.send("Unauthorized: You do not have access to activities or members")
+        return
+    }
+
+    try{
+        LC = (req.body.filter)
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 0) {
+                searchMemberDelete(req.body, con, function(flag, data){
+                    if (flag == 0){
+                        res.status(200)
+                        res.send(JSON.stringify(data))
+                        return
+                    }
+                    res.status(500)
+                    res.send("Internal Server Error")
+
+                })
+            } else if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+            } else if (flag == 3) {
                 res.status(500)
                 res.send("Internal Server Error")
-                
-            })
-        } else if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-        }
-    })
+            }
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request')
+    }
 })
 
 app.post("/deleteParticipants", function(req, res){
@@ -1122,37 +1330,53 @@ app.post("/deleteParticipants", function(req, res){
         res.send("Your request does not include a cipher, please login and use the website as intended")
         return
     }
+
+    if (req.body.position != "Secgen"){
+        res.status(401)
+        res.send("Unauthorized: You do not have access to activities or members")
+        return
+    }
     
-    LC = (req.body.filter)
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 0) {
-            deleteParticipants(req.body, con, function(flag, data){
-                if (flag != 0){
-                    res.status(500)
-                    res.send("Internal Server Error")
-                    return
-                }
-                updateAction(req.body.username, `removed participants from activity number :${req.body.actNum}`, con, function(flag){
+    try{
+        LC = (req.body.filter)
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 0) {
+                deleteParticipants(req.body, con, function(flag, data){
                     if (flag != 0){
-                        res.status(201)
-                        res.send(`Succesfully Removed Selected Members From Activity Number :${req.body.actNum}, but failed to update action`)
+                        res.status(500)
+                        res.send("Internal Server Error")
+                        return
                     }
-                    res.status(200)
-                    res.send(`Succesfully Removed Selected Members From Activity Number :${req.body.actNum}`)
+                    updateAction(req.body.username, `removed participants from activity number :${req.body.actNum}`, con, function(flag){
+                        if (flag != 0){
+                            res.status(201)
+                            res.send(`Succesfully Removed Selected Members From Activity Number :${req.body.actNum}, but failed to update action`)
+                        }
+                        res.status(200)
+                        res.send(`Succesfully Removed Selected Members From Activity Number :${req.body.actNum}`)
+                    })
                 })
-            })
-        } else if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-        }
-    })
+            } else if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
+            }
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request')
+    }
 })
 
 app.post("/addParticipants", function(req, res){
@@ -1173,37 +1397,53 @@ app.post("/addParticipants", function(req, res){
         res.send("Your request does not include a cipher, please login and use the website as intended")
         return
     }
-    
-    LC = (req.body.filter)
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 0) {
-            addParticipants(req.body, con, function(flag, data){
-                if (flag != 0){
-                    res.status(500)
-                    res.send("Internal Server Error")
-                    return
-                }
-                updateAction(req.body.username, `added participants from activity number :${req.body.actNum}`, con, function(flag){
+
+    if (req.body.position != "Secgen"){
+        res.status(401)
+        res.send("Unauthorized: You do not have access to activities or members")
+        return
+    }
+        
+    try{
+        LC = (req.body.filter)
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 0) {
+                addParticipants(req.body, con, function(flag, data){
                     if (flag != 0){
-                        res.status(201)
-                        res.send(`Succesfully Added Selected Members From Activity Number :${req.body.actNum}, but failed to update action`)
+                        res.status(500)
+                        res.send("Internal Server Error")
+                        return
                     }
-                    res.status(200)
-                    res.send(`Succesfully Added Selected Members From Activity Number :${req.body.actNum}`)
+                    updateAction(req.body.username, `added participants from activity number :${req.body.actNum}`, con, function(flag){
+                        if (flag != 0){
+                            res.status(201)
+                            res.send(`Succesfully Added Selected Members From Activity Number :${req.body.actNum}, but failed to update action`)
+                        }
+                        res.status(200)
+                        res.send(`Succesfully Added Selected Members From Activity Number :${req.body.actNum}`)
+                    })
                 })
-            })
-        } else if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-        }
-    })
+            } else if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
+            }
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request')
+    }
 })
 
 app.post("/editActivity", function(req, res){
@@ -1225,40 +1465,56 @@ app.post("/editActivity", function(req, res){
         return
     }
     
-    LC = (req.body.filter)
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 0) {
-            console.log(`flag == ${flag}`)
-            editActivity(req.body, con, function(flag, data){
-                if (flag != 0){
-                    res.status(500)
-                    res.send("Internal Server Error")
-                    return
-                }
+    if (req.body.position != "Secgen"){
+        res.status(401)
+        res.send("Unauthorized: You do not have access to activities or members")
+        return
+    }
+    
+    try{
+        LC = (req.body.filter)
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 0) {
                 console.log(`flag == ${flag}`)
-                updateAction(req.body.username, `edited activity number :${req.body.actNum}`, con, function(flag){
+                editActivity(req.body, con, function(flag, data){
                     if (flag != 0){
-                        res.status(201)
-                        res.send(`edited activity :${req.body.actNum}, but failed to update action`)
+                        res.status(500)
+                        res.send("Internal Server Error")
                         return
                     }
-                    res.status(200)
-                    res.send(`Succesfully Edited Activity Number :${req.body.actNum}`)
                     console.log(`flag == ${flag}`)
+                    updateAction(req.body.username, `edited activity number :${req.body.actNum}`, con, function(flag){
+                        if (flag != 0){
+                            res.status(201)
+                            res.send(`edited activity :${req.body.actNum}, but failed to update action`)
+                            return
+                        }
+                        res.status(200)
+                        res.send(`Succesfully Edited Activity Number :${req.body.actNum}`)
+                        console.log(`flag == ${flag}`)
+                    })
                 })
-            })
-        } else if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-        }
-    })
+            } else if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
+            }
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request')
+    } 
 })
 
 app.post("/printCert", function(req, res){
@@ -1281,28 +1537,44 @@ app.post("/printCert", function(req, res){
         res.send("Your request does not include a cipher, please login and use the website as intended")
         return
     }
-    
-    LC = (req.body.filter)
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 0) {
-            html2PDF(req.body.actNum, req.body.currentMemNum, certificate_variables, con, function(flag, data){
-                if (flag == 0){
-                    console.log("DONE")
-                    res.sendFile(__dirname + `/certificates/${data.certCode}_cropped.pdf`)
-                }
-            })
-        } else if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-        }
-    }) 
+
+    if (req.body.position != "Secgen"){
+        res.status(401)
+        res.send("Unauthorized: You do not have access to activities or members")
+        return
+    }
+
+    try{
+        LC = (req.body.filter)
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 0) {
+                html2PDF(req.body.actNum, req.body.currentMemNum, certificate_variables, con, function(flag, data){
+                    if (flag == 0){
+                        console.log("DONE")
+                        res.sendFile(__dirname + `/certificates/${data.certCode}_cropped.pdf`)
+                    }
+                })
+            } else if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
+            }
+        }) 
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request')
+    }
 })
 
 app.post("/printAllCert", function(req, res){
@@ -1325,31 +1597,48 @@ app.post("/printAllCert", function(req, res){
         res.send("Your request does not include a cipher, please login and use the website as intended")
         return
     }
-    
-    LC = (req.body.filter)
-    verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
-        if (flag == 0) {
-            sendToAllParticipants(req.body.actNum, certificate_variables, con, function(flag){
-                if (flag == 0){
-                    res.status(200)
-                    res.send("Succesfully Started Creating Certificates, Should Send to All Participants")
-                    return
-                }
-                res.status(501)
-                res.send("Internal Server Error, Cannot Send Emails")
-            })
-        } else if (flag == 1) {
-            //failed, bad cipher
-            res.status(401)
-            res.send("Your request has a bad cipher")
-        } else if (flag == 2) {
-            res.status(401)
-            res.send("user not registered")
-        } else if (flag == 3) {
-            res.status(500)
-            res.send("Internal Server Error")
-        }
-    }) 
+
+    if (req.body.position != "Secgen"){
+        res.status(401)
+        res.send("Unauthorized: You do not have access to activities or members")
+        return
+    }
+
+    try{
+        LC = (req.body.filter)
+        verifyUser(req.body.username, req.body.cipher, req.body.localCommittee, req.body.position, con, function(flag) {
+            if (flag == 0) {
+                sendToAllParticipants(req.body.actNum, certificate_variables, con, function(flag){
+                    if (flag == 0){
+                        res.status(200)
+                        res.send("Succesfully Started Creating Certificates, Should Send to All Participants")
+                        return
+                    }
+                    res.status(501)
+                    res.send("Internal Server Error, Cannot Send Emails")
+                })
+            } else if (flag == 1) {
+                //failed, bad cipher
+                res.status(401)
+                res.send("Your request has a bad cipher")
+            } else if (flag == 2) {
+                res.status(401)
+                res.send("user not registered")
+            } else if (flag == 3) {
+                res.status(500)
+                res.send("Internal Server Error")
+            }
+        })
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request')
+    }
+     
 })
 
 
@@ -1411,14 +1700,6 @@ app.get("/scripts/*", function(req, res) {
 
 
     res.sendFile(fileName, options)
-})
-
-app.get("/cert", function(req, res){
-    const options = {
-        root: path.join(__dirname, "/public")
-    }
-
-    res.sendFile("index.html", options)
 })
 
 

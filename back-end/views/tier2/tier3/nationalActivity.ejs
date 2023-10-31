@@ -188,7 +188,7 @@
         </div>
         <div style="width: 3%;"></div>
         <div class="borderLine"></div>
-        <form method="post" action="/allMembers">
+        <form class ="allMembersForm" method="post" action="/allMembers">
             <input type="hidden" name="memNum" value=0>
             <input type="hidden" name="direction" value="next">
             <input type="hidden" name="filterLC" value="<%=userLC%>">
@@ -200,7 +200,7 @@
         <div class="borderLine"></div>
 
         <!-- all trainers -->
-        <form method="post" action="/allTrainers">
+        <form class ="allTrainersForm" method="post" action="/allTrainers">
              <input type="hidden" name="memNum" value=0>
             <input type="hidden" name="direction" value="next">
             <input type="hidden" name="filterLC" value="<%=userLC%>">
@@ -211,7 +211,7 @@
         </form>
         <div class="borderLine"></div>
         <!-- all activities -->
-        <form method="post" action="/allActivities">
+        <form class="allActivitiesForm" method="post" action="/allActivities">
             <input type="hidden" name="filter" value="<%=userLC%>">
             <button class="" type="submit">
             All Activities
@@ -219,7 +219,7 @@
         </form>
         <div class="borderLine"></div>
 
-        <form method="post" action="/blackList">
+        <form class="blackListForm" method="post" action="/blackList">
             <button class="" type="submit">
             Black List
         </button>
@@ -345,10 +345,10 @@
                         <%=activityDescription%>
                     </div>
                     <div style="font-size: large; margin-top:2%">
-                        <a href="<%=reportLink%>">Report Link</a>
+                        <a href="<%=reportLink%>" target="_blank">Report Link</a>
                     </div>
                     <div style="font-size: large;margin-top:2%">
-                        <a href="<%=proposalLink%>">Proposal Link</a>
+                        <a href="<%=proposalLink%>" target="_blank">Proposal Link</a>
                     </div>
                 </div>
                 <div class="headerbox" style="margin-left: 41.8px;">
@@ -461,10 +461,10 @@
                             <%=participantPhoneNO%>
                         </div>
                         <div class="headerbox" style="margin:3% 0%; overflow-x: hidden;max-width: 100%;font-size: x-large;">
-                            <a href="<%=participantEmail%>">Email</a>
+                            <%=participantEmail%>
                         </div>
                         <div class="headerbox" style="margin:3% 0%; overflow-x: hidden;max-width: 100%;font-size: x-large;">
-                            <a href="<%=participantFacebook%>">Facebook Account</a>
+                            <a href="<%=participantFacebook%>" target="_blank">Facebook Account</a>
                         </div>
                     </div>
                     <div style="width: 60%; height: 90%; margin-left: 5%; border-style: solid; display: flex; flex-direction: column;">
