@@ -168,10 +168,10 @@ INSERT INTO LC VALUES
     ('jerusalem', 'Full');
 
 
-SELECT IFNULL((SELECT * FROM M_A, A, Na WHERE M_A.ActivityID = Na.ActivityID AND A.ActivityID = Na.ActivityID AND A.ActivityID = 1),(SELECT ))
+-- SELECT IFNULL((SELECT * FROM M_A, A, Na WHERE M_A.ActivityID = Na.ActivityID AND A.ActivityID = Na.ActivityID AND A.ActivityID = 1),(SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%' AND UniID IN (SELECT UniID FROM M_A WHERE ActivityID = ) ))
 
-SELECT  A.Committee AS Committee, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name,
-A.Aname, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1,
-M_A.position AS Position, M_A.CertCode AS memNumPerA, Na.Anum AS Anum 
-FROM M, M_A, Na, A
-WHERE M_A.ActivityID = A.ActivityID AND A.ActivityID = Na.ActivityID AND M_A.UniID = M.UniID AND M.UniID = 1190083 AND A.ActivityID = 11
+-- SELECT  A.Committee AS Committee, CONCAT(M.FirstName, " ",M.FatherName, " ", M.GFatherName, " ", M.FamilyName) AS Name,
+-- A.Aname, DATE_FORMAT(StartDate,'%Y/%m/%d') AS StartDate1, DATE_FORMAT(EndDate,'%Y/%m/%d') AS EndDate1,
+-- M_A.position AS Position, M_A.CertCode AS memNumPerA, Na.Anum AS Anum 
+-- FROM M, M_A, Na, A
+-- WHERE M_A.ActivityID = A.ActivityID AND A.ActivityID = Na.ActivityID AND M_A.UniID = M.UniID AND M.UniID = 1190083 AND A.ActivityID = 11
