@@ -151,6 +151,29 @@ app.post("/login", function(req, res) {
     
 })
 
+app.post("/mainPage", function(req, res) {
+    const fileName = 'login'
+    var username = req.body.username
+    var password = req.body.password
+    try{
+        mainPageInformer(username, con, mainPage_varialbes, function(data) {
+            res.render("main", data);
+        })
+                    
+            
+    }catch(e){
+        console.log(e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'Error : ' + e)
+        fs.writeFileSync( __dirname + '/logs/error.txt', 'req.body = ' + req.body)
+        fs.writeFileSync( __dirname + '/logs/error.txt', '-------------------------------------------------------------------------------')
+        res.status(400)
+        res.send('Bad Request; error has been logged, please make this known so it can be fixed')
+    }
+})
+
+
+
 // /////////////////////////
 // Main page GET processing
 //TODO: make sure to do authentication

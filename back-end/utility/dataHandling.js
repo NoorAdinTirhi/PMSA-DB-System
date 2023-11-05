@@ -1152,12 +1152,8 @@ function searchMemberDelete(body, con, callback){
     try{
         console.log(body)
 
-        if (body.localCommittee.toUpperCase() == "NATIONAL")
-            chosenLC = ""
-        else
-            chosenLC = ` AND LC = '${body.localCommittee}'`
-        console.log(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%' AND UniID IN (SELECT UniID FROM M_A WHERE ActivityID = ${body.actNum})` + chosenLC)
-        con.query(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%' AND UniID IN (SELECT UniID FROM M_A WHERE ActivityID = ${body.actNum})` + chosenLC, function(err, results){
+        console.log(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%' AND UniID IN (SELECT UniID FROM M_A WHERE ActivityID = ${body.actNum})`)
+        con.query(`SELECT UniID, CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) AS Name FROM M WHERE CONCAT(FirstName, " ", FatherName, " ",GFatherName, " ",FamilyName) LIKE '%${body.memberLike}%' AND UniID IN (SELECT UniID FROM M_A WHERE ActivityID = ${body.actNum})`, function(err, results){
             data=[]
             temp={}
             if (err){

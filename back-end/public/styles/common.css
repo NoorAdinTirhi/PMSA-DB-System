@@ -42,7 +42,7 @@ body {
             font-size: 22px;
             padding: 14px 0;
             transition-property: box-shadow border-radius transform;
-            transition-duration: .5s;
+            transition-duration: .15;
         }
 
         #navigationBar{
@@ -78,4 +78,9 @@ body {
             border-style: solid;
             border-color: white;
             border-width: 1px;
+        }
+        .PMSA_Logo{
+            width: 100px;
+            margin: 0 3%;
+            cursor: pointer;
         }

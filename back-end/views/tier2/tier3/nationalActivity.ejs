@@ -183,9 +183,9 @@
 
 <body>
     <div id = "navigationBar">
-        <div style="width: 10%;">
-            <img src="../../../public/images/PMSA_Web_Logo.png">
-        </div>
+        <form class=PMSA_Logo method="post" action="/mainPage" onclick="this.submit()">
+            <img src="../../../public/images/PMSA_Web_Logo.png" >
+        </form>
         <div style="width: 3%;"></div>
         <div class="borderLine"></div>
         <form class ="allMembersForm" method="post" action="/allMembers">
@@ -440,7 +440,7 @@
                         Add Participants
                     </button>
                     <button class="participantBtn" style="width:25%; margin-right:7.5%" onclick="deleteMemPopUp()">
-                        Delete Participants
+                        Search Participants
                     </button>
                     <button class="participantBtn" style="width:25%; border-color: rgb(0, 119, 255); color: rgb(0, 119, 255)" onclick="addActivityWindow()">
                         Edit Activity
@@ -583,8 +583,9 @@
                                     <div style="display: flex; flex-direction:row">
                                             <input style="margin-left:5%;" type="checkbox" onclick="toggle(this)">
                                             <div style="width:5%">select all</div> 
-                                            <label style="width:42%; margin-left:5%">Member Number</label>
-                                            <label style="width:42%">Member Name</label>
+                                            <label style="width:30%; margin-left:5%">Member Number</label>
+                                            <label style="width:30%">Member Name</label>
+                                            <label style="width:30%">Certificate Code</label>
                                     </div>
                                 </li>
                             </ul>
@@ -633,8 +634,9 @@
     <li id="templatelistItem" style="display: none; flex-direction:row">
         <input style="margin-left:5%;" name="addMemCb" type="checkbox" >
         <div style="width: 5%;"></div>
-        <label style="width:42%; margin-left:5%">Member Number</label>
-        <label style="width:42%">Member Name</label>
+        <label style="width:30%; margin-left:5%">Member Number</label>
+        <label style="width:30%">Member Name</label>
+        <label style="width:30%">CertCode</label>
         <input type="hidden" name="memNum">
     </li>
 
@@ -975,7 +977,8 @@
                         listItem.style.display = "flex"
                         listItem.children[2].innerText = obj.memNum
                         listItem.children[3].innerText = obj.memName
-                        listItem.children[4].value = obj.memNum
+                        listItem.children[4].innerText = obj.CertCode
+                        listItem.children[5].value = obj.memNum
                         document.getElementById("searchlistDelete").append(listItem)
                     })
                 }else{
