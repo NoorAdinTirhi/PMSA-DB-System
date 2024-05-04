@@ -1,9 +1,9 @@
 # PMSA-DB-System
 A MySQL DB used to keep track and update the PMSA activities, the commitees holding them as well as the involved members.
 
-for the front-end we use Javascript, HTML and CSS.
+for the front-end, Javascript, HTML and CSS are used.
 
-for the back-end we use NodeJS with the MySQL connector.
+for the back-end, NodeJS with a MYSQL Connector are used.
 
 
 ## Dependencies :
