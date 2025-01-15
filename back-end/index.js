@@ -1587,6 +1587,9 @@ app.post("/printCert", function(req, res){
             } else if (flag == 3) {
                 res.status(500)
                 res.send("Internal Server Error")
+            } else if (flag == 5) {
+                res.status(401)
+                res.send("Member not registered for activity")
             }
         }) 
     }catch(e){

@@ -1585,7 +1585,11 @@ function html2PDF (actNum, memNum, pageData_original, con, callback){
                 return callback(4, pageData)
             }
             const pageData = {...pageData_original};
-        
+            
+	        if (results === undefined || results.length == 0) {
+		        return callback(5,pageData);
+	        }
+		
             certPath = __dirname + `/../views/certificates/${(results[0].Committee.toUpperCase() != 'CB')?results[0].Committee.toUpperCase():"GENERAL.ejs"}.ejs`
             pageData.participantName = results[0].Name;
             pageData.activityName = results[0].Aname;
@@ -1594,7 +1598,7 @@ function html2PDF (actNum, memNum, pageData_original, con, callback){
             pageData.participentPosition = results[0].Position;
         
             date = results[0].StartDate1.split("/")
-            termDate = `${Number(date[0].slice(2,4))-1} ||  ${date[0].slice(2,4)}`
+            termDate = `${Number(date[0].slice(2,4))-1}${date[0].slice(2,4)}`
         
             if (Number(date[1]) > 2)
                 termDate = `${date[0].slice(2,4)}${Number(date[0].slice(2,4)) + 1}`
@@ -1613,7 +1617,8 @@ function html2PDF (actNum, memNum, pageData_original, con, callback){
                     i++;
                     // Create a browser instance
                     const browser = await puppeteer.launch({
-                      headless : "new"
+                      headless : "new",
+                      ignoreDefaultArgs: ['--disable-extensions']
                     });
                 
                     // Create a new page

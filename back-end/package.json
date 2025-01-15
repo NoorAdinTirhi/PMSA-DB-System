@@ -12,7 +12,7 @@
         "nodemailer": "^6.9.7",
         "package.json": "^0.0.0",
         "path": "^0.12.7",
-        "puppeteer": "^21.4.1",
+        "puppeteer": "^23.11.1",
         "scissors": "^0.3.0",
         "url": "^0.11.3"
     }

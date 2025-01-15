@@ -21,6 +21,7 @@ CREATE TABLE Users(
 )ENGINE=INNODB;
 
 INSERT INTO Users (Username, Hmac, Hkey,Position, Locality) VALUES ('noor', '14b95c8a801504ac2bd1aeddcbdd74adbe91e951db1f435355538be6cd9391fe', '28,54,23,16,252,42,160,50,245,169,9,88,221,113,238,156,243,238,109,5,55,207,102,189,229,88,102,125,242,164,1,57', 'Secgen', 'National');
+INSERT INTO Users (Username, Hmac, Hkey,Position, Locality) VALUES ('admin', '060e5db75dab203b0a106b0f225c82291c64fbd5e025c0505d32fcf7564af02d', '28,54,23,16,252,42,160,50,245,169,9,88,221,113,238,156,243,238,109,5,55,207,102,189,229,88,102,125,242,164,1,57', 'Secgen', 'National');
 
 CREATE TABLE LocalCommittees
 (
